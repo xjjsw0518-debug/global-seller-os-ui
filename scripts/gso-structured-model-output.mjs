@@ -28,7 +28,6 @@ const REQUIRED_KEYS = Object.freeze([
   'authorization_id',
   'attestation_sha256',
   'target_path',
-  'content_sha256',
   'content',
   'evidence_sources',
   'provenance_urls',
@@ -145,8 +144,6 @@ export function validateStructuredModelOutput({ rawOutput, manifest, attestation
     errors.push('MODEL_OUTPUT_CONTENT_TOO_SMALL');
   }
   if (Buffer.byteLength(value.content || '', 'utf8') > MAX_ARTIFACT_CONTENT_BYTES) errors.push('MODEL_OUTPUT_CONTENT_TOO_LARGE');
-  if (value.content_sha256 !== sha256(value.content || '')) errors.push('MODEL_OUTPUT_CONTENT_HASH_MISMATCH');
-  if (!SHA256_PATTERN.test(value.content_sha256 || '')) errors.push('MODEL_OUTPUT_CONTENT_HASH_INVALID');
   if (TOKEN_PATTERN.test(value.content || '') || SECRET_TEXT_PATTERN.test(value.content || '')) errors.push('MODEL_OUTPUT_SECRET_SHAPED_CONTENT');
   TOKEN_PATTERN.lastIndex = 0;
   if (EXECUTABLE_TEXT_PATTERN.test(value.content || '')) errors.push('MODEL_OUTPUT_EXECUTABLE_CONTROL_TEXT');
@@ -173,7 +170,13 @@ export function validateStructuredModelOutput({ rawOutput, manifest, attestation
   return { ok: errors.length === 0, errors: [...new Set(errors)], value };
 }
 
-export function applyStructuredModelOutput({ repoRoot, rawOutput, manifest, attestation }) {
+export function applyStructuredModelOutput({
+  repoRoot,
+  rawOutput,
+  manifest,
+  attestation,
+  afterAtomicWriteForTest = null,
+}) {
   const before = changedPaths(repoRoot);
   if (before.length !== 0) throw new Error(`CONTROLLER_APPLY_WORKTREE_NOT_CLEAN:${before.join(',')}`);
   const validation = validateStructuredModelOutput({ rawOutput, manifest, attestation });
@@ -184,18 +187,29 @@ export function applyStructuredModelOutput({ repoRoot, rawOutput, manifest, atte
   const rel = relative(resolve(repoRoot), absolute);
   if (!rel || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) throw new Error('CONTROLLER_APPLY_TARGET_ESCAPE');
   if (existsSync(absolute)) throw new Error('CONTROLLER_APPLY_TARGET_ALREADY_EXISTS');
+  const contentBytes = Buffer.from(validation.value.content, 'utf8');
+  const controllerContentSha256 = sha256(contentBytes);
   mkdirSync(dirname(absolute), { recursive: true });
   const temporary = `${absolute}.${randomUUID()}.gso-controller.tmp`;
   try {
-    writeFileSync(temporary, validation.value.content, { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    writeFileSync(temporary, contentBytes, { mode: 0o600, flag: 'wx' });
     renameSync(temporary, absolute);
+    if (afterAtomicWriteForTest) afterAtomicWriteForTest({ absolutePath: absolute });
+    const readbackBytes = readFileSync(absolute);
+    const readbackSha256 = sha256(readbackBytes);
+    if (readbackBytes.length !== contentBytes.length || readbackSha256 !== controllerContentSha256) {
+      throw new Error('CONTROLLER_APPLY_READBACK_HASH_MISMATCH');
+    }
     const after = changedPaths(repoRoot);
     if (!exactStringArray(after, [targetPath])) throw new Error(`CONTROLLER_APPLY_CHANGED_PATHS_INVALID:${after.join(',')}`);
     return {
       passed: true,
       mode: STRUCTURED_MODEL_OUTPUT_MODE,
       target_path: targetPath,
-      content_sha256: validation.value.content_sha256,
+      content_sha256: controllerContentSha256,
+      readback_sha256: readbackSha256,
+      readback_hash_verified: true,
+      content_bytes: contentBytes.length,
       changed_paths: after,
       model_wrote_files: false,
       controller_wrote_file: true,
@@ -220,7 +234,6 @@ export function buildStubStructuredModelOutput({ fixture, manifest, attestation,
     authorization_id: task.authorization_id,
     attestation_sha256: attestation.packet_sha256,
     target_path: targetPath,
-    content_sha256: sha256(content),
     content,
     evidence_sources: expectedEvidenceSources(attestation),
     provenance_urls: expectedProvenanceUrls(attestation),

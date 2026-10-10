@@ -1,6 +1,5 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
@@ -17,8 +16,6 @@ import {
 const scriptRoot = dirname(fileURLToPath(import.meta.url));
 const fixture = JSON.parse(readFileSync(join(scriptRoot, '..', 'control', 'local-bridge', 'fixtures', 'issue-21.valid-model-output.stub.json'), 'utf8'));
 const targetPath = 'docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md';
-const hash = (value) => createHash('sha256').update(value).digest('hex');
-
 function git(cwd, ...args) {
   const result = spawnSync('git', ['-C', cwd, ...args], { encoding: 'utf8', windowsHide: true });
   if (result.status !== 0) throw new Error(result.stderr || `git ${args.join(' ')} failed`);
@@ -93,27 +90,44 @@ test('stub JSON flows through controller validation and creates exactly the one 
     assert.equal(result.mode, STRUCTURED_MODEL_OUTPUT_MODE);
     assert.equal(result.model_wrote_files, false);
     assert.equal(result.controller_wrote_file, true);
+    assert.equal(result.readback_hash_verified, true);
+    assert.equal(result.content_sha256, result.readback_sha256);
+    assert.equal(result.content_bytes, Buffer.byteLength(content, 'utf8'));
+    assert.equal('content_sha256' in output, false);
     assert.deepEqual(result.changed_paths, [targetPath]);
     assert.equal(readFileSync(join(repoRoot, targetPath), 'utf8'), content);
     assert.equal(git(repoRoot, 'status', '--porcelain', '--untracked-files=all').slice(3).replaceAll('\\', '/'), targetPath);
   } finally { rmSync(repoRoot, { recursive: true, force: true }); }
 });
 
-test('malformed JSON, stale base, missing provenance, path traversal, and BLOCKED output fail closed', () => {
+test('malformed JSON, stale identity, missing or forged provenance, path traversal, and BLOCKED output fail closed', () => {
   const { manifest, attestation, output } = contract();
   assert.equal(validateStructuredModelOutput({ rawOutput: '{', manifest, attestation }).ok, false);
 
   const stale = { ...output, base_sha: 'e'.repeat(40) };
   assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(stale), manifest, attestation }).errors.includes('MODEL_OUTPUT_BASE_SHA_MISMATCH'));
 
+  const wrongRun = { ...output, run_id: 'gso-21-wrong-run' };
+  assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(wrongRun), manifest, attestation }).errors.includes('MODEL_OUTPUT_RUN_ID_MISMATCH'));
+
+  const wrongLease = { ...output, lease_id: 'wrong-lease-00000000000000000000001' };
+  assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(wrongLease), manifest, attestation }).errors.includes('MODEL_OUTPUT_LEASE_ID_MISMATCH'));
+
+  const modelAuthoredHash = { ...output, content_sha256: '0'.repeat(64) };
+  assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(modelAuthoredHash), manifest, attestation }).errors.includes('MODEL_OUTPUT_FIELDS_NOT_EXACT'));
+
   const missingProvenance = { ...output, provenance_urls: [] };
   assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(missingProvenance), manifest, attestation }).errors.includes('MODEL_OUTPUT_PROVENANCE_MISMATCH'));
+
+  const forgedSource = structuredClone(output);
+  forgedSource.evidence_sources[0].sha256 = 'f'.repeat(64);
+  assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(forgedSource), manifest, attestation }).errors.includes('MODEL_OUTPUT_EVIDENCE_SOURCES_MISMATCH'));
 
   const traversalManifest = { issue_execution_policy: { allowed_files: ['../escape.md'], forbidden_files: [] } };
   const traversal = { ...output, target_path: '../escape.md', changed_files: ['../escape.md'] };
   assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(traversal), manifest: traversalManifest, attestation }).errors.includes('MODEL_OUTPUT_ALLOWED_PATH_INVALID'));
 
-  const blocked = { ...output, status: 'BLOCKED', blocker: 'insufficient evidence', content: '', content_sha256: hash('') };
+  const blocked = { ...output, status: 'BLOCKED', blocker: 'insufficient evidence', content: '' };
   assert.ok(validateStructuredModelOutput({ rawOutput: JSON.stringify(blocked), manifest, attestation }).errors.includes('MODEL_OUTPUT_DECLARED_BLOCKED'));
 });
 
@@ -122,7 +136,7 @@ test('secret-shaped or executable model content is rejected before filesystem mu
   try {
     const { manifest, attestation, content, output } = contract();
     const secretContent = `${content}\napi_key=sk-abcdefghijklmnopqrstuvwxyz123456`;
-    const secretOutput = { ...output, content: secretContent, content_sha256: hash(secretContent) };
+    const secretOutput = { ...output, content: secretContent };
     assert.throws(
       () => applyStructuredModelOutput({ repoRoot, rawOutput: JSON.stringify(secretOutput), manifest, attestation }),
       /MODEL_OUTPUT_SECRET_SHAPED_CONTENT/,
@@ -130,13 +144,37 @@ test('secret-shaped or executable model content is rejected before filesystem mu
     assert.equal(existsSync(join(repoRoot, targetPath)), false);
 
     const executableContent = `${content}\n\`\`\`powershell\ngit push origin main\n\`\`\``;
-    const executableOutput = { ...output, content: executableContent, content_sha256: hash(executableContent) };
+    const executableOutput = { ...output, content: executableContent };
     assert.throws(
       () => applyStructuredModelOutput({ repoRoot, rawOutput: JSON.stringify(executableOutput), manifest, attestation }),
       /MODEL_OUTPUT_EXECUTABLE_CONTROL_TEXT/,
     );
     assert.equal(existsSync(join(repoRoot, targetPath)), false);
   } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('tampered or truncated persisted bytes fail readback hash verification and cannot continue', () => {
+  for (const mutation of ['tamper', 'truncate']) {
+    const repoRoot = cleanRepository();
+    try {
+      const { manifest, attestation, output } = contract();
+      assert.throws(
+        () => applyStructuredModelOutput({
+          repoRoot,
+          rawOutput: JSON.stringify(output),
+          manifest,
+          attestation,
+          afterAtomicWriteForTest: ({ absolutePath }) => {
+            if (mutation === 'tamper') writeFileSync(absolutePath, 'tampered after atomic rename\n');
+            else writeFileSync(absolutePath, '');
+          },
+        }),
+        /CONTROLLER_APPLY_READBACK_HASH_MISMATCH/,
+      );
+      assert.equal(existsSync(join(repoRoot, targetPath)), false);
+      assert.equal(git(repoRoot, 'status', '--porcelain', '--untracked-files=all'), '');
+    } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+  }
 });
 
 test('unexpected pre-existing changes and an existing target block controller apply without rollback loss', () => {

@@ -100,6 +100,17 @@ export function runStructuredOutputDryRun({ repoRoot, stateDir }) {
   const invalidChecks = {
     malformed_json: validateStructuredModelOutput({ rawOutput: '{', manifest, attestation }).ok === false,
     stale_base: validateStructuredModelOutput({ rawOutput: JSON.stringify({ ...output, base_sha: '0'.repeat(40) }), manifest, attestation }).ok === false,
+    wrong_run_id: validateStructuredModelOutput({ rawOutput: JSON.stringify({ ...output, run_id: 'wrong-run-id' }), manifest, attestation }).ok === false,
+    wrong_lease_id: validateStructuredModelOutput({ rawOutput: JSON.stringify({ ...output, lease_id: 'wrong-lease-id' }), manifest, attestation }).ok === false,
+    missing_sources: validateStructuredModelOutput({ rawOutput: JSON.stringify({ ...output, evidence_sources: [] }), manifest, attestation }).ok === false,
+    forged_sources: validateStructuredModelOutput({
+      rawOutput: JSON.stringify({
+        ...output,
+        evidence_sources: output.evidence_sources.map((entry, index) => index === 0 ? { ...entry, sha256: 'f'.repeat(64) } : entry),
+      }),
+      manifest,
+      attestation,
+    }).ok === false,
     missing_provenance: validateStructuredModelOutput({ rawOutput: JSON.stringify({ ...output, provenance_urls: [] }), manifest, attestation }).ok === false,
     unexpected_path: validateStructuredModelOutput({ rawOutput: JSON.stringify({ ...output, target_path: '../escape.md' }), manifest, attestation }).ok === false,
   };
@@ -114,6 +125,7 @@ export function runStructuredOutputDryRun({ repoRoot, stateDir }) {
     github_write_performed: false,
     authorization_created_or_consumed: false,
     historical_issue_21_state_changed: false,
+    raw_stub_omits_content_sha256: !Object.hasOwn(output, 'content_sha256'),
     worktree: { isolated: true, path: worktreePath, clean_after_commit: git(worktreePath, ['status', '--porcelain']) === '' },
     controller_apply: application,
     local_commit_candidate: { sha: commitSha, changed_paths: commitPaths },

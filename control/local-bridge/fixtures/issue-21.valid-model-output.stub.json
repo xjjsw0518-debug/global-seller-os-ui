@@ -7,7 +7,6 @@
   "authorization_id": "stub-authorization-id",
   "attestation_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
   "target_path": "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md",
-  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
   "content": "STUB_REPLACED_BY_TEST",
   "evidence_sources": [],
   "provenance_urls": [],

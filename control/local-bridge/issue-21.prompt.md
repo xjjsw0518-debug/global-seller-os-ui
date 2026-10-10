@@ -20,7 +20,8 @@ Hard boundaries:
 - never expose credentials or raw authentication output;
 - use only the Issue-specific isolated worktree and reviewed branch;
 - the Codex child has no filesystem-write authority; it may propose content only for `docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md` in structured JSON;
-- only the trusted controller may write that proposed content after validating the schema, all hashes, provenance, exact target path, content size, secret scan, and clean worktree;
+- only the trusted controller may write that proposed content after validating the schema, identity and source hashes, provenance, exact target path, content size, secret scan, and clean worktree;
+- the model must not calculate or return a content digest; the controller computes SHA-256 from the received exact UTF-8 content bytes, writes atomically, rereads the file, and must stop before Git commit if the readback hash differs;
 - do not edit `public/dev-status.json`; that file is reserved for the bridge control process after an exact-head Gate PASS;
 - stop before commit or push when the changed-file policy fails;
 - leave all GitHub operations, status claims, merge decisions, and retries to the controller.
@@ -31,7 +32,7 @@ Required structured JSON:
 - Copy `base_sha`, `run_id`, `lease_id`, `authorization_id`, and `attestation_sha256` exactly from the controller packet/binding line.
 - Set `target_path` and the only `changed_files` entry to `docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md`.
 - Set `evidence_sources` to the packet source paths and SHA-256 values in the same order, and `provenance_urls` to the historical evidence URLs in the same order.
-- Set `current_live_verification` to `false`, `tests_run` to an empty array, and `content_sha256` to the SHA-256 of the exact UTF-8 `content` string.
+- Set `current_live_verification` to `false` and `tests_run` to an empty array. Do not add a `content_sha256` field or any other field outside the provided schema.
 
 Required evidence content:
 

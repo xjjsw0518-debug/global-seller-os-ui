@@ -12,7 +12,6 @@
     "authorization_id",
     "attestation_sha256",
     "target_path",
-    "content_sha256",
     "content",
     "evidence_sources",
     "provenance_urls",
@@ -30,7 +29,6 @@
     "authorization_id": { "type": "string", "minLength": 16, "maxLength": 128 },
     "attestation_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "target_path": { "type": "string", "const": "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md" },
-    "content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "content": { "type": "string", "maxLength": 65536 },
     "evidence_sources": {
       "type": "array",

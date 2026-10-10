@@ -1398,6 +1398,9 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
         manifest,
         attestation,
       });
+      if (controllerApply.readback_hash_verified !== true) {
+        throw new Error('CONTROLLER_APPLY_READBACK_NOT_VERIFIED');
+      }
       atomicWriteJson(join(lease.leaseDir, 'codex-audit-summary.json'), {
         schema_version: 1,
         sanitized_events_path: 'codex-events.sanitized.jsonl',
@@ -1411,7 +1414,11 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
           model_filesystem_write_allowed: false,
           controller_apply_completed: true,
           target_path: controllerApply.target_path,
+          content_hash_owner: 'CONTROLLER',
           content_sha256: controllerApply.content_sha256,
+          readback_sha256: controllerApply.readback_sha256,
+          readback_hash_verified: controllerApply.readback_hash_verified,
+          git_continuation_allowed: controllerApply.readback_hash_verified === true,
         },
       });
     } catch (error) {
