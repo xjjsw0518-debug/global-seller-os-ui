@@ -8,6 +8,7 @@
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test:dependencies": "depcruise src --config .dependency-cruiser.mjs --output-type err-long",
+    "test:unused": "knip",
     "test:smoke": "playwright test",
     "test:visual": "node scripts/run-backstop.mjs test",
     "test:visual:reference": "node scripts/run-backstop.mjs reference",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@playwright/test": "^1.64.0",
     "backstopjs": "^6.3.25",
-    "dependency-cruiser": "^17.4.3"
+    "dependency-cruiser": "^17.4.3",
+    "knip": "^6.41.0"
   }
 }

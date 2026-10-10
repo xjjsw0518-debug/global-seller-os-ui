@@ -41,6 +41,18 @@ jobs:
           mkdir -p dependency-cruiser-report
           npm run test:dependencies 2>&1 | tee dependency-cruiser-report/report.txt
 
+      - name: Knip unused code and dependency gate
+        run: |
+          mkdir -p knip-report
+          set +e
+          npm run test:unused > knip-report/report.txt 2>&1
+          knip_status=$?
+          npx knip --reporter json > knip-report/report.json 2>&1 || true
+          npx knip --reporter markdown > knip-report/report.md 2>&1 || true
+          npx knip --version > knip-report/version.txt
+          cat knip-report/report.txt
+          exit "$knip_status"
+
       - name: Install Playwright Chromium
         # The self-hosted runner account is intentionally non-root. System
         # dependencies are managed on the host; the workflow only downloads
@@ -88,5 +100,14 @@ jobs:
         with:
           name: dependency-cruiser-${{ github.run_id }}
           path: dependency-cruiser-report/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload Knip evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: knip-unused-${{ github.run_id }}
+          path: knip-report/
           if-no-files-found: warn
           retention-days: 7

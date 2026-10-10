@@ -1,0 +1,54 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "entry": [
+    "src/features/ai/preview.jsx",
+    "src/features/ai/AddModelPagePreview.jsx",
+    "src/features/ai/RoutingAdvicePagePreview.jsx",
+    "src/features/ai/UsageCostPreviewPreview.jsx",
+    "scripts/**/*.{js,mjs,cjs}",
+    "tests/**/*.{js,mjs,cjs}",
+    "worker/**/*.{js,mjs,cjs}",
+    "backstop.config.cjs",
+    "backstop_data/engine_scripts/**/*.{js,mjs,cjs}",
+    "capture-a16-comparison.mjs",
+    "update-a16-a17-roadmap.cjs"
+  ],
+  "project": [
+    "src/**/*.{js,jsx,mjs,cjs}",
+    "scripts/**/*.{js,mjs,cjs}",
+    "tests/**/*.{js,mjs,cjs}",
+    "worker/**/*.{js,mjs,cjs}",
+    "backstop_data/engine_scripts/**/*.{js,mjs,cjs}",
+    "*.{js,mjs,cjs}"
+  ],
+
+  // Initial file baseline: retain these known standalone UI modules without
+  // weakening unused-file detection for the rest of src/.
+  "ignoreFiles": [
+    "src/WorkerOverviewMapPanels.jsx",
+    "src/features/ai/ModelArchiveDialog.jsx"
+  ],
+
+  // Historical one-off capture script contains machine-local absolute paths.
+  "ignore": [
+    "w49-before.mjs"
+  ],
+  "treatConfigHintsAsErrors": true,
+  "rules": {
+    "files": "error",
+    "dependencies": "error",
+    "devDependencies": "error",
+    "unlisted": "error",
+    "binaries": "error",
+    "unresolved": "error",
+
+    // Surface the existing export backlog without forcing business-code edits
+    // in this configuration-only integration. Promote these to errors after
+    // the warnings have been reviewed and retired.
+    "exports": "warn",
+    "types": "warn",
+    "enumMembers": "warn",
+    "namespaceMembers": "warn",
+    "duplicates": "error"
+  }
+}
