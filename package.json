@@ -8,8 +8,8 @@
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test:smoke": "playwright test",
-    "test:visual": "backstop test --config=backstop.config.cjs",
-    "test:visual:reference": "backstop reference --config=backstop.config.cjs",
+    "test:visual": "node scripts/run-backstop.mjs test",
+    "test:visual:reference": "node scripts/run-backstop.mjs reference",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {
