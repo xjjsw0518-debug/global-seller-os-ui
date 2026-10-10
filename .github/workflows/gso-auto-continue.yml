@@ -1,0 +1,26 @@
+name: GSO Auto-Continue Controller
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["GSO Gate"]
+    types: [completed]
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+  actions: read
+jobs:
+  continue:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 20}
+      - name: Inspect and continue eligible PRs
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: node scripts/gso-auto-continue-controller.mjs
