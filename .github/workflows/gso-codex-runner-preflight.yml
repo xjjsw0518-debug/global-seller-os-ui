@@ -1,0 +1,46 @@
+name: Codex Runner Read-Only Preflight
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+    paths:
+      - .github/workflows/gso-codex-runner-preflight.yml
+      - scripts/codex-runner-preflight.mjs
+      - scripts/codex-runner-preflight.test.mjs
+      - docs/GSO_CODEX_RUNNER_PREFLIGHT.md
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gso-codex-runner-read-only-preflight
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: self-hosted
+    timeout-minutes: 5
+    env:
+      PREFLIGHT_OUTPUT: codex-runner-preflight.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Verify diagnostic contract
+        run: node --test scripts/codex-runner-preflight.test.mjs
+
+      - name: Inspect Codex runner without model invocation
+        run: node scripts/codex-runner-preflight.mjs
+
+      - name: Upload redacted preflight report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codex-runner-preflight-${{ github.run_id }}
+          path: codex-runner-preflight.json
+          if-no-files-found: error
+          retention-days: 7
