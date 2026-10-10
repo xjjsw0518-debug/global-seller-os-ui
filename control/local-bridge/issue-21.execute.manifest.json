@@ -16,7 +16,7 @@
   "prompt_sha256": "250a26b36dd553ece6738a566a96f09a23f2f33eaa485b85dc210ce54e3f51a8",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "a17045f745e597687b1ce1153f40fa7839deeae00ccfe40df1422c4ecca56b87",
+  "reviewed_executor_sha256": "69bf34d041b60aa7ef30c454bdae93f57d0d2c0b7ec5d24a6bcc651160c0de60",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],

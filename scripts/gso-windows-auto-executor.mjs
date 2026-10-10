@@ -1750,7 +1750,7 @@ export async function buildNewAttemptDryRunReport({ repoRoot, stateDir, manifest
     issueRevision: issueBodyHash,
     authorizationId: mockAuthorizationId,
   });
-  const simulationRoot = safeChild(stateDir, join(stateDir, 'recovery-simulations', identity.leaseId));
+  const simulationRoot = safeChild(stateDir, join(stateDir, 'rs', identity.leaseId.slice(0, 12)));
   const priorWorktreePath = safeChild(stateDir, join(stateDir, manifest.planned_worktree_relative_path));
   if (!existsSync(priorWorktreePath)) throw new Error('NEW_ATTEMPT_SIMULATION_PRIOR_WORKTREE_MISSING');
   const priorWorktree = {
@@ -1776,7 +1776,7 @@ export async function buildNewAttemptDryRunReport({ repoRoot, stateDir, manifest
     const simulationManifest = {
       ...manifest,
       planned_branch_prefix: 'codex/sim-wrc-p2-u01-attempt',
-      planned_worktree_relative_path_prefix: 'worktrees/sim-issue-21-wrc-p2-u01-attempt',
+      planned_worktree_relative_path_prefix: 'w/i21',
     };
     const taskWorktree = createTaskWorktree({
       repoRoot,
