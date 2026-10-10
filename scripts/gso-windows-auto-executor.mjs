@@ -1093,6 +1093,7 @@ export function verifyReviewedExecutionSources({ repoRoot, manifestPath, manifes
   }
   const paths = [
     'scripts/gso-windows-auto-executor.mjs',
+    'scripts/gso-windows-local-bridge-dry-run.mjs',
     'scripts/gso-structured-model-output.mjs',
     relative(repoRoot, manifestPath).replaceAll('\\', '/'),
     manifest.prompt_path,

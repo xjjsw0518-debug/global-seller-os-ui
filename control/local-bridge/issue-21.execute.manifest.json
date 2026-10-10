@@ -19,7 +19,7 @@
   "model_output_schema_sha256": "7c5c01791a456b7ed73c40b85aecf795e2bceac0030d6c2381fcd93fd1888989",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "7c33c087da40d6f89e8c0ca620f21e7003ae42058a10965e3358e2c43f10e993",
+  "reviewed_executor_sha256": "31100ba25d49e454494b82e3a9bbfa86bdcd8b7353543d43d96d47c5041dd845",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],

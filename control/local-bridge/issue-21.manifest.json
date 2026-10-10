@@ -28,11 +28,11 @@
   "bridge_sources": [
     {
       "path": "scripts/gso-windows-local-bridge-dry-run.mjs",
-      "sha256": "20a860577f06d0228b88d98fcdb6680910589afeadfe3308a38d6d311cb2d9d5"
+      "sha256": "2f585ca3b7df3500e32f536a3241677066f74259cae745e87cf1965ed0559d59"
     },
     {
       "path": "scripts/gso-windows-local-bridge-dry-run.test.mjs",
-      "sha256": "c58ddf9d6d33dbe54acb52bbf0166acc77b9d959da214200e773be908a45b395"
+      "sha256": "f6cd0c0503952f9301942bcd2187ede8f4bc13aa3686e97b915b4694e7e4cf52"
     }
   ],
   "bridge_change_policy": {

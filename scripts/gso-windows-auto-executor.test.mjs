@@ -495,13 +495,15 @@ test('reviewed executor must be exact clean origin/main content', () => {
     git(repoRoot, 'config', 'user.email', 'test@example.invalid');
     git(repoRoot, 'config', 'user.name', 'Test');
     const executorPath = join(repoRoot, 'scripts', 'gso-windows-auto-executor.mjs');
+    const localBridgePath = join(repoRoot, 'scripts', 'gso-windows-local-bridge-dry-run.mjs');
     const structuredOutputPath = join(repoRoot, 'scripts', 'gso-structured-model-output.mjs');
     const manifestPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.execute.manifest.json');
     const promptPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.prompt.md');
     const checklistPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.checklist.md');
     const schemaPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.model-output.schema.json');
-    for (const path of [executorPath, structuredOutputPath, manifestPath, promptPath, checklistPath, schemaPath]) mkdirSync(dirname(path), { recursive: true });
+    for (const path of [executorPath, localBridgePath, structuredOutputPath, manifestPath, promptPath, checklistPath, schemaPath]) mkdirSync(dirname(path), { recursive: true });
     writeFileSync(executorPath, 'reviewed executor\n');
+    writeFileSync(localBridgePath, 'reviewed local bridge\n');
     writeFileSync(structuredOutputPath, 'reviewed structured output controller\n');
     writeFileSync(promptPath, 'prompt\n');
     writeFileSync(checklistPath, 'checklist\n');
