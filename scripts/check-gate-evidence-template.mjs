@@ -4,10 +4,14 @@ import path from "node:path";
 const root = process.cwd();
 const standardPath = path.join(root, "docs", "GSO_GATE_EVIDENCE_STANDARD.md");
 const templatePath = path.join(root, "docs", "templates", "gate-evidence-comment.md");
+const failureStandardPath = path.join(root, "docs", "GSO_FAILURE_HANDLING_STANDARD.md");
+const failureTemplatePath = path.join(root, "docs", "templates", "failure-handling-comment.md");
 
-const [standard, template] = await Promise.all([
+const [standard, template, failureStandard, failureTemplate] = await Promise.all([
   fs.readFile(standardPath, "utf8"),
   fs.readFile(templatePath, "utf8"),
+  fs.readFile(failureStandardPath, "utf8"),
+  fs.readFile(failureTemplatePath, "utf8"),
 ]);
 
 const requiredStandardTerms = [
@@ -45,6 +49,47 @@ const requiredTemplateTerms = [
   "FINAL_STATE=",
 ];
 
+const requiredFailureStandardTerms = [
+  "## 2. Status handling flows",
+  "### FAILED",
+  "### BLOCKED",
+  "### WARNING",
+  "### PASS",
+  "## 3. First response after a Gate failure",
+  "## 4. Failure evidence preservation rules",
+  "## 5. No-merge rules",
+  "## 6. Failure type classification",
+  "## 7. Conditions for retrying CI",
+  "## 8. Conditions for updating or resubmitting a PR",
+  "## 9. Scenarios requiring user authorization",
+  "## 10. Scenarios requiring server root operations",
+  "## 11. Project Board state transitions",
+  "## 12. Issue comment format",
+  "## 13. Conditions for restoring PASS",
+  "## 14. Prohibited behavior and Next Safe Unit",
+  "CODE",
+  "ENVIRONMENT",
+  "PERMISSION",
+  "USER_APPROVAL",
+  "UNKNOWN",
+];
+
+const requiredFailureTemplateTerms = [
+  "## Failure State",
+  "## Failed Gate",
+  "## Actions Run",
+  "## Commit",
+  "## Runner",
+  "## Failure Type",
+  "## Evidence",
+  "## Immediate Action",
+  "## Required Owner",
+  "## Project Board Target Status",
+  "## Retry Condition",
+  "## Next Safe Unit",
+  "CODE / ENVIRONMENT / PERMISSION / USER_APPROVAL / UNKNOWN",
+];
+
 const missing = [
   ...requiredStandardTerms
     .filter((term) => !standard.includes(term))
@@ -52,6 +97,12 @@ const missing = [
   ...requiredTemplateTerms
     .filter((term) => !template.includes(term))
     .map((term) => `${path.relative(root, templatePath)}: ${term}`),
+  ...requiredFailureStandardTerms
+    .filter((term) => !failureStandard.includes(term))
+    .map((term) => `${path.relative(root, failureStandardPath)}: ${term}`),
+  ...requiredFailureTemplateTerms
+    .filter((term) => !failureTemplate.includes(term))
+    .map((term) => `${path.relative(root, failureTemplatePath)}: ${term}`),
 ];
 
 if (missing.length > 0) {
@@ -60,4 +111,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("GSO gate evidence standard and comment template contract: PASS");
+console.log("GSO gate evidence and failure-handling contracts: PASS");

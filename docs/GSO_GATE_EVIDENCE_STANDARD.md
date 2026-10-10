@@ -6,7 +6,7 @@ This document is the single evidence contract for Global Seller OS automation wo
 
 The contract applies to process rules, documentation, templates, workflow configuration, and evidence reporting. It does not authorize business UI changes, feature work, visual-baseline updates, or threshold reductions.
 
-The canonical comment template is [`docs/templates/gate-evidence-comment.md`](templates/gate-evidence-comment.md). `npm run test:evidence-template` checks that the standard and template retain their required structure.
+The canonical completion template is [`docs/templates/gate-evidence-comment.md`](templates/gate-evidence-comment.md). Failures and blockers follow [`GSO_FAILURE_HANDLING_STANDARD.md`](GSO_FAILURE_HANDLING_STANDARD.md) and [`docs/templates/failure-handling-comment.md`](templates/failure-handling-comment.md). `npm run test:evidence-template` checks that both standards and both templates retain their required structure.
 
 ## 2. Gate name standard
 
@@ -166,7 +166,7 @@ The following actions are forbidden:
 - rerunning until green without recording a material infrastructure or code explanation for the earlier failure;
 - using an artifact, run, commit, or runner from a different change as evidence.
 
-On failure, preserve evidence, set the truthful status, identify the smallest safe corrective unit, and obtain any missing authorization before expanding scope.
+On failure, preserve evidence, set the truthful status, identify the smallest safe corrective unit, and obtain any missing authorization before expanding scope. The complete response and recovery procedure is mandatory in [`GSO_FAILURE_HANDLING_STANDARD.md`](GSO_FAILURE_HANDLING_STANDARD.md).
 
 ## 12. Merge admission and final output contract
 
