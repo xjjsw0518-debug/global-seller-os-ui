@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "bridge_revision": "step-c.5-canonical-git-blob-sha256",
+  "bridge_revision": "step-c.6-canonical-hash-simulation-admission",
   "mode": "EXECUTE_ONE_AUTHORIZED_ISSUE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -19,7 +19,7 @@
   "model_output_schema_sha256": "412020d39a397aad6f71c7d087d835b8f89cfe0eb00db50dea7c38284a1583be",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "74056cb16215957afc2c240e731cbf6f23157cd3323ab07485ce16f91254d0ae",
+  "reviewed_executor_sha256": "829a30f94b7fbce1945898de274aecce366ee66e3fce6d18978f31de48793fbf",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],

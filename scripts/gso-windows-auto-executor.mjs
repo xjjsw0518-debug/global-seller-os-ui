@@ -916,7 +916,9 @@ export function validateAuthorizationEnvelope(envelope, context) {
   if (envelope?.approved_base_sha !== context.baseSha) errors.push('AUTHORIZATION_BASE_MISMATCH');
   if (envelope?.max_model_runs !== 1) errors.push('AUTHORIZATION_MODEL_LIMIT_INVALID');
   if (envelope?.max_automatic_retries !== 0) errors.push('AUTHORIZATION_RETRY_LIMIT_INVALID');
-  if (envelope?.simulation_only === true) errors.push('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE');
+  if (envelope?.simulation_only === true && context?.allowSimulationOnlyForDryRun !== true) {
+    errors.push('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE');
+  }
   if (!envelope?.expires_at || Date.parse(envelope.expires_at) <= Date.now()) errors.push('AUTHORIZATION_EXPIRED');
   if (envelope?.attempt_kind && !['INITIAL', 'NEW_ATTEMPT'].includes(envelope.attempt_kind)) errors.push('AUTHORIZATION_ATTEMPT_KIND_INVALID');
   return { valid: errors.length === 0, errors };
@@ -1785,6 +1787,7 @@ export async function buildNewAttemptDryRunReport({ repoRoot, stateDir, manifest
     promptHash,
     executorHash,
     baseSha: prospectiveBaseSha,
+    allowSimulationOnlyForDryRun: true,
   };
   const mockAuthorization = {
     authorization_id: mockAuthorizationId,

@@ -189,6 +189,17 @@ test('real execute rejects simulation-only authorization envelopes', () => {
   assert.ok(result.errors.includes('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE'));
 });
 
+test('simulation-only authorization is accepted only in an explicit no-model dry-run context', () => {
+  const envelope = authorization({ simulation_only: true });
+  const dryRun = validateAuthorizationEnvelope(envelope, {
+    ...authorizationContext,
+    allowSimulationOnlyForDryRun: true,
+  });
+  assert.equal(dryRun.valid, true);
+  assert.deepEqual(dryRun.errors, []);
+  assert.equal(validateAuthorizationEnvelope(envelope, authorizationContext).valid, false);
+});
+
 test('Codex child environment contains no controller or OpenAI credentials', () => {
   const child = buildRestrictedCodexEnv({ PATH: 'safe', GH_TOKEN: 'secret', GITHUB_TOKEN: 'secret', OPENAI_API_KEY: 'secret', CODEX_API_KEY: 'secret', GSO_GITHUB_BROKER_TOKEN: 'secret' });
   assert.equal(child.PATH, 'safe');
@@ -323,6 +334,17 @@ test('trusted historical BLOCKED lineage admits only a fresh version-bound NEW_A
     assert.equal(result.prior_lineage.lease_id, fixture.priorIdentity.leaseId);
     assert.equal(result.prior_lineage.preserved, true);
     assert.equal(JSON.parse(readFileSync(join(stateDir, 'leases', fixture.priorIdentity.leaseId, 'journal.json'), 'utf8')).state, 'BLOCKED');
+
+    const simulated = evaluateNewAttemptRecovery({
+      stateDir,
+      manifest: fixture.manifest,
+      issueState: fixture.issueState,
+      issueBodyHash: fixture.issueBodyHash,
+      authorizationEnvelope: { ...fixture.freshAuthorization, simulation_only: true },
+      authorizationContext: { ...fixture.currentContext, allowSimulationOnlyForDryRun: true },
+    });
+    assert.equal(simulated.allowed, true);
+    assert.equal(simulated.state, 'NEW_ATTEMPT_READY');
   } finally { rmSync(stateDir, { recursive: true, force: true }); }
 });
 
