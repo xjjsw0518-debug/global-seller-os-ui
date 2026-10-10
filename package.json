@@ -11,6 +11,7 @@
     "test:unused": "knip",
     "test:smoke": "playwright test tests/e2e/smoke.spec.mjs",
     "test:accessibility": "playwright test tests/e2e/accessibility.spec.mjs",
+    "test:evidence-template": "node scripts/check-gate-evidence-template.mjs",
     "test:visual": "node scripts/run-backstop.mjs test",
     "test:visual:reference": "node scripts/run-backstop.mjs reference",
     "test:sites": "node --test tests/sites-worker.test.mjs"
