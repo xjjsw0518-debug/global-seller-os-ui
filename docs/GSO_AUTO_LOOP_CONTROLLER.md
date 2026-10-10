@@ -28,7 +28,11 @@ Stop when a scope is incomplete, a secret is missing, a protected branch cannot 
 
 ## Status and Work recovery
 
-Every automatic action writes an Issue comment and updates `/dev-status` through a reviewed PR. Status updates include the loop mode, batch, current RUNNING Issue, READY queue, last controller check, last recovery action, and approval requirement. When a Work stops, the watcher records the stop, marks an overdue RUNNING item STALE, and emits a resume instruction; it does not silently continue coding. An explicit operator resume returns the item to READY after entry checks.
+Every automatic transition writes an idempotent Issue comment and updates `/dev-status`. A status-only controller commit contains no business or UI code and dispatches the full GSO Gate explicitly. Status updates include the loop mode, batch, current RUNNING Issue, READY queue, last controller check, last recovery action, and approval requirement. When a Work stops, the watcher records the stop, marks an overdue RUNNING item STALE, and emits a resume instruction; it does not silently continue coding.
+
+For the U00E to U00F transition, the controller requires the exact completion marker `FINAL_STATE=WRC_P2_U00E_ROUTE_AUDIT_READY` in the parent GitHub Issue or one of its comments. It then creates or reopens the contract-decision Issue, publishes the bounded resume instruction, clears the stale blocker on the parent Issue, and writes the same next action to `/dev-status.json`. All operations are idempotent.
+
+GitHub Actions cannot start or wake a stopped Codex Work session. The controller removes the need to manually compose or copy the next prompt, but a Work-capable platform runner must still claim or start the READY Issue. This platform boundary is recorded in both the Issue and `/dev-status.json`.
 
 ## Three-unit cadence
 
