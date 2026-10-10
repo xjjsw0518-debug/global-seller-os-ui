@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" role="img" aria-label="业务执行 Agent Package">
+  <defs><linearGradient id="g" x1="3" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#45E8FA"/><stop offset="1" stop-color="#1689FF"/></linearGradient></defs>
+  <path d="M12 2.7v2.6M10.4 2.7h3.2" stroke="url(#g)" stroke-width="1.8" stroke-linecap="round"/>
+  <rect x="3.6" y="6.5" width="16.8" height="13.1" rx="3.4" fill="#092D60" stroke="url(#g)" stroke-width="1.8"/>
+  <path d="M3.6 12H2M22 12h-1.6M9.3 15.3h5.4" stroke="url(#g)" stroke-width="1.6" stroke-linecap="round"/>
+  <circle cx="8.6" cy="11.5" r="1.15" fill="#41E6F7"/><circle cx="15.4" cy="11.5" r="1.15" fill="#41E6F7"/>
+</svg>

@@ -1,0 +1,12 @@
+import fs from 'node:fs';
+const target = await (await fetch('http://127.0.0.1:9228/json/new?file:///C:/Users/DELL/Documents/Codex/2026-09-30/task-4/compare-a16-visual.html', { method: 'PUT' })).json();
+const ws = new WebSocket(target.webSocketDebuggerUrl);
+await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',reject,{once:true});});
+let id=0; const pending=new Map();
+ws.addEventListener('message',e=>{const m=JSON.parse(e.data);if(m.id&&pending.has(m.id)){pending.get(m.id)(m);pending.delete(m.id);}});
+const call=(method,params={})=>new Promise((resolve,reject)=>{const n=++id;pending.set(n,m=>m.error?reject(new Error(m.error.message)):resolve(m));ws.send(JSON.stringify({id:n,method,params}));});
+await call('Page.enable'); await call('Emulation.setDeviceMetricsOverride',{width:3352,height:970,deviceScaleFactor:1,mobile:false});
+await new Promise(r=>setTimeout(r,800));
+const shot=await call('Page.captureScreenshot',{format:'png',captureBeyondViewport:false});
+fs.writeFileSync('C:/Users/DELL/Documents/Codex/2026-09-30/task-4/a16-reference-current-comparison.png',Buffer.from(shot.result.data,'base64'));
+await call('Target.closeTarget',{targetId:target.id}).catch(()=>{}); ws.close();

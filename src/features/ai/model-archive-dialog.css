@@ -1,0 +1,17 @@
+.ai-feature .archive-dialog{width:min(520px,calc(100vw - 36px));}
+.ai-feature .archive-dialog .archive-model-summary{display:flex;align-items:center;gap:12px;margin:18px 24px;padding:14px;border:1px solid #245580;border-radius:8px;background:#071d37;color:#36c5fa}
+.ai-feature .archive-model-summary div,.ai-feature .archived-model>div{display:grid;gap:4px;min-width:0}
+.ai-feature .archive-model-summary b,.ai-feature .archived-model b{color:#eaf5ff;font-size:13px;overflow-wrap:anywhere}
+.ai-feature .archive-model-summary span,.ai-feature .archived-model span,.ai-feature .archived-model small{color:#9fb8d0;font-size:11px}
+.ai-feature .archive-actions{display:flex;justify-content:flex-end;gap:8px;padding:0 24px 20px}
+.ai-feature .archive-actions .archive-confirm{background:#c8872f;border-color:#e3a345;color:#1b160b}
+.ai-feature .archive-error{margin:12px 24px;padding:10px 12px;border:1px solid #904e4b;border-radius:7px;background:#572e32;color:#ffd1ca;font-size:11px;line-height:1.55}
+.ai-feature .archive-list{max-height:min(410px,50vh);overflow:auto;padding:4px 24px 16px}
+.ai-feature .archive-state{min-height:140px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#9fb8d0;text-align:center;font-size:11px}
+.ai-feature .archive-state b{color:#dcecff;font-size:13px}
+.ai-feature .archive-state.is-error{color:#ffc1bd}
+.ai-feature .archived-model{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #174b77}
+.ai-feature .restore-action{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-width:76px;height:31px;padding:0 9px;border:1px solid #227cae;border-radius:6px;background:#0b3158;color:#bfeaff;font:inherit;font-size:11px;cursor:pointer;white-space:nowrap}
+.ai-feature .restore-action:disabled,.ai-feature .archive-actions button:disabled{opacity:.58;cursor:wait}
+.ai-feature .archive-dialog .spinner,.ai-feature .restore-action .spin{width:12px;height:12px;border:2px solid #497394;border-top-color:#23baf4;border-radius:50%;animation:ai-feature-spin .8s linear infinite}
+@media(max-width:600px){.ai-feature .archive-dialog .dialog-notice{margin-left:16px;margin-right:16px}.ai-feature .archive-list{padding-left:16px;padding-right:16px}.ai-feature .archive-actions{padding-left:16px;padding-right:16px}}

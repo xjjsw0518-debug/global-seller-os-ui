@@ -1,0 +1,2871 @@
+/* P01 desktop composition: match the approved 1672x941 parent reference while keeping values API-backed. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary,
+  .ai-feature .model-quota-summary .kpi,
+  .ai-feature .data-layout > .panel,
+  .ai-feature .right-stack > .panel,
+  .ai-feature .bottom-grid > .panel {
+    background: linear-gradient(135deg, #001e46f5, #001a35f5);
+  }
+
+  .ai-feature .model-quota-summary .kpi {
+    background: linear-gradient(135deg, #00214af5, #001b38f5);
+  }
+
+  .ai-feature .bottom-grid > .panel {
+    background: linear-gradient(135deg, #001d3c, #001835);
+  }
+
+  .ai-feature .data-layout > .model-table.panel {
+    background: linear-gradient(135deg, #001a3e, #00152f);
+  }
+
+  .ai-feature .model-quota-summary {
+    margin: -3px 1px 7px -3px;
+    padding: 8px 10px 10px;
+    border-color: #0c5594;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #001d40, #001931);
+  }
+
+  .ai-feature .model-quota-summary .page-heading {
+    height: 60px;
+    min-height: 60px;
+    margin: 0 0 12px;
+    padding: 0 5px;
+  }
+
+  .ai-feature .model-quota-summary .page-heading h1 {
+    font-size: 28px;
+    line-height: 1.2;
+    margin-bottom: 6px;
+    letter-spacing: 0.65px;
+    transform: translateY(-2px);
+  }
+
+  .ai-feature .model-quota-summary .page-heading p {
+    font-size: 15.75px;
+    line-height: 1.35;
+    color: #bad1e9;
+    transform: translateY(-1px);
+  }
+
+  .ai-feature .model-quota-summary .page-heading > div:first-child {
+    margin-left: 0;
+  }
+
+  .ai-feature .model-quota-summary .heading-actions {
+    gap: 12px;
+    transform: translate(7px, -3px);
+  }
+
+  .ai-feature .model-quota-summary .heading-actions button:first-child {
+    width: 128px;
+    min-width: 128px;
+    flex: 0 0 128px;
+    margin-right: 137px;
+  }
+
+  .ai-feature .model-quota-summary .heading-actions button:last-child {
+    width: 101px;
+    min-width: 101px;
+    flex: 0 0 101px;
+  }
+
+  .ai-feature .model-quota-summary .heading-actions button:last-child {
+    width: 100px;
+  }
+
+  .ai-feature .model-quota-summary .kpis {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 9px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .ai-feature .model-quota-summary .kpi {
+    height: 120px;
+    position: relative;
+    padding: 13px 11px 10px;
+    grid-template-columns: 60px minmax(0, 1fr);
+    column-gap: 10px;
+  }
+
+  .ai-feature .model-quota-summary .kpi-icon {
+    width: 60px;
+    height: 58px;
+    grid-row: 1 / span 2;
+    align-self: start;
+  }
+
+  .ai-feature .model-table td:first-child .provider-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 6px;
+  }
+
+  .ai-feature .model-quota-summary .kpi-copy {
+    align-self: start;
+    min-width: 0;
+    transform: translate(2px, 1px);
+  }
+
+  .ai-feature .model-quota-summary .kpi-copy small {
+    font-size: 11px;
+    line-height: 1.25;
+    margin-bottom: 9px;
+  }
+
+  .ai-feature .model-quota-summary .kpi-copy strong {
+    font-size: 22px;
+    line-height: 1.25;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend {
+    position: absolute;
+    right: 10px;
+    bottom: 9px;
+    left: 75px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 5px;
+    min-width: 0;
+    font-size: 9px;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ai-feature .distribution-body {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: 12px 5px 0;
+  }
+
+  .ai-feature .distribution-body .donut {
+    width: 148px;
+    height: 148px;
+    max-width: 100%;
+    margin-inline: auto;
+  }
+
+  .ai-feature .distribution-body ul {
+    min-width: 0;
+  }
+
+  .ai-feature .distribution-body ul li {
+    min-width: 0;
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .ai-feature .distribution-body ul li span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-feature .health-cards article {
+    display: grid;
+    grid-template-columns: 22px minmax(0, 1fr);
+    grid-template-rows: 24px 1fr;
+    align-items: center;
+    justify-items: center;
+    padding: 8px 5px;
+  }
+
+  .ai-feature .health-cards article > b {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .ai-feature .health-cards article > span {
+    grid-column: 2;
+    grid-row: 1;
+    white-space: nowrap;
+  }
+
+  .ai-feature .health-cards article > strong {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    font-size: 20px;
+  }
+
+  .ai-feature .data-layout {
+    margin: 0 1px 0 -3px;
+    grid-template-columns: 182px minmax(0, 1fr) 361px;
+    gap: 6px;
+  }
+
+  .ai-feature .model-table .table-title {
+    gap: 9.5px;
+  }
+
+
+  .ai-feature .model-table .filters {
+    gap: 5px;
+  }
+
+  .ai-feature .model-table .filters select:nth-of-type(1) {
+    width: 125px;
+  }
+
+  .ai-feature .model-table .filters select:nth-of-type(2) {
+    width: 107px;
+  }
+
+  .ai-feature .model-table .filters select:nth-of-type(3) {
+    width: 107px;
+  }
+
+  .ai-feature .model-table .filters select:nth-of-type(4) {
+    width: 101px;
+  }
+
+  .ai-feature .model-table .filters .searchbox {
+    min-width: 0;
+    flex: 0 0 230px;
+  }
+
+  .ai-feature .model-table .filters .reset {
+    width: 32px;
+    min-width: 32px;
+    padding: 0;
+    font-size: 0;
+  }
+
+  .ai-feature .right-stack {
+    grid-template-rows: minmax(250px, 1.88fr) minmax(133px, 1fr);
+    gap: 7px;
+  }
+
+  .ai-feature .distribution-body {
+    gap: 14px;
+    padding: 12px 2px 0;
+  }
+
+  .ai-feature .health-cards {
+    margin-top: 10px;
+    gap: 5px;
+  }
+
+  .ai-feature .health-cards article {
+    height: 72px;
+  }
+
+  .ai-feature .bottom-grid {
+    margin: 8px 1px 0 -3px;
+    grid-template-columns: 1.2fr 1fr 1.02fr;
+    gap: 7px;
+  }
+
+  .ai-feature .bottom-grid > .panel {
+    height: 237px;
+    padding: 12px;
+  }
+
+  .ai-feature .quota-trend .chart-placeholder {
+    display: grid;
+    place-items: center;
+    height: 174px;
+    margin: 8px 4px 0;
+    border: 1px dashed #164570;
+    border-radius: 5px;
+    background: linear-gradient(180deg, #071d39, #061832);
+    color: #90adc8;
+    text-align: center;
+  }
+
+  .ai-feature .quota-trend .usage-read-empty {
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    color: #90adc8;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+
+  .ai-feature .quota-trend .usage-read-empty button,
+  .ai-feature .activity .remaining-empty button {
+    min-height: 26px;
+    padding: 3px 12px;
+    border: 1px solid #1675b7;
+    border-radius: 5px;
+    background: #09284a;
+    color: #b9e8ff;
+    cursor: pointer;
+  }
+
+  .ai-feature .remaining-empty {
+    display: grid;
+    min-height: 168px;
+    margin: 0;
+    place-items: center;
+    color: #90adc8;
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .ai-feature .remaining .remaining-empty {
+    min-height: 177px;
+  }
+
+  .ai-feature .activity .remaining-empty {
+    min-height: 177px;
+  }
+
+  .ai-feature .activity > h2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 14px;
+  }
+
+  .ai-feature .activity > h2 small {
+    color: #74b8e9;
+    font-size: 9px;
+    font-weight: 400;
+  }
+
+  .ai-feature .activity-events {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ai-feature .activity-events > li {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 56px;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 35px;
+    border-bottom: 1px solid #123c63;
+  }
+
+  .ai-feature .activity-event-icon {
+    display: grid;
+    width: 31px;
+    height: 31px;
+    place-items: center;
+    border: 1px solid #0a8fba;
+    border-radius: 50%;
+    background: #063353;
+    color: #16d4b0;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .ai-feature .activity-event-enabled,
+  .ai-feature .activity-event-restored {
+    color: #26d8b6;
+  }
+
+  .ai-feature .activity-event-disabled,
+  .ai-feature .activity-event-archived {
+    color: #78b5dc;
+  }
+
+  .ai-feature .activity-event-copy {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .ai-feature .activity-event-copy b,
+  .ai-feature .activity-event-copy small {
+    overflow: hidden;
+    color: #c9def2;
+    font-size: 10px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-feature .activity-event-copy small {
+    color: #85aaca;
+    font-size: 9px;
+  }
+
+  .ai-feature .activity-events time {
+    color: #91abc5;
+    font-size: 8px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .ai-feature .activity-state {
+    display: grid;
+    min-height: 168px;
+    margin: 0;
+    place-content: center;
+    gap: 9px;
+    color: #90adc8;
+    font-size: 11px;
+    text-align: center;
+  }
+
+  .ai-feature .activity-state button {
+    min-height: 26px;
+    padding: 3px 12px;
+    border: 1px solid #1675b7;
+    border-radius: 5px;
+    background: #09284a;
+    color: #b9e8ff;
+    cursor: pointer;
+  }
+}
+
+.ai-feature.ai-visual-fixture-771271 .model-table .table-title h2 > span,
+.ai-feature.ai-visual-fixture-771271 .model-table .pagination {
+  display: none !important;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell {
+  display: grid;
+  grid-template-columns: 53px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 16px;
+  height: 100%;
+  padding: 21px 2px 1px 0;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-plot svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-area-total {
+  fill: rgba(0, 210, 187, .14);
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-area-used {
+  fill: rgba(25, 147, 255, .14);
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-line-total,
+.ai-feature.ai-visual-fixture-771271 .chart-line-used {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-line-total {
+  stroke: #00d2bb;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-line-used {
+  stroke: #168fff;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-point-total {
+  fill: #00d2bb;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-point-used {
+  fill: #168fff;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip {
+  position: absolute;
+  z-index: 1;
+  top: -3%;
+  left: 61%;
+  display: grid;
+  min-width: 111px;
+  gap: 4px;
+  padding: 7px 8px;
+  border: 1px solid #146298;
+  border-radius: 5px;
+  background: rgba(4, 24, 49, .96);
+  color: #d8e9f8;
+  font-size: 9px;
+}
+
+
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip > span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip > span strong {
+  margin-left: auto;
+  color: #fff;
+  font-weight: 500;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip .chart-legend-total {
+  background: #00d2bb;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip .chart-legend-used {
+  background: #168fff;
+}
+
+/* Keep the chart date axis in its own plot column at the canonical 1536px review width. */
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell {
+  grid-template-columns: 53px minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) 16px;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis {
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: end;
+  justify-items: center;
+  font-size: 8px;
+  line-height: 1;
+}
+
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis i {
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.ai-feature.ai-visual-fixture-771271 .activity-events time {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+}
+
+.ai-feature.ai-visual-fixture-771271 .activity-events time small {
+  color: #8baac8;
+  font-size: 8px;
+}
+
+.ai-feature.ai-visual-fixture-771271 .activity-event-created {
+  color: #1ce0bc;
+}
+
+.ai-feature.ai-visual-fixture-771271 .activity-event-updated {
+  color: #2eacff;
+}
+
+.ai-feature.ai-visual-fixture-771271 .activity-event-quota_alert {
+  color: #ff637c;
+}
+
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--openai,
+.ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--openai {
+  width: 26px !important;
+  min-width: 26px !important;
+  max-width: 26px !important;
+  height: 26px !important;
+  flex: 0 0 26px;
+  overflow: hidden;
+}
+
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--openai img,
+.ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--openai img {
+  width: 98px !important;
+  max-width: none !important;
+  height: 26px !important;
+  object-fit: fill !important;
+  object-position: left center;
+  filter: brightness(0) invert(1);
+}
+
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--openai,
+.ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--openai {
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+  flex-basis: 22px;
+}
+
+.ai-feature.ai-visual-fixture-771271 .model-table td:nth-child(2) .provider-logo--openai {
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  height: 20px !important;
+  overflow: hidden;
+}
+
+.ai-feature.ai-visual-fixture-771271 .model-table td:nth-child(2) .provider-logo--openai img {
+  width: 75px !important;
+  max-width: none !important;
+  height: 20px !important;
+}
+
+.ai-feature.ai-visual-fixture-771271 .provider-logo--openai svg {
+  display: block;
+  color: #e9edff;
+  filter: drop-shadow(0 0 2px #8b83ff88);
+}
+
+.ai-feature.ai-visual-fixture-771271 .provider-logo--anthropic img {
+  display: none !important;
+}
+
+.ai-feature.ai-visual-fixture-771271 .provider-logo--anthropic::before {
+  content: "AI";
+  color: #e3e2ff;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.ai-feature.ai-visual-fixture-771271 .provider-logo--inline.provider-logo--anthropic::before {
+  font-size: 13px;
+}
+
+.ai-feature.ai-visual-fixture-771271 .provider-logo--alibaba-cloud {
+  width: 27px !important;
+  min-width: 27px !important;
+  max-width: 27px !important;
+  height: 18px !important;
+  overflow: hidden;
+}
+
+.ai-feature.ai-visual-fixture-771271 .provider-logo--alibaba-cloud img {
+  width: 143px !important;
+  max-width: none !important;
+  height: 18px !important;
+  object-fit: fill !important;
+  object-position: left center;
+}
+
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi-icon {
+    border: 1px solid #0b5b90;
+    border-radius: 12px;
+    background: #002c60;
+    box-shadow: none;
+    color: #20a8f2;
+    transform: translate(1px, -1px);
+  }
+
+  .ai-feature .model-quota-summary .kpi:nth-child(2) .kpi-icon {
+    border-color: #078c83;
+    background: #00454f;
+    color: #12d3a7;
+  }
+
+  .ai-feature .model-quota-summary .kpi:nth-child(6) .kpi-icon {
+    border-color: #77365d;
+    background: #20294b;
+    color: #ff5f75;
+  }
+
+  .ai-feature .provider-filter button {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ai-feature .provider-filter > button.chosen {
+    background: #002f6a;
+  }
+
+  .ai-feature .provider-filter .provider-filter-name {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1600px) {
+  .ai-feature .model-table table {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .ai-feature .data-layout {
+    height: 390px;
+    align-items: stretch;
+  }
+
+  .ai-feature .data-layout > .panel {
+    min-height: 0;
+  }
+
+  .ai-feature .model-table {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .ai-feature .model-table .table-scroll {
+    min-height: 0;
+    overflow: auto;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend {
+    right: 10px;
+    bottom: 13px;
+    left: 12px;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend > b {
+    display: grid;
+    min-width: 65px;
+    min-height: 24px;
+    place-items: center;
+    padding: 0 8px;
+    border: 1px solid #087d79;
+    border-radius: 12px;
+    background: #073f49;
+    color: #18d5b0;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend > b.is-unknown {
+    border-color: #846927;
+    background: #3d3418;
+    color: #f0c955;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend > b.is-fixture {
+    border-color: #315f95;
+    background: #102e52;
+    color: #80baf3;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend > span {
+    max-width: calc(100% - 72px);
+    color: #a9c4df;
+    font-size: 9px;
+    text-align: left;
+  }
+
+  .ai-feature .model-quota-summary .kpi {
+    column-gap: 20px;
+  }
+
+  .ai-feature .distribution-controls button {
+    min-width: 86px;
+  }
+
+  .ai-feature .distribution-body .donut {
+    transform: translate(7px, 8px);
+  }
+
+  .ai-feature .distribution-body ul {
+    align-self: start;
+    padding-top: 7px;
+  }
+
+  .ai-feature .right-stack,
+  .ai-feature .right-stack > .panel {
+    min-height: 0;
+  }
+
+  .ai-feature .right-stack {
+    grid-template-rows: 250px 133px;
+  }
+
+  .ai-feature .distribution,
+  .ai-feature .health {
+    overflow: hidden;
+  }
+
+  .ai-feature .health-cards article {
+    position: relative;
+    height: 72px;
+    grid-template-columns: 38px minmax(0, 1fr);
+    grid-template-rows: 38px 1fr;
+    justify-items: stretch;
+    padding: 4px 5px;
+    border: 1px solid #123c61;
+    border-radius: 7px;
+    background: #0a2748;
+  }
+
+  .ai-feature .health-cards article:first-child {
+    border-color: #0b5b60;
+    background: #001e41;
+  }
+
+  .ai-feature .health-cards article:nth-child(2) {
+    border-color: #65415c;
+    background: #11203d;
+  }
+
+  .ai-feature .health-cards article:nth-child(3) {
+    border-color: #284565;
+    background: #0c2643;
+  }
+
+  .ai-feature .health-cards article > b {
+    display: grid;
+    width: 34px;
+    height: 34px;
+    place-items: center;
+    border: 1px solid #0e9a8c;
+    border-radius: 50%;
+    background: #064a4c;
+    color: #24d9b7;
+    font-size: 21px;
+    line-height: 1;
+  }
+
+  .ai-feature .health-cards article:nth-child(2) > b {
+    border-color: #e75e6d;
+    background: #4b283d;
+    color: #ff667a;
+  }
+
+  .ai-feature .health-cards article:nth-child(3) > b {
+    border-color: #4a7099;
+    background: #213d5c;
+    color: #a3bfd9;
+  }
+
+  .ai-feature .health-cards article > span {
+    justify-self: start;
+    font-size: 10px;
+  }
+
+  .ai-feature .health-cards article > strong {
+    align-self: center;
+    justify-self: center;
+    font-size: 18px;
+  }
+
+  .ai-feature .health-cards article > small {
+    position: absolute;
+    right: 6px;
+    bottom: 3px;
+    color: #89abc8;
+    font-size: 8px;
+  }
+
+  .ai-feature .activity-event-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ai-feature .model-table .table-scroll {
+    margin-top: 17px;
+  }
+
+  .ai-feature .model-table .table-scroll th {
+    height: 48px;
+  }
+
+  .ai-feature .model-table .table-scroll td {
+    height: 44px;
+  }
+
+  .ai-feature .model-table .pagination {
+    height: 20px;
+    flex: 0 0 20px;
+    font-size: 9px;
+  }
+
+  .ai-feature .model-table .pagination .pages button,
+  .ai-feature .model-table .pagination .pages select {
+    height: 20px;
+    min-height: 20px;
+  }
+
+  .ai-feature .distribution-controls {
+    display: inline-flex;
+    overflow: hidden;
+    border: 1px solid #0879d0;
+    border-radius: 7px;
+  }
+
+  .ai-feature .distribution-controls button {
+    min-width: 86px;
+    height: 31px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #91b9dc;
+    font-size: 10px;
+  }
+
+  .ai-feature .distribution-controls button + button {
+    border-left: 1px solid #0879d0;
+  }
+
+  .ai-feature .distribution-controls button.selected {
+    background: linear-gradient(180deg, #0b5596, #0a3c72);
+    color: #e3f4ff;
+  }
+
+  .ai-feature .quota-trend > h2 .chart-legend {
+    display: inline-flex;
+    align-items: center;
+    width: 151px;
+    justify-content: space-between;
+    gap: 0;
+    margin-right: 17px;
+    color: #b9d0e7;
+    font-size: 10px;
+    font-weight: 400;
+  }
+
+  .ai-feature .chart-legend i {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-style: normal;
+    white-space: nowrap;
+  }
+
+  .ai-feature .chart-legend i::before {
+    width: 12px;
+    height: 7px;
+    border-radius: 4px;
+    background: #148dff;
+    content: "";
+  }
+
+  .ai-feature .chart-legend .chart-legend-total::before {
+    background: #12caa8;
+  }
+
+  .ai-feature .quota-trend .chart-placeholder {
+    display: block;
+    height: 174px;
+    border: 0;
+    background: transparent;
+    text-align: initial;
+  }
+
+  .ai-feature .chart-empty-shell {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-columns: 53px minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) 16px;
+    padding: 14px 2px 1px 0;
+  }
+
+  .ai-feature .chart-y-axis {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 8px 0 0;
+    color: #91abc5;
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  .ai-feature .chart-y-axis i,
+  .ai-feature .chart-x-axis i {
+    font-style: normal;
+  }
+
+  .ai-feature .chart-plot {
+    position: relative;
+    min-width: 0;
+    border-left: 1px solid #225277;
+    border-bottom: 1px solid #225277;
+    background-image:
+      repeating-linear-gradient(to bottom, transparent 0 calc(25% - 1px), #12365a 25%, transparent calc(25% + 1px)),
+      repeating-linear-gradient(to right, transparent 0 calc(16.666% - 1px), #102f50 16.666%, transparent calc(16.666% + 1px));
+  }
+
+  .ai-feature .chart-empty-label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    color: #90adc8;
+    font-size: 11px;
+  }
+
+  .ai-feature .chart-x-axis {
+    display: grid;
+    grid-column: 2;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    align-items: end;
+    justify-items: center;
+    color: #91abc5;
+    font-size: 8px;
+    line-height: 1;
+  }
+
+  .ai-feature .remaining > h2 > button,
+  .ai-feature .activity > h2 > button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: #31b8ff;
+    font-size: 10px;
+  }
+
+  .ai-feature .remaining-header {
+    display: grid;
+    height: 28px;
+    grid-template-columns: minmax(0, 1fr) 90px 93px;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding: 0 10px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #0b3158, #09294a);
+    color: #b9d0e7;
+    font-size: 10px;
+  }
+
+  .ai-feature .remaining-header span:nth-child(n + 2) {
+    text-align: center;
+  }
+
+  .ai-feature .remaining-row {
+    grid-template-columns: minmax(0, 1fr) auto 38px 55px;
+    min-height: 27px;
+    padding: 0 10px;
+  }
+
+  .ai-feature .remaining-row > span:nth-of-type(2) {
+    color: #a9c4df;
+    text-align: right;
+  }
+
+  .ai-feature .remaining-row > i {
+    width: 55px;
+  }
+
+  .ai-feature .remaining .remaining-empty {
+    min-height: 145px;
+  }
+
+  .ai-feature .model-table td:first-child b {
+    font-weight: 500;
+  }
+
+  .ai-feature .model-table .table-scroll table {
+    font-size: 12px;
+  }
+
+  .ai-feature .model-table .filters {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 9.5px;
+    transform: translate(70.25px, 3px);
+  }
+
+  .ai-feature .model-table .filters select {
+    max-width: none;
+    flex-shrink: 0;
+  }
+
+  .ai-feature .model-table .filters .reset {
+    display: none;
+    flex: 0 0 32px;
+  }
+
+  .ai-feature .model-table .filters.has-active-filter .reset {
+    display: inline-flex;
+  }
+
+  .ai-feature .model-table .filters .searchbox {
+    flex-basis: 257px;
+  }
+
+  .ai-feature .model-table .filters.has-active-filter .searchbox {
+    flex-basis: 213px;
+  }
+
+  .ai-feature .model-table .table-scroll thead {
+    background: #00244d;
+  }
+
+  .ai-feature .chart-empty-shell {
+    padding-top: 21px;
+  }
+}
+
+@media (min-width: 1181px) and (max-width: 1450px) {
+  .ai-feature .model-quota-summary .kpi {
+    grid-template-columns: 40px minmax(0, 1fr);
+    column-gap: 8px;
+  }
+
+  .ai-feature .model-quota-summary .kpi-copy {
+    min-width: 0;
+  }
+
+  .ai-feature .model-quota-summary .kpi-copy small,
+  .ai-feature .model-quota-summary .kpi-copy strong {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend {
+    right: 8px;
+    left: 8px;
+    gap: 4px;
+    overflow: hidden;
+  }
+
+  .ai-feature .model-quota-summary .kpi-trend > span {
+    min-width: 0;
+    max-width: calc(100% - 69px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (min-width: 681px) and (max-width: 1450px) {
+  .ai-feature .remaining-header {
+    display: grid;
+    height: 28px;
+    grid-template-columns: minmax(0, 1fr) minmax(66px, auto) minmax(74px, auto);
+    align-items: center;
+    gap: 5px;
+    margin: 4px 0 0;
+    padding: 0 8px;
+    border-radius: 4px;
+    background: linear-gradient(180deg, #0b3158, #09294a);
+    color: #b9d0e7;
+    font-size: 9px;
+  }
+
+  .ai-feature .remaining-header span:nth-child(n + 2) {
+    text-align: center;
+  }
+
+  .ai-feature .activity-events {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ai-feature .activity-events > li {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    min-height: 35px;
+    border-bottom: 1px solid #123c63;
+  }
+
+  .ai-feature .activity-event-icon {
+    display: grid;
+    width: 26px;
+    height: 26px;
+    place-items: center;
+    border: 1px solid #0a8fba;
+    border-radius: 50%;
+    background: #063353;
+    color: #16d4b0;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .ai-feature .activity-event-copy {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .ai-feature .activity-event-copy b,
+  .ai-feature .activity-event-copy small {
+    overflow: hidden;
+    color: #c9def2;
+    font-size: 9px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-feature .activity-event-copy small {
+    color: #85aaca;
+    font-size: 8px;
+  }
+
+  .ai-feature .activity-events time {
+    color: #91abc5;
+    font-size: 8px;
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+/* B01: fill the 1451-1599px activity-list layout gap without changing shared UI. */
+@media (min-width: 1451px) and (max-width: 1599px) {
+  .ai-feature .activity-events {
+    display: grid;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ai-feature .activity-events > li {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) 58px;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    min-height: 38px;
+    border-bottom: 1px solid #123c63;
+  }
+
+  .ai-feature .activity-event-icon {
+    display: grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 1px solid #0a8fba;
+    border-radius: 50%;
+    background: #063353;
+    color: #16d4b0;
+    font-size: 15px;
+    line-height: 1;
+  }
+
+  .ai-feature .activity-event-copy {
+    display: grid;
+    min-width: 0;
+    gap: 2px;
+  }
+
+  .ai-feature .activity-event-copy b,
+  .ai-feature .activity-event-copy small {
+    overflow: hidden;
+    color: #c9def2;
+    font-size: 9px;
+    font-weight: 400;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-feature .activity-event-copy small {
+    color: #85aaca;
+    font-size: 8px;
+  }
+
+  .ai-feature .activity-events time {
+    color: #91abc5;
+    font-size: 8px;
+    text-align: right;
+    white-space: nowrap;
+  }
+}
+
+@media (min-width: 1600px) {
+  .ai-feature .provider-filter h2 {
+    position: relative;
+    left: -2px;
+    top: -1px;
+    margin-bottom: 16px;
+    font-size: 16px;
+  }
+
+  .ai-feature .provider-filter > button:first-of-type {
+    height: 36px;
+  }
+
+  .ai-feature .activity-events > li {
+    min-height: 42px;
+  }
+
+  .ai-feature .activity-event-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .ai-feature .activity-event-copy b {
+    font-size: 11px;
+  }
+
+  .ai-feature .activity-events time {
+    font-size: 10px;
+  }
+}
+
+/* AI034 pixel calibration: retain only the Top 5 panel correction that improved its measured region. */
+@media (min-width: 1600px) {
+  .ai-feature .bottom-grid > .remaining {
+    background: linear-gradient(135deg, #002247, #001735);
+  }
+
+  .ai-feature .remaining-header {
+    margin-top: 13px;
+    background: linear-gradient(180deg, #002955, #001e47);
+  }
+}
+
+
+
+
+/* AI034 table title alignment: align only the static heading glyphs. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .table-title h2 {
+    position: relative;
+    left: 3px;
+    top: 1px;
+  }
+}
+
+/* AI034 table row rhythm: match reference header and row separator baselines. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .table-scroll th {
+    height: 45px;
+  }
+
+  .ai-feature .model-table .table-scroll td {
+    height: 43.5px;
+  }
+}
+
+/* AI035 reference-scale calibration: the cube glyph alone needs the larger slot fill. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi-icon.k0 > svg {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+
+
+
+/* AI035 B01: keep shared KPI icon glow out of the frozen AI parent card treatment. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi-icon {
+    filter: none;
+  }
+}
+
+
+
+/* AI035 B01: controlled lower-stop comparison against the frozen KPI navy. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi {
+    background: linear-gradient(135deg, #00214af5, #001d42f5);
+  }
+}
+
+
+
+/* AI035 B01: align right-stack headings with the frozen panel title inset. */
+@media (min-width: 1600px) {
+  .ai-feature .right-stack .side-head h2 {
+    transform: translateX(7px);
+  }
+}
+
+
+
+
+/* AI035 B01: tune row surface to the approved static table tone; keep live row data intact. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .table-scroll tbody tr {
+    background-color: #001a38;
+  }
+}
+
+
+
+
+/* AI037 B01: align row action button anchor to the approved table reference. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more {
+    transform: translate(4px, 2px);
+  }
+}
+
+
+
+
+
+
+
+
+/* AI041 B01: match the second KPI card's sampled reference surface. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi:nth-child(2) {
+    background: linear-gradient(135deg, #00244d, #001f49);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* B01 pixel-registration candidate: align KPI cards to the frozen reference baseline. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpis { transform: translateY(-1px); }
+}
+
+/* B01 pixel-registration candidate: align quota trend plot to frozen reference baseline. */
+@media (min-width: 1600px) {
+  .ai-feature .quota-trend .chart-data-shell { transform: translateY(-1px); }
+}
+
+/* B01 pixel-registration candidate: align the TOP 5 heading to the frozen reference. */
+@media (min-width: 1600px) {
+  .ai-feature .remaining > h2 { transform: translateX(2px); }
+}
+
+/* B01 one-pixel provider filter title-to-first-row registration candidate. */
+@media (min-width: 1600px) {
+  .ai-feature .provider-filter h2 { margin-bottom: 17px; }
+}
+
+
+
+/* AI041 B01: sample-guided model-table panel tone candidate; compare before retention. */
+@media (min-width: 1600px) {
+  .ai-feature .data-layout > .model-table.panel {
+    background: linear-gradient(135deg, #001d40, #001832);
+  }
+}
+
+/* AI041 B01: six KPI card boundaries measured from the approved reference. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpis {
+    grid-template-columns: 230px 211px 222px 230px 254px 238px;
+    gap: 8px;
+  }
+}
+
+/* AI041 B01: match the measured 892px table panel while preserving the adjacent column. */
+@media (min-width: 1600px) {
+  .ai-feature .data-layout > .model-table.panel {
+    width: calc(100% - 1px);
+  }
+}
+
+/* AI041 B01: sample-guided second KPI card surface candidate. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi:nth-child(2) {
+    background: linear-gradient(135deg, #00224a, #001d42);
+  }
+}
+
+/* AI041 B01: reference-measured first-column logo-to-name spacing candidate. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table td:first-child .provider-logo {
+    margin-right: 12px;
+  }
+}
+
+/* AI041 B01: preserve the frozen Add Model action coordinate while omitting the removed import action. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .heading-actions button:first-child {
+    margin-right: 137px;
+  }
+}
+
+/* AI045 B01 candidate25: align provider filter button surfaces to measured frozen-reference bounds. */
+@media (min-width: 1600px) {
+  .ai-feature .provider-filter > button {
+    width: calc(100% + 10px);
+    margin-left: -5px;
+    padding-left: 10px;
+  }
+}
+
+/* AI050 B01 candidate27: align model-row action button height and vertical registration to the reference. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more {
+    height: 28px;
+    transform: translate(4px, 0px);
+  }
+}
+
+/* AI054 B01 candidate28: center the final action-column header to match its reference alignment. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table thead th:nth-child(11) { text-align: center; }
+}
+
+/* AI055 B01 candidate29: center Updated header text to match frozen reference alignment. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table thead th:nth-child(10) { text-align: center; }
+}
+
+
+/* AI056 B01 candidate30: match frozen dropdown-label glyph scale; preserve control geometry. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .filters select { font-size: 12px; }
+}
+
+
+/* AI057 B01 candidate31: match frozen dropdown-label foreground tone; preserve geometry. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .filters select { color: rgb(172, 203, 231); }
+}
+
+
+/* AI062 B01 candidate35: match row-action border to reference sampled pixel color only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { border-color: rgb(3, 72, 130); }
+}
+
+
+/* AI063 B01 candidate36: register row action vertically to the reference pixel row only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { transform: translate(4px, -1px); }
+}
+
+
+/* AI064 B01 candidate37: match filter/search control border tone to reference pixels only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .filters select,
+  .ai-feature .model-table .filters .searchbox { border-color: rgb(2, 63, 119); }
+}
+
+
+/* AI066 B01 candidate38: align action glyph baseline inside fixed button box only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { padding-top: 3px; }
+}
+
+
+/* AI068 B01 candidate40: register action ellipsis horizontally by one pixel only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { text-indent: -1px; }
+}
+
+
+/* AI069 B01 candidate41: refine remaining action glyph baseline by one pixel. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { padding-top: 4px; }
+}
+
+
+/* AI070 B01 candidate42: match row-action button fill to sampled reference interior only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { background-color: rgb(0, 30, 65); }
+}
+
+
+/* AI071 B01 candidate43: match model-table header foreground to sampled reference text pixels. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table thead th { color: rgb(155, 191, 228); }
+}
+
+
+/* AI072 B01 candidate44: refine dropdown label foreground to sampled reference tone only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .filters select { color: rgb(155, 191, 228); }
+}
+
+
+/* AI075 B01 candidate46: match search glyph visual size without changing search control box. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .filters .searchbox svg { width: 20px; height: 20px; }
+}
+
+
+/* AI076 B01 candidate47: register enlarged search icon horizontally only. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .filters .searchbox svg { transform: translateX(-6px); }
+}
+
+/* AI081 B01 candidate51: align warning foreground to reference pixel sample. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .state-warn { color: rgb(245, 84, 109); }
+}
+/* AI082 B01 candidate52: align warning badge background to reference pixel sample. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .state-warn { background-color: rgb(34, 29, 51); }
+}
+/* AI085 B01 candidate54: horizontally center priority badges within existing cells. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody td:nth-child(9) { text-align: center; }
+}
+/* AI088 B01 candidate55: align row action border color to sampled reference. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody .action-cell button.more { border-color: rgb(1, 63, 119); }
+}
+/* AI089 B01 candidate56: fill fixed DeepSeek mark slot without changing column geometry. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody td:first-child .provider-logo--deepseek img { width: 24px; height: 24px; }
+}
+
+/* B01 Visual Reconstruction V2 — rebuild the distribution legend's inner grid from measured reference bounds. */
+@media (min-width: 1600px) {
+  .ai-feature .distribution-body ul {
+    padding-left: 14px;
+    padding-top: 2px;
+  }
+
+  .ai-feature .distribution-body ul li {
+    height: 26.5px;
+    gap: 9px;
+  }
+
+  .ai-feature .distribution-body ul li .dot {
+    width: 11px;
+    height: 11px;
+    flex: 0 0 11px;
+  }
+
+  .ai-feature .distribution-body .donut {
+    align-self: flex-start;
+    margin-top: 7px;
+  }
+
+}
+
+/* B01 Visual Reconstruction V2 — align the measured 更新时间 header ink anchor. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table thead th:nth-child(2) {
+    padding-left: 15px;
+  }
+
+  .ai-feature .model-table thead th:nth-child(8) {
+    padding-left: 14px;
+  }
+
+  .ai-feature .model-table thead th:nth-child(10) {
+    padding-left: 22px;
+    text-align: left;
+  }
+}
+
+/* B01 V2 measured single-variable candidate: register only the 总额度 header glyph start. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table thead th:nth-child(6) { padding-left: 0; }
+}
+
+/* B01 V2 Phase A: rebuild measured table columns 5-9 while preserving the 872px outer grid. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table .table-scroll table {
+    width: 100%;
+    table-layout: fixed;
+  }
+  .ai-feature .model-table .table-scroll th:nth-child(1) { width: 16.0055%; }
+  .ai-feature .model-table .table-scroll th:nth-child(2) { width: 10.8993%; }
+  .ai-feature .model-table .table-scroll th:nth-child(3) { width: 7.362385%; }
+  .ai-feature .model-table .table-scroll th:nth-child(4) { width: 5.889908%; }
+  .ai-feature .model-table .table-scroll th:nth-child(5) { width: 9.026376%; }
+  .ai-feature .model-table .table-scroll th:nth-child(6) { width: 6.422018%; }
+  .ai-feature .model-table .table-scroll th:nth-child(7) { width: 11.020642%; }
+  .ai-feature .model-table .table-scroll th:nth-child(8) { width: 8.027523%; }
+  .ai-feature .model-table .table-scroll th:nth-child(9) { width: 6.997706%; }
+  .ai-feature .model-table .table-scroll th:nth-child(10) { width: 12.983945%; }
+  .ai-feature .model-table .table-scroll th:nth-child(11) { width: 5.364681%; }
+}
+
+/* B01 V2 fixture-only model identity: show Qwen in the Qwen model cell, not its Alibaba access-provider mark. Keep slot/name anchors fixed. */
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--qwen {
+  width: 27px !important;
+  min-width: 27px !important;
+  max-width: 27px !important;
+  height: 18px !important;
+  flex: 0 0 27px;
+  overflow: visible;
+}
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--qwen img {
+  width: 26px !important;
+  max-width: none !important;
+  height: 26px !important;
+  object-fit: contain !important;
+  filter: hue-rotate(35deg) saturate(1.3) brightness(1.05);
+}
+
+/* B01 V2 measured Updated-cell typography and right-edge registration. */
+@media (min-width: 1600px) {
+  .ai-feature .model-table tbody td:nth-child(10) {
+    font-size: 11px;
+    text-align: right;
+    padding-right: 0;
+  }
+}
+
+/* B01 V2 Phase A: reconstruct TOP5 inner header and row columns from frozen pixel anchors. */
+@media (min-width: 1600px) {
+  .ai-feature .remaining-header {
+    grid-template-columns: 128px 88px 93px;
+  }
+  .ai-feature .remaining-header span:nth-child(3) {
+    transform: translateX(10px);
+  }
+  .ai-feature .remaining-row {
+    grid-template-columns: 157px 80px 38px 87px;
+    padding-left: 7px;
+    padding-right: 10px;
+  }
+  .ai-feature .remaining-model-identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .ai-feature .remaining-model-identity > .provider-logo {
+    width: 20px;
+    height: 20px;
+    margin: 0 6px 0 0;
+    flex: 0 0 20px;
+  }
+  .ai-feature .remaining-model-identity > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ai-feature .remaining-row > i {
+    width: 87px;
+    height: 11px;
+    margin-left: 21px;
+    position: relative;
+    top: 2px;
+  }
+}
+
+/* B01 V2 Phase B: restore measured TOP5 typography hierarchy without moving its grid anchors. */
+@media (min-width: 1600px) {
+  .ai-feature .remaining > h2 { font-size: 16px; }
+  .ai-feature .remaining-header { font-size: 12px; }
+  .ai-feature .remaining-row,
+  .ai-feature .remaining-row > span { font-size: 11px; }
+}
+
+/* B01 V2 candidate: scale and register the Anthropic glyph to measured reference pixels. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:first-child .provider-logo--anthropic::before {
+    transform: translateY(-2px) scale(1.57, 1.67);
+  }
+}/* B01 V2 Phase A: reconstruct the measured stacked quota meter geometry. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(7) .usage-cell {
+    display: grid;
+    grid-template-rows: 16px 8px;
+    justify-items: start;
+    align-content: start;
+    width: 80px;
+    transform: translateY(-5.75px);
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(7) .usage-cell > span {
+    width: 27px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(7) .usage-cell > i {
+    width: 80px;
+    height: 8px;
+  }
+}
+/* B01 V2 Phase A: reconstruct the Recent Activity three-column grid from reference anchors. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .activity-events > li {
+    grid-template-columns: 36px minmax(0, 1fr) 76px;
+    gap: 16px;
+  }
+}
+
+/* AI153 V2 single-variable geometry candidate: health-card spacing measured from 771271. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .health-cards {
+    gap: 12px;
+  }
+}
+
+/* AI154 V2 single-variable inner geometry candidate: align health labels to reference pixel anchors. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .health-cards article {
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+}
+
+/* AI155 V2 single-variable inner geometry candidate: register health labels and counts vertically. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .health-cards article {
+    grid-template-rows: 26px 1fr;
+  }
+}
+
+/* AI156 V2 single-variable count registration to measured reference raster bounds. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .health-cards article > strong {
+    transform: translate(10px, -6px);
+  }
+}
+
+/* AI158 V2 single-variable share baseline registration. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .health-cards article > small {
+    bottom: 0;
+  }
+}
+
+@media (max-width: 1599px) {
+  .ai-feature.ai-visual-fixture-771271 .health-cards article > small {
+    grid-column: 1 / -1;
+    justify-self: center;
+    width: max-content;
+    max-width: 100%;
+    white-space: nowrap;
+    font-size: 8px;
+    line-height: 1;
+  }
+}
+
+/* AI162 V2 single-row type badge geometry measured from the second frozen-reference row. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:nth-child(2) td:nth-child(3) .type-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    height: 25px;
+    position: relative;
+    left: -4.5px;
+    top: -2.25px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* AI163 V2 single-row type badge geometry measured from the fourth frozen-reference row. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:nth-child(4) td:nth-child(3) .type-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    height: 25px;
+    position: relative;
+    left: -4.5px;
+    top: -2.25px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* AI165 V2 single-row type badge geometry measured from the first frozen-reference row. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:nth-child(1) td:nth-child(3) .type-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    height: 25px;
+    position: relative;
+    left: -4.5px;
+    top: -1px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* AI166 V2 single-row type badge geometry measured from the sixth frozen-reference row. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:nth-child(6) td:nth-child(3) .type-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    height: 25px;
+    position: relative;
+    left: -4.5px;
+    top: 5.25px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+
+
+
+/* B01 V2 Phase A: preserve the measured donut x anchor and move y from 8px to 1px. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .distribution .donut {
+    transform: translate(7px, 1px);
+  }
+}
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .distribution .donut::before {
+    inset: 22px;
+  }
+}
+/* AI137 B01 V2: scale/register title ink without changing the measured filter anchor. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-title h2 {
+    transform-origin: 0 50%;
+    transform: translate(1px, -1.5px) scale(1.22, 1.42);
+  }
+}
+
+/* AI138 B01 V2 visual-QA model identity: match the frozen Qwen mark in the model cell only. */
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--qwen {
+  width: 27px !important;
+  min-width: 27px !important;
+  max-width: 27px !important;
+  height: 27px !important;
+  flex: 0 0 27px;
+  background: url("./assets/visual-qa/qwen-model-reference-mark.png") center / contain no-repeat !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 136% !important;
+}
+.ai-feature.ai-visual-fixture-771271 .model-table td:first-child .provider-logo--qwen img {
+  opacity: 0 !important;
+}
+
+
+
+/* AI140 B01 V2: register only the last-row usage cell to measured frozen-reference anchors. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:last-child td:nth-child(7) .usage-cell {
+    transform: translate(4px, 2.25px);
+  }
+}
+
+/* AI144 B01 V2: register the model-type badge by measured frozen-reference bbox. */
+.ai-feature.ai-visual-fixture-771271 .model-table tbody tr:nth-child(3) td:nth-child(3) .type-pill {
+  display: inline-flex;
+  box-sizing: border-box;
+  width: 56px;
+  min-width: 56px;
+  max-width: 56px;
+  height: 25px;
+  position: relative;
+  left: -4.5px;
+  top: -2.25px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* AI145 B01 V2: align only the last-row model-name glyph baseline to its measured raster anchor. */
+.ai-feature.ai-visual-fixture-771271 .model-table tbody tr:last-child td:first-child b {
+  position: relative;
+  top: 6px;
+}
+
+
+
+
+/* AI167 Phase A: extend the summary shell upward to the frozen parent frame while preserving all child anchors. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary {
+    margin-top: -17px;
+    padding-top: 22px;
+  }
+}
+
+
+/* AI169 Phase B visual-reference fixture only: the frozen provider filter omits the trailing Other row. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .provider-filter > button:last-child {
+    display: none !important;
+  }
+}
+
+/* AI170 Phase B: complete Provider filter mark geometry; fixture-only mapping remains non-functional. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--image {
+    width: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    height: 24px !important;
+    flex: 0 0 24px;
+    overflow: hidden;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--image img {
+    width: 24px !important;
+    max-width: none !important;
+    height: 24px !important;
+    object-fit: contain !important;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--openai svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--anthropic::before {
+    font-size: 20px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--microsoft-azure img {
+    width: 192px !important;
+    max-width: none !important;
+    height: 24px !important;
+    object-fit: fill !important;
+    object-position: left center;
+  }
+}
+
+
+/* AI176 V2 Phase B: register the complete table-header label row to measured frozen-reference ink anchors. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(1) button { transform: translateX(1px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(2) button { transform: translateX(-12px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(3) button { transform: translateX(-2px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(4) button { transform: translateX(.5px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(5) button { transform: translateX(3.5px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(6) button { transform: translateX(2px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(7) button { transform: translateX(4px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(8) button { transform: translateX(-.5px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(9) button { transform: translateX(1.5px); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(10) button { transform: translateX(0); }
+  .ai-feature.ai-visual-fixture-771271 .model-table thead th:nth-child(11) button { transform: translateX(4px); }
+}
+
+
+/* AI185 B01 Phase B: rebuild event icon surfaces without changing the 31px slots or row geometry. */
+.ai-feature.ai-visual-fixture-771271 .activity-event-icon {
+  border-color: #0b8d9a;
+  background: #075866;
+  color: #27e2bc;
+  box-shadow: 0 0 10px #08b7a52b;
+}
+.ai-feature.ai-visual-fixture-771271 .activity-event-icon.activity-event-updated {
+  border-color: #1477c2;
+  background: #104b83;
+  color: #58b9ff;
+}
+.ai-feature.ai-visual-fixture-771271 .activity-event-icon.activity-event-quota_alert {
+  border-color: #a93d5b;
+  background: #47213d;
+  color: #ff6178;
+}
+.ai-feature.ai-visual-fixture-771271 .activity-event-icon.activity-event-enabled {
+  border-color: #1477c2;
+  background: #0a4e84;
+  color: #4fb4ff;
+}
+
+/* AI187 B01 Component Geometry: match the alert KPI icon tile/glyph as a complete component. */
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .kpi:nth-child(6) .kpi-icon {
+    border-color: #34324f;
+    background: #20294b;
+    box-shadow: none;
+  }
+
+  .ai-feature .model-quota-summary .kpi:nth-child(6) .kpi-icon svg {
+    width: 35px;
+    height: 35px;
+  }
+}
+
+/* AI190 B01 Phase B: reconstruct the Recent Activity row grid to the frozen visual reference. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .activity-events > li {
+    grid-template-columns: 46px minmax(0, 1fr) 107px;
+    gap: 0;
+    min-height: 45px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-event-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-event-copy {
+    display: grid;
+    grid-template-columns: 64px minmax(0, 1fr);
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-event-copy b {
+    color: #d4e7f8;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-event-copy small {
+    color: #b9cfe5;
+    font-size: 10px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-events time {
+    font-size: 11px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-events time small {
+    font-size: 10px;
+  }
+}
+
+/* AI193 B01 Component/Region Geometry: restore frozen provider-list vertical rhythm. */
+@media (min-width: 1600px) {
+  .ai-feature .provider-filter > button:not(:first-of-type) {
+    height: 46px;
+  }
+}
+
+/* AI199 B01 Component/Region Geometry: restore the frozen search input's leading magnifier slot and text anchor. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table .filters .searchbox {
+    position: relative;
+    padding: 0 7px 0 32px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .model-table .filters .searchbox::before {
+    content: "⊕";
+    position: absolute;
+    left: 9px;
+    top: 50%;
+    transform: translateY(-55%);
+    color: #8eb8df;
+    font: 16px/1 Arial, sans-serif;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .model-table .filters .searchbox::after {
+    content: "";
+    position: absolute;
+    left: 22px;
+    top: calc(50% + 4px);
+    width: 6px;
+    height: 1.5px;
+    background: #8eb8df;
+    transform: rotate(45deg);
+  }
+}
+
+/* AI202 B01 Phase B: restore the single undersized type badge to the shared frozen-reference component box. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:nth-child(5) td:nth-child(3) .type-pill {
+    display: inline-flex;
+    box-sizing: border-box;
+    width: 56px;
+    min-width: 56px;
+    max-width: 56px;
+    height: 25px;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* AI204 B01 Phase B: reconstruct the frozen TOP 5 five-row cadence as one list component. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .remaining-row {
+    min-height: 29px;
+  }
+}
+
+/* AI206 B01 Phase C: match the frozen model-type badge typography and surface while holding its 56x25 box. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody .type-pill {
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1;
+    color: #d7eaff;
+    border-color: #0a6fca;
+    border-radius: 6px;
+    background: linear-gradient(180deg, #0b3b78 0%, #002251 100%);
+    box-shadow: inset 0 1px 3px rgba(31, 127, 222, 0.22);
+  }
+}
+
+/* AI209 B01 Phase C: reconstruct the complete frozen status-badge surface inside visual QA only. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(8) {
+    text-align: center;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(8) .state {
+    min-width: 50px;
+    height: 25px;
+    padding: 0 7px;
+    gap: 5px;
+    justify-content: center;
+    border-radius: 11px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(8) .state i {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 10px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(8) .state-ready {
+    color: #18e4b5;
+    background-color: #063a39;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(8) .state-warn {
+    color: #ff526b;
+    background-color: #221d33;
+  }
+}
+
+/* AI210 B01 provider identity component: keep only the Azure mark in the inline logo slot; the adjacent provider name remains readable. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(2) .provider-logo--microsoft-azure {
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    height: 20px !important;
+    overflow: hidden;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(2) .provider-logo--microsoft-azure img {
+    width: 69.4px !important;
+    max-width: none !important;
+    height: 20px !important;
+    object-fit: fill !important;
+    object-position: left center;
+  }
+}
+
+/* AI211 B01 provider identity component: restore the DeepSeek inline-mark slot width measured from the frozen reference. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(2) .provider-logo--deepseek {
+    width: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
+    height: 24px !important;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(2) .provider-logo--deepseek img {
+    width: 24px !important;
+    height: 24px !important;
+    object-fit: contain !important;
+  }
+}
+
+
+/* AI220 B01 Usage Meter component: reconstruct the complete row track geometry from frozen pixel bounds. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(7) .usage-cell {
+    width: 82px;
+    grid-template-rows: 16px 11px;
+    transform: translate(3px, -5.75px);
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(7) .usage-cell > i {
+    width: 82px;
+    height: 11px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody tr:last-child td:nth-child(7) .usage-cell {
+    transform: translate(3px, 2.25px);
+  }
+}
+
+/* AI222 B01 Context column component: align all context values to the frozen text anchor. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table tbody td:nth-child(4) {
+    text-indent: 4px;
+  }
+}
+
+/* AI224 B01 Component Geometry: rebuild complete activity row cards and icon slots against 771271. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .activity-events {
+    margin-top: 2px;
+    gap: 4px;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-events > li {
+    min-height: 44px;
+    border: 0;
+    border-radius: 8px;
+    background: #001e41;
+  }
+  .ai-feature.ai-visual-fixture-771271 .activity-event-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* AI225 B01 Component Geometry: align the frozen-reference chart tooltip's complete bounds. */
+.ai-feature.ai-visual-fixture-771271 .chart-tooltip {
+  top: -2.2%;
+  left: 61.5%;
+  width: 132px;
+  min-width: 132px;
+  gap: 5px;
+  padding: 10px 8px;
+}
+
+/* AI237 B01: align the Recent Activity icon slot diameter to the frozen raster. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .activity-event-icon {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+
+/* AI250 B01 Provider filter region reconstruction: fixed mark/name/count tracks;
+   preserve provider identity order and crop wide official wordmarks to their brand mark. */
+@media (min-width: 768px) {
+  .ai-feature.ai-visual-fixture-771271 .provider-filter > button {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 8px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter > button > .provider-logo {
+    grid-column: 1;
+    grid-row: 1;
+    flex: 0 0 24px;
+    width: 24px;
+    min-width: 24px;
+    max-width: 24px;
+    height: 24px;
+    overflow: hidden;
+    justify-self: center;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter > button > .provider-filter-name {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter > button > b {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+    margin: 0;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--image img {
+    display: block;
+    width: 24px;
+    max-width: 24px;
+    height: 24px;
+    object-fit: contain;
+    object-position: left center;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--alibaba-cloud img,
+  .ai-feature.ai-visual-fixture-771271 .provider-filter .provider-logo--microsoft-azure img {
+    width: auto !important;
+    max-width: none !important;
+    height: 24px !important;
+    object-fit: fill !important;
+    object-position: left center;
+  }
+}
+
+/* AI251 B01 Distribution/Health component reconstruction: restore the reference's
+   selected-control contrast, compact link affordance, and semantic health surfaces. */
+@media (min-width: 768px) {
+  .ai-feature.ai-visual-fixture-771271 .distribution-controls button:disabled {
+    opacity: 1;
+    cursor: default;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .distribution-controls button.selected:disabled {
+    background: linear-gradient(180deg, #0b5596, #0a3c72);
+    color: #e3f4ff;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .health .side-head > button {
+    height: 24px;
+    padding: 0 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: #10a8ef;
+    font-size: 11px;
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .health-cards article {
+    border-color: transparent;
+    box-shadow: none;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .health-cards article > b {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* AI252 B01 table identity/provider column-group reconstruction: keep measured outer tracks;
+   give official marks and full model/provider names one consistent inner layout. */
+@media (min-width: 1280px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody td:first-child,
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody td:nth-child(2) {
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody td:first-child .provider-logo {
+    margin-right: 4px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody td:nth-child(2) .provider-logo {
+    width: 18px;
+    min-width: 18px;
+    max-width: 18px;
+    height: 18px;
+    margin-right: 4px;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody td:nth-child(2) .provider-logo img {
+    width: 18px;
+    max-width: 18px;
+    height: 18px;
+    object-fit: contain;
+  }
+}
+
+/* AI256 B01 Model Table body-region surface reconstruction: keep measured column tracks,
+   typography, row height, data and handlers; replace the brighter live row fill/separators
+   with the sampled frozen-reference body surface on the visual-QA fixture only. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody tr {
+    background-color: #001835;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .model-table .table-scroll tbody td {
+    border-bottom-color: #001835;
+  }
+}
+
+/* AI259 B01 filter dropdown surface reconstruction: align the four fixture selects
+   to the darker frozen-reference face without resizing controls or changing interaction. */
+@media (min-width: 1600px) {
+  .ai-feature.ai-visual-fixture-771271 .model-table .filters > select {
+    background-color: #001d3e;
+    background-image: linear-gradient(180deg, #002042 0%, #001b3b 100%);
+  }
+}
+
+/* AI310 B01 Macro Geometry: match the measured three-panel allocation from 771271 at the canonical 1536 viewport. Fixture-only; preserve live data and behavior. */
+@media (min-width: 1181px) {
+  .ai-feature.ai-visual-fixture-771271 .bottom-grid {
+    grid-template-columns: 1.2fr 1fr 1.02fr;
+  }
+}
+
+
+/* AI311 B01 Macro Geometry: normalize the data row and its right-side tracks at 1536; visual-QA fixture only. */
+@media (min-width: 1181px) and (max-width: 1599px) {
+  .ai-feature.ai-visual-fixture-771271 .data-layout {
+    height: 359px;
+    align-items: stretch;
+  }
+  .ai-feature.ai-visual-fixture-771271 .data-layout > .panel { min-height: 0; }
+  .ai-feature.ai-visual-fixture-771271 .model-table { min-height: 0; overflow: hidden; }
+  .ai-feature.ai-visual-fixture-771271 .right-stack {
+    grid-template-rows: minmax(230px, 1.88fr) minmax(122px, 1fr);
+    gap: 7px;
+  }
+}
+
+/* AI313 B01 Macro Geometry: reconstruct the frozen-reference horizontal track split at the canonical 1536px visual-QA viewport. */
+@media (min-width: 1530px) and (max-width: 1542px) {
+  .ai-feature.ai-visual-fixture-771271 .data-layout {
+    margin-left: -8.3px;
+    margin-right: 1.3px;
+    grid-template-columns: 150.5px 840px 338.1px;
+    column-gap: 0;
+  }
+
+  .ai-feature.ai-visual-fixture-771271 .data-layout > .right-stack {
+    margin-left: 7.4px;
+  }
+}
+
+
+@media (min-width: 1181px) and (max-width: 1599px) {
+  .ai-feature.ai-visual-fixture-771271 .bottom-grid > .panel { height: 218px; }
+}
+
+/* AI user visual fix: keep Top 5 identity, amount, percent and meter on stable tracks. */
+.ai-feature .remaining-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 82px;
+  align-items: center;
+  column-gap: 10px;
+}
+.ai-feature .remaining-header > span:nth-child(2),
+.ai-feature .remaining-header > span:nth-child(3) { text-align: right; }
+.ai-feature .remaining-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 82px;
+  grid-template-rows: 18px 6px;
+  grid-template-areas: "identity amount percent" "meter . .";
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 1px;
+  min-height: 27px;
+  height: auto;
+  padding: 1px 0;
+}
+.ai-feature .remaining-model-identity {
+  grid-area: identity;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 6px;
+  white-space: nowrap;
+}
+.ai-feature .remaining-model-identity > .provider-logo {
+  flex: 0 0 20px;
+  width: 20px;
+  min-width: 20px;
+  max-width: 20px;
+  height: 20px;
+  margin: 0;
+}
+.ai-feature .remaining-model-identity > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ai-feature .remaining-row > b {
+  grid-area: amount;
+  justify-self: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ai-feature .remaining-row > span:nth-of-type(2) {
+  grid-area: percent;
+  min-width: 52px;
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ai-feature .remaining-row > i {
+  grid-area: meter;
+  position: static;
+  justify-self: start;
+  width: min(156px, 100%);
+  max-width: 100%;
+  height: 6px;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 99px;
+}
+.ai-feature .remaining-row > i > b {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+.ai-feature .provider-logo--ai-tech-azure {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 24px;
+  width: 24px;
+  min-width: 24px;
+  max-width: 24px;
+  height: 24px;
+  border: 1px solid #0c9dff;
+  border-radius: 7px;
+  background: radial-gradient(circle at 50% 40%, #0c5b96 0, #062b52 72%);
+  box-shadow: 0 0 10px #00caff80, inset 0 0 8px #20aaff55;
+}
+.ai-feature .provider-logo--ai-tech-azure svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  filter: drop-shadow(0 0 3px #00d9ff);
+}
+
+/* AI-023 user-requested parent refinements: compact actions, seven KPI slots and one-line Top 5 alignment. */
+.ai-feature .model-quota-summary .page-heading { margin-bottom: 6px; }
+.ai-feature .model-quota-summary .heading-actions { gap: 10px; }
+.ai-feature .model-quota-summary .heading-actions button:first-child { margin-right: 0 !important; }
+.ai-feature .model-quota-summary .kpis { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.ai-feature .model-quota-summary .kpi { min-width: 0; }
+.ai-feature .remaining-header,
+.ai-feature .remaining-row {
+  grid-template-columns: minmax(0, 1fr) minmax(76px, 112px) minmax(112px, auto);
+  column-gap: 10px;
+}
+.ai-feature .remaining-header > span:nth-child(2) { text-align: center; }
+.ai-feature .remaining-header > span:nth-child(3) { text-align: right; }
+.ai-feature .remaining-row {
+  grid-template-rows: 24px;
+  grid-template-areas: "identity meter values";
+  min-height: 28px;
+  align-items: center;
+  padding: 1px 0;
+}
+.ai-feature .remaining-row > i {
+  grid-area: meter;
+  justify-self: center;
+  width: 100%;
+  height: 7px;
+  margin: 0;
+  position: static;
+}
+.ai-feature .remaining-row > .remaining-values {
+  grid-area: values;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.ai-feature .remaining-values b { font-size: 11px; }
+.ai-feature .remaining-values small { color: #a9c7e3; font-size: 10px; }
+.ai-feature .model-quota-summary .kpi:nth-child(7) .kpi-icon {
+  border-color: #815c27;
+  background: linear-gradient(145deg, #392d1e, #202940);
+  color: #ffc467;
+  box-shadow: 0 0 14px #f6a82d55;
+}
+.ai-feature .distribution-controls button { cursor: pointer; }
+
+/* AI-025: time-range controls and expanded panels stay readable in the parent layout. */
+.ai-feature .trend-panel-heading { display:grid; grid-template-columns:minmax(0,1fr) auto; grid-template-areas:"title legend" "period period"; align-items:center; gap:7px 8px; min-width:0; }
+.ai-feature .trend-panel-heading > h2 { grid-area:title; flex:0 0 auto; margin:0; font-size:14px; line-height:1.3; font-weight:700; }
+.ai-feature .trend-period-controls { grid-area:period; display:flex; align-items:center; gap:2px; width:100%; padding:2px; border:1px solid #12517d; border-radius:7px; background:#061a32; }
+.ai-feature .trend-period-controls button { flex:1; min-height:23px; padding:0 7px; border:0; border-radius:5px; background:transparent; color:#91b8d6; font-size:9px; white-space:nowrap; cursor:pointer; }
+.ai-feature .trend-period-controls button.selected { color:#f0f9ff; background:linear-gradient(180deg,#087fe0,#0759ad); box-shadow:0 0 10px #0789ff55; }
+.ai-feature .trend-panel-heading .chart-legend { grid-area:legend; width:auto; flex:0 0 auto; gap:10px; margin:0 2px; }
+.ai-feature .remaining:has(.remaining-row:nth-of-type(n+6)) { max-height:330px; overflow-y:auto; overflow-x:hidden; scrollbar-color:#178dd0 #061a32; }
+.ai-feature .activity:has(.activity-events li:nth-child(n+5)) { max-height:330px; overflow:hidden; }
+.ai-feature .activity-events { max-height:250px; overflow:auto; overscroll-behavior:contain; scrollbar-color:#178dd0 #061a32; }
+.ai-feature .model-table.health-focus { animation:ai-health-focus 1.8s ease-out; }
+@keyframes ai-health-focus { 0%,100% { box-shadow:0 0 0 1px #117ec5, 0 8px 30px #0003; } 25%,65% { box-shadow:0 0 0 3px #19b8ff, 0 0 24px #13aaff99; } }
+.ai-feature .model-table .table-scroll th,
+.ai-feature .model-table .table-scroll td { text-align:center; }
+.ai-feature .model-table .table-scroll td:first-child { justify-content:center; }
+.ai-feature .activity:has(.activity-events li:nth-child(n+5)) .activity-events { max-height:196px; }
+.ai-feature .model-quota-summary .kpi-copy small,
+.ai-feature .model-table .table-title h2,
+.ai-feature .provider-filter > h2,
+.ai-feature .right-stack .side-head h2,
+.ai-feature .bottom-grid > .panel > h2,
+.ai-feature .trend-panel-heading > h2 { font-family:"Microsoft YaHei","PingFang SC",sans-serif; font-size:14px; font-weight:700; letter-spacing:0; }
+@media(max-width:1050px) { .ai-feature .trend-panel-heading .chart-legend { margin-left:auto; } }
+@media(max-width:680px) { .ai-feature .trend-period-controls { order:3; width:100%; } .ai-feature .trend-period-controls button { flex:1; } .ai-feature .trend-panel-heading .chart-legend { margin-left:auto; } }
+
+/* Compact trend controls: keep title, date pills and legend on one visual line. */
+.ai-feature .trend-panel-heading {
+  grid-template-columns: minmax(70px,1fr) auto auto;
+  grid-template-areas: "title period legend";
+  gap: 8px;
+}
+.ai-feature .trend-period-controls {
+  width: auto;
+  gap: 3px;
+  padding: 2px;
+  border-radius: 999px;
+}
+.ai-feature .trend-period-controls button {
+  flex: 0 0 auto;
+  min-width: 58px;
+  min-height: 22px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 8px;
+}
+.ai-feature .trend-period-controls button.selected {
+  border-color: #20baff;
+  background: linear-gradient(180deg,#0b8fed,#075bb4);
+}
+.ai-feature .trend-panel-heading .chart-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+.ai-feature .trend-panel-heading .chart-legend i { font-size: 8px; }
+@media(max-width:520px) {
+  .ai-feature .trend-panel-heading {
+    grid-template-columns: minmax(0,1fr) auto;
+    grid-template-areas: "title legend" "period period";
+    gap: 7px;
+  }
+  .ai-feature .trend-period-controls { width: 100%; }
+  .ai-feature .trend-period-controls button { flex: 1 1 0; }
+  .ai-feature .trend-panel-heading .chart-legend { margin-left: auto; }
+}
+
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .page-heading { margin-bottom: 4px; }
+  .ai-feature .model-quota-summary .heading-actions { gap: 10px; transform: translate(7px, -3px); }
+  .ai-feature .model-quota-summary .heading-actions button:first-child { margin-right: 0 !important; }
+  .ai-feature .model-quota-summary .kpis { grid-template-columns: 230px 211px 222px 230px 254px 238px minmax(210px, 1fr); }
+}
+
+@media (max-width: 1180px) {
+  .ai-feature .model-quota-summary .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (max-width: 760px) {
+  .ai-feature .model-quota-summary .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ai-feature .remaining-header { display: none; }
+  .ai-feature .remaining-row { grid-template-columns: minmax(0, 1fr) minmax(70px, 30%) minmax(100px, auto); column-gap: 7px; }
+}
+.ai-feature .provider-logo--ai-tech-qwen {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 22px;
+  width: 22px;
+  min-width: 22px;
+  max-width: 22px;
+  height: 22px;
+  border: 1px solid #6b75ff;
+  border-radius: 7px;
+  background: radial-gradient(circle at 50% 42%, #383f9e 0, #131c56 76%);
+  box-shadow: 0 0 10px #7269ff75, inset 0 0 7px #21cfff55;
+}
+.ai-feature .provider-logo--ai-tech-qwen svg {
+  display: block;
+  width: 18px;
+  height: 18px;
+  filter: drop-shadow(0 0 3px #33dfff);
+}
+.ai-feature .model-table .table-scroll tbody td:first-child .provider-logo--ai-tech-qwen {
+  width: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  height: 18px;
+  border-radius: 5px;
+}
+.ai-feature .model-table .table-scroll tbody td:first-child .provider-logo--ai-tech-qwen svg {
+  width: 14px;
+  height: 14px;
+}
+.ai-feature .provider-filter .provider-logo--ai-tech-azure,
+.ai-feature .model-table .provider-logo--ai-tech-azure {
+  justify-self: center;
+}
+.ai-feature .model-table .table-scroll tbody td:first-child .provider-logo--ai-tech-azure,
+.ai-feature .model-table .table-scroll tbody td:nth-child(2) .provider-logo--ai-tech-azure {
+  width: 18px;
+  min-width: 18px;
+  max-width: 18px;
+  height: 18px;
+  border-radius: 5px;
+}
+.ai-feature .model-table .table-scroll tbody td:first-child .provider-logo--ai-tech-azure svg,
+.ai-feature .model-table .table-scroll tbody td:nth-child(2) .provider-logo--ai-tech-azure svg {
+  width: 14px;
+  height: 14px;
+}
+@media (max-width: 680px) {
+  .ai-feature .remaining-header,
+  .ai-feature .remaining-row { column-gap: 6px; }
+  .ai-feature .remaining-header,
+  .ai-feature .remaining-row { grid-template-columns: minmax(0, 1fr) auto 70px; }
+  .ai-feature .remaining-row > i { width: min(118px, 100%); }
+  .ai-feature .remaining-row > span:nth-of-type(2) { min-width: 66px; }
+}
+
+
+/* AI-023 final overrides: keep Top 5 identity, bar and remaining amount on one centered track. */
+.ai-feature .model-quota-summary .page-heading { margin-bottom: 6px; }
+.ai-feature .model-quota-summary .heading-actions { gap: 10px; }
+.ai-feature .model-quota-summary .heading-actions button:first-child { margin-right: 0 !important; }
+.ai-feature .model-quota-summary .kpis { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+.ai-feature .remaining-header,
+.ai-feature .remaining-row { grid-template-columns: minmax(0, 1fr) minmax(76px, 112px) minmax(112px, auto) !important; column-gap: 10px !important; }
+.ai-feature .remaining-header > span:nth-child(2) { text-align: center !important; }
+.ai-feature .remaining-header > span:nth-child(3) { text-align: right !important; }
+.ai-feature .remaining-row { grid-template-rows: 24px !important; grid-template-areas: "identity meter values" !important; min-height: 28px; align-items: center; padding: 1px 0; }
+.ai-feature .remaining-row > i { grid-area: meter !important; justify-self: center !important; width: 100% !important; height: 7px !important; margin: 0 !important; position: static !important; }
+.ai-feature .remaining-row > .remaining-values { grid-area: values !important; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.ai-feature .remaining-values b { font-size: 11px; }
+.ai-feature .remaining-values small { color: #a9c7e3; font-size: 10px; }
+.ai-feature .model-quota-summary .kpi:nth-child(7) .kpi-icon { border-color: #815c27; background: linear-gradient(145deg,#392d1e,#202940); color: #ffc467; box-shadow: 0 0 14px #f6a82d55; }
+.ai-feature .distribution-controls button { cursor: pointer; }
+@media (min-width: 1600px) {
+  .ai-feature .model-quota-summary .page-heading { margin-bottom: 4px; }
+  .ai-feature .model-quota-summary .heading-actions { gap: 10px; transform: translate(7px,-3px); }
+  .ai-feature .model-quota-summary .heading-actions button:first-child { margin-right: 0 !important; }
+  .ai-feature .model-quota-summary .kpis { grid-template-columns: 230px 211px 222px 230px 254px 238px minmax(210px,1fr) !important; }
+}
+@media (min-width: 761px) and (max-width: 1180px) { .ai-feature .model-quota-summary .kpis { grid-template-columns: repeat(4,minmax(0,1fr)) !important; } }
+@media (max-width: 760px) {
+  .ai-feature .model-quota-summary .kpis { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
+  .ai-feature .remaining-header { display: none; }
+  .ai-feature .remaining-row { grid-template-columns: minmax(0,1fr) minmax(70px,30%) minmax(100px,auto) !important; column-gap: 7px !important; }
+}
+.ai-feature .model-health-details{width:min(560px,calc(100vw - 32px));max-height:min(680px,calc(100vh - 32px));padding:0;border:1px solid #168ed0;border-radius:12px;background:linear-gradient(145deg,#0a2a4b,#06172d);color:#f2f8ff;box-shadow:0 22px 72px #000b,inset 0 1px #4ccaff22;scrollbar-color:#1c6796 #06172d}
+.ai-feature .model-health-details::backdrop{background:#020b18c9;backdrop-filter:blur(4px)}
+.ai-feature .model-health-details>header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 22px 14px;border-bottom:1px solid #17476b}
+.ai-feature .model-health-details>header small{color:#35c4ff;font-size:10px;font-weight:700;letter-spacing:.12em}
+.ai-feature .model-health-details>header h2{margin:5px 0;color:#fff;font-size:21px}
+.ai-feature .model-health-details>header p{margin:0;color:#a7c2d9;font-size:11px}
+.ai-feature .model-health-details>header button{width:32px;height:32px;border:1px solid #245a80;border-radius:8px;background:#0b2541;color:#fff;font-size:21px;cursor:pointer}
+.ai-feature .model-health-details__summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:14px 22px}
+.ai-feature .model-health-details__summary>span{display:flex;align-items:center;gap:6px;padding:9px;border:1px solid #17466b;border-radius:7px;background:#071b35;color:#d8eaff;font-size:10px}
+.ai-feature .model-health-details__summary i{width:8px;height:8px;border-radius:50%;background:#23d3a2;box-shadow:0 0 10px #23d3a2aa}
+.ai-feature .model-health-details__summary i[data-tone=warning]{background:#ffb642;box-shadow:0 0 10px #ffb642aa}
+.ai-feature .model-health-details__summary i[data-tone=bad]{background:#ff637c;box-shadow:0 0 10px #ff637caa}
+.ai-feature .model-health-details__summary b{margin-left:auto;color:#fff;font-size:15px}
+.ai-feature .model-health-details>ul{display:grid;gap:6px;max-height:min(390px,48vh);overflow:auto;margin:0;padding:0 22px;list-style:none}
+.ai-feature .model-health-details>ul>li{display:flex;align-items:center;gap:10px;min-height:50px;padding:7px 10px;border:1px solid #15446a;border-radius:7px;background:#071a31}
+.ai-feature .model-health-details>ul .provider-logo{flex:none}
+.ai-feature .model-health-details>ul>li>span{display:grid;gap:3px;min-width:0}
+.ai-feature .model-health-details>ul>li>span b{overflow:hidden;color:#fff;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+.ai-feature .model-health-details>ul>li>span small{color:#a6c2d9;font-size:9px}
+.ai-feature .model-health-details>ul>li em{margin-left:auto;padding:4px 8px;border:1px solid #147c67;border-radius:12px;background:#0c463e;color:#65e4bd;font-size:9px;font-style:normal;white-space:nowrap}
+.ai-feature .model-health-details>ul>li em[data-health=告警]{border-color:#9b7030;background:#483414;color:#ffd071}
+.ai-feature .model-health-details>ul>li em[data-health=不可用]{border-color:#914552;background:#451e2a;color:#ff9ba9}
+.ai-feature .model-health-details>ul>li em[data-health="状态未知"]{border-color:#536b82;background:#1a2d42;color:#b3c7d8}
+.ai-feature .model-health-details>ul>li em[data-health="已停用"]{border-color:#536b82;background:#1a2d42;color:#b3c7d8}
+.ai-feature .model-health-details>footer{display:flex;justify-content:flex-end;margin:12px 22px 18px;padding-top:12px;border-top:1px solid #17476b}
+.ai-feature .model-health-details>footer button{min-width:78px;height:34px;border:1px solid #1b8ecb;border-radius:7px;background:#0879cf;color:#fff;font-size:11px;font-weight:700;cursor:pointer}
+@media(max-width:520px){.ai-feature .model-health-details__summary{grid-template-columns:1fr;padding:12px 14px}.ai-feature .model-health-details>header{padding:16px 14px 12px}.ai-feature .model-health-details>ul{padding:0 14px}.ai-feature .model-health-details>footer{margin-right:14px;margin-left:14px}}
+/* User-requested repair: the frozen OpenAI knot must not become a white rectangle. */
+.ai-feature .provider-logo.provider-logo--parent-reference{background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+.ai-feature .provider-logo.provider-logo--parent-reference img{display:block!important;filter:none!important;object-fit:contain!important;object-position:center!important;width:100%!important;height:100%!important;max-width:100%!important;max-height:100%!important;transform:none!important}
+.ai-feature .provider-logo.provider-logo--parent-reference{width:26px!important;height:26px!important;min-width:26px!important;max-width:26px!important;flex:0 0 26px!important}
+.ai-feature .provider-logo.provider-logo--parent-reference.provider-logo--inline{width:20px!important;height:20px!important;min-width:20px!important;max-width:20px!important;flex-basis:20px!important}
+.ai-feature.ai-visual-fixture-771271 :is(.provider-filter,.model-table td:first-child) .provider-logo.provider-logo--openai.provider-logo--parent-reference{width:26px!important;height:26px!important;min-width:26px!important;max-width:26px!important;flex:0 0 26px!important;margin-right:8px!important}
+.ai-feature.ai-visual-fixture-771271 :is(.provider-filter,.model-table td:first-child) .provider-logo.provider-logo--openai.provider-logo--parent-reference img{width:26px!important;height:26px!important;min-width:0!important;max-width:26px!important;max-height:26px!important;filter:none!important;object-fit:contain!important;transform:none!important}
+/* Recent activity: frozen five-row compact list, inline sentence and small icon. */
+.ai-feature.ai-visual-fixture-771271 .panel.activity{overflow:hidden!important;min-height:0!important;max-height:none!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-events{margin:0!important;padding:0!important;max-height:none!important;overflow:visible!important;list-style:none}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-events>li{display:grid!important;grid-template-columns:24px minmax(0,1fr) 76px!important;gap:7px!important;align-items:center!important;min-height:32px!important;height:32px!important;padding:3px 0!important;border-bottom:1px solid #16416b!important;border-radius:0!important;background:transparent!important;box-sizing:border-box}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-event-icon{width:24px!important;height:24px!important;min-width:24px!important;display:grid!important;place-items:center!important;border:0!important;border-radius:50%!important;box-shadow:none!important;padding:0!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-event-copy{display:block!important;min-width:0!important;padding:0!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-event-copy small{display:block!important;font-size:11px!important;line-height:1.4!important;font-weight:400!important;color:#c7d9ef!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-events time{font-size:10px!important;font-weight:400!important;line-height:1.35!important;text-align:right!important;color:#a6bedb!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity .activity-events time small{display:block!important;font-size:10px!important;line-height:1.3!important;color:#a6bedb!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity:has(h2 button[aria-expanded="true"]){max-height:330px!important}
+.ai-feature.ai-visual-fixture-771271 .panel.activity:has(h2 button[aria-expanded="true"]) .activity-events{max-height:270px!important;overflow:auto!important}
+.ai-feature.model-actions-portal{position:fixed!important;inset:0!important;z-index:10000!important;pointer-events:none!important;background:transparent!important;display:block!important}
+.ai-feature.model-actions-portal .row-action-menu{position:fixed!important;z-index:10001!important;pointer-events:auto!important;min-width:144px;padding:5px!important;background:#082746!important;border:1px solid #2583c0!important;border-radius:7px!important;box-shadow:0 8px 24px #0009!important}
+.ai-feature.model-actions-portal .row-action-menu button{display:block!important;width:100%!important;padding:8px 10px!important;text-align:left!important;color:#fff!important;background:transparent!important;border:0!important;font-size:12px!important;cursor:pointer}
+.ai-feature.model-actions-portal .row-action-menu button:hover{background:#12528a!important}
+/* X labels use the same n-1 intervals as the SVG data points. */
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis{position:relative!important;display:block!important;grid-column:2!important;width:100%!important;height:20px!important;min-width:0!important;box-sizing:border-box!important;margin:0!important;padding:0!important}
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis>i{position:absolute!important;top:6px!important;margin:0!important;padding:0!important;transform:translateX(-50%)!important;font-size:10px!important;line-height:14px!important;font-style:normal!important;white-space:nowrap!important;text-align:center!important}
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis>i:first-child{transform:none!important;text-align:left!important}
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis>i:last-child{transform:translateX(-100%)!important;text-align:right!important}
+/* Week labels occupy equal cells and sit at each interval center. */
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis{display:grid!important;grid-auto-flow:column!important;grid-auto-columns:minmax(0,1fr)!important;grid-template-columns:none!important;align-items:center!important;justify-items:stretch!important}
+.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis>i,.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis>i:first-child,.ai-feature.ai-visual-fixture-771271 .chart-data-shell .chart-x-axis>i:last-child{position:static!important;left:auto!important;top:auto!important;transform:none!important;width:100%!important;text-align:center!important}
+
+/* User approved 2026-10-09: narrow currency values fit existing locked KPI cards. */
+@media (max-width: 600px) {
+  .ai-feature .model-quota-summary .kpi:nth-child(4) .kpi-copy strong,
+  .ai-feature .model-quota-summary .kpi:nth-child(5) .kpi-copy strong { font-size: 15px; }
+}

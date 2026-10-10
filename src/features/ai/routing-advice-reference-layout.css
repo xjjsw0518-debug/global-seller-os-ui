@@ -1,0 +1,31 @@
+/* Reference-aligned section anatomy. All values remain local/unknown until a trusted source is connected. */
+.routing-advice__overview{grid-template-columns:minmax(0,1.68fr) minmax(0,1.54fr) minmax(0,1fr) minmax(145px,.65fr)}
+.routing-advice__strategy-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.routing-advice__strategy-card{min-height:50px}
+.routing-advice__strategy-card small{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;white-space:normal;text-overflow:clip;line-height:1.25}
+.routing-advice__rules{grid-column:auto}
+.routing-advice__version-panel{display:flex;flex-direction:column}
+.routing-advice__version-panel .routing-advice__version{flex:1;align-content:center;margin-top:0}
+.routing-advice__impact-row{display:grid;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr);align-items:stretch;gap:8px;margin:0 0 9px}
+.routing-advice__impact{min-width:0;margin:0;padding:9px 10px}
+.routing-advice__effects{min-width:0;padding:9px 10px;border:1px solid #0b5997;border-radius:8px;background:linear-gradient(160deg,#082349,#061c37)}
+.routing-advice__effects>header{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.routing-advice__effects h2{margin:0;color:#edf6ff;font-size:13px}
+.routing-advice__effects header p{margin:2px 0 0;color:#88a9c4;font-size:9px}
+.routing-advice__effects>header>span{display:flex;align-items:center;gap:4px;color:#83a8c6;font-size:8px;white-space:nowrap}
+.routing-advice__effects>header>span i{display:inline-block;width:7px;height:7px;border-radius:50%;background:#38d6a7}
+.routing-advice__effects>header>span i:last-child{margin-left:5px;background:#19c5ff}
+.routing-advice__effects-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.routing-advice__effects-grid article{display:grid;grid-template-columns:minmax(0,.8fr) minmax(50px,1fr);align-items:center;gap:7px;min-width:0;min-height:39px;padding:5px 7px;border:1px solid #104675;border-radius:6px;background:#071f3d}
+.routing-advice__effects-grid article>span{display:grid;min-width:0}
+.routing-advice__effects-grid b{color:#cfe6f7;font-size:9px}
+.routing-advice__effects-grid strong{color:#f0f8ff;font-size:12px}
+.routing-advice__effects-grid .routing-advice__unknown-bars{gap:4px}
+.routing-advice__effects-grid .routing-advice__unknown-bars i,.routing-advice__effects-grid .routing-advice__unknown-bars i+i{height:6px;border:1px dashed #27618a;background:transparent}
+@media(max-width:1180px){.routing-advice__overview{grid-template-columns:repeat(2,minmax(0,1fr))}.routing-advice__overview>.panel{grid-column:auto}}
+@media(max-width:900px){.routing-advice__overview{grid-template-columns:1fr}.routing-advice__impact-row{grid-template-columns:1fr}.routing-advice__impact-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:600px){.routing-advice__strategy-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.routing-advice__impact-grid,.routing-advice__effects-grid{grid-template-columns:1fr}.routing-advice__effects>header{align-items:flex-start;flex-direction:column}}
+
+/* Keep the explicit UNKNOWN value readable beside the non-data placeholder bars. */
+.routing-advice__impact-grid>article{grid-template-columns:auto max-content minmax(48px,.8fr)}
+.routing-advice__effects-grid article{grid-template-columns:max-content minmax(34px,1fr)}

@@ -1,0 +1,158 @@
+.routing-advice-page{--ra-panel:#082349;--ra-panel-hi:#0b2c53;--ra-border:#0b5997;--ra-blue:#159dff;--ra-cyan:#19c5ff;--ra-teal:#12d6b0;--ra-text:#edf6ff;--ra-muted:#a7c3dd;box-sizing:border-box;width:100%;min-width:0;min-height:100%;padding:16px;color:var(--ra-text);background:radial-gradient(ellipse at 80% 0,#0a2d54 0,#071d3c 42%,#06162e 90%);font:12px/1.5 "Microsoft YaHei","PingFang SC",Arial,sans-serif}
+.routing-advice-page *,.routing-advice-page *::before,.routing-advice-page *::after{box-sizing:border-box}
+.routing-advice{width:100%;max-width:1800px;margin:0 auto}
+.routing-advice__actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.routing-advice__request-state{color:#9ec5df;font-size:10px}
+.routing-advice__request-state.state-success{color:#55d8b5}.routing-advice__request-state.state-error{color:#ff9aa8}.routing-advice__request-state.state-loading{color:#7dcfff}
+.routing-advice__reanalyze{min-height:32px;padding:0 12px;border:1px solid #159dff;border-radius:6px;background:#0a4e83;color:#eff9ff;font:inherit;cursor:pointer}
+.routing-advice__reanalyze:hover:not(:disabled){background:#0b67a6}.routing-advice__reanalyze:disabled{opacity:.55;cursor:not-allowed}
+.routing-advice-preview-harness>nav{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;padding:8px 14px;background:#e7edf3;color:#26384b;font:12px/1.4 Arial,sans-serif}
+.routing-advice-preview-harness>nav span{color:#805d17}.routing-advice-preview-harness>nav button{margin-left:auto;padding:5px 10px;border:1px solid #70869a;border-radius:4px;background:#fff;color:#26384b;cursor:pointer}
+.routing-advice-preview-harness>nav output{min-width:100px;color:#35495d;font-variant-numeric:tabular-nums}
+.routing-advice__heading{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:2px 4px 12px}
+.routing-advice__eyebrow{display:block;margin-bottom:3px;color:#65caff;font-size:10px;letter-spacing:.08em}
+.routing-advice__heading h1{margin:0 0 3px;font-size:23px;line-height:1.2}
+.routing-advice__heading p{margin:0;color:var(--ra-muted);font-size:11px}
+.routing-advice__disclosure{display:flex;align-items:center;gap:9px;padding:10px 13px;margin:0 0 12px;border:1px solid #865d20;border-radius:7px;background:#302711;color:#f3cf78;font-size:11px}
+.routing-advice__disclosure svg{flex:none}.routing-advice__disclosure b{margin-right:5px;color:#ffe5a0}
+.routing-advice__risk-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:12px}
+.routing-advice__risk-card{display:grid;grid-template-columns:1fr auto;align-items:center;gap:2px 8px;min-height:69px;padding:10px 13px;border:1px solid var(--ra-border);border-radius:7px;background:linear-gradient(145deg,#0a2b50,#071f3d);color:var(--ra-muted);text-align:left;font:inherit;cursor:pointer}
+.routing-advice__risk-card strong{grid-column:2;grid-row:1/3;color:var(--ra-text);font-size:23px}.routing-advice__risk-card small{color:#789ab8;font-size:9px}.routing-advice__risk-card.is-selected{outline:1px solid var(--ra-cyan);background:#0b345c}
+.risk-high{--risk:#ff7185}.risk-medium{--risk:#ffc45c}.risk-low{--risk:#31d6b0}.risk-unknown{--risk:#9bb0c4}
+.routing-advice__risk-card span,.routing-advice__risk-pill{color:var(--risk,#a7c3dd)}
+.routing-advice__list-panel{overflow:hidden;border:1px solid var(--ra-border);border-radius:8px;background:linear-gradient(160deg,#082349,#061c37)}
+.routing-advice__list-panel>header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 15px 10px;border-bottom:1px solid #123c63}
+.routing-advice__list-panel h2{margin:0;font-size:15px}.routing-advice__list-panel h2 span{margin-left:4px;color:#80cfff;font-size:11px}.routing-advice__list-panel>header p{margin:3px 0 0;color:#91adc7;font-size:10px}
+.routing-advice__search{display:flex;align-items:center;gap:7px;width:min(320px,45%);height:34px;padding:0 9px;border:1px solid #17639b;border-radius:6px;background:#071d39;color:#93b5d1}.routing-advice__search input{width:100%;min-width:0;border:0;outline:0;background:transparent;color:#eaf6ff;font:inherit}.routing-advice__search input::placeholder{color:#718da8}
+.routing-advice__filters{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 15px;border-bottom:1px solid #123c63;color:#91adc7;font-size:10px}.routing-advice__filters label{display:flex;align-items:center;gap:8px}.routing-advice__filters select{height:29px;min-width:120px;border:1px solid #17639b;border-radius:5px;background:#08274a;color:#dceeff;padding:0 8px;font:inherit}.routing-advice__filters>span{display:flex;align-items:center;gap:5px;color:#9db5cb}
+.routing-advice__table-wrap{width:100%;overflow:auto}.routing-advice__table-wrap table{width:100%;min-width:940px;border-collapse:collapse;text-align:left}.routing-advice__table-wrap th{height:35px;padding:0 12px;background:#0a2b50;color:#83a8c8;font-size:10px;font-weight:500}.routing-advice__table-wrap td{height:57px;padding:8px 12px;border-bottom:1px solid #123a60;color:#c8dced;vertical-align:middle}.routing-advice__table-wrap tbody tr{cursor:pointer;outline:none}.routing-advice__table-wrap tbody tr:hover,.routing-advice__table-wrap tbody tr:focus{background:#0a2b50}.routing-advice__table-wrap td b{display:block;color:#edf6ff;font-size:11px}.routing-advice__table-wrap td small{display:block;margin-top:2px;color:#789ab8;font-size:9px}.routing-advice__risk-pill{display:inline-flex;align-items:center;padding:3px 8px;border:1px solid color-mix(in srgb,var(--risk,#9bb0c4) 50%,transparent);border-radius:12px;background:color-mix(in srgb,var(--risk,#9bb0c4) 10%,transparent);font-size:10px;white-space:nowrap}.routing-advice__recommended{display:flex;align-items:center;gap:7px;color:#91d7ff;white-space:nowrap}.routing-advice__list-panel>footer{padding:8px 15px;color:#708fac;font-size:9px;text-align:right}
+.routing-advice__empty{display:grid;gap:4px;place-items:center;min-height:180px;color:#a9c0d6}.routing-advice__empty b{color:#e8f5ff;font-size:13px}
+.routing-advice__backdrop{position:fixed;inset:0;z-index:1000;display:flex;justify-content:flex-end;background:#020b15aa}.routing-advice__drawer{width:min(520px,94vw);height:100%;overflow:auto;padding:21px;border-left:1px solid #1673af;background:linear-gradient(165deg,#0a2b50,#06182f);box-shadow:-18px 0 40px #0005}.routing-advice__drawer>header{display:flex;justify-content:space-between;gap:16px;padding-bottom:13px;border-bottom:1px solid #16466f}.routing-advice__drawer>header small{color:#8dcdf3;font-size:10px}.routing-advice__drawer h2{margin:5px 0 0;font-size:18px}.routing-advice__drawer>header button{width:34px;height:34px;border:1px solid #205d89;border-radius:6px;background:#0a3156;color:#cce8fb;cursor:pointer}.routing-advice__scope{margin:12px 0;color:#9bb9d2;font-size:11px}.routing-advice__comparison{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);align-items:center;gap:8px}.routing-advice__comparison>article{display:grid;gap:7px;min-height:126px;padding:12px;border:1px solid #15598f;border-radius:7px;background:#082448}.routing-advice__comparison>article small{color:#84abc9;font-size:10px}.routing-advice__comparison>article b{color:#eaf7ff;font-size:12px;overflow-wrap:anywhere}.routing-advice__comparison>article span{color:#9db7ce;font-size:10px}.routing-advice__comparison>svg{color:#34c9ff}.routing-advice__reason{display:flex;align-items:flex-start;gap:8px;margin-top:14px;padding:11px;border:1px solid #185282;border-radius:6px;background:#092949;color:#bdd7eb}.routing-advice__reason svg{flex:none;color:#63c9ff}.routing-advice__drawer-note{margin-top:15px;color:#e3ba68;font-size:10px}
+.routing-advice__config-comparison{margin-top:12px;padding:10px;border:1px solid #15598f;border-radius:7px;background:#071f3d}.routing-advice__config-comparison>header,.routing-advice__config-comparison-head,.routing-advice__config-comparison-row{display:grid;grid-template-columns:minmax(72px,.7fr) minmax(0,1fr) minmax(0,1fr);gap:8px;align-items:start}.routing-advice__config-comparison>header{grid-template-columns:1fr;gap:2px;margin-bottom:7px}.routing-advice__config-comparison>header b{color:#eaf7ff;font-size:11px}.routing-advice__config-comparison>header span{color:#84abc9;font-size:9px}.routing-advice__config-comparison-head{padding:5px 0;border-bottom:1px solid #16466f;color:#84abc9;font-size:9px}.routing-advice__config-comparison-row{padding:5px 0;border-bottom:1px solid #103a60;font-size:10px}.routing-advice__config-comparison-row:last-child{border-bottom:0}.routing-advice__config-comparison-row>b{color:#9fc1dc;font-weight:500}.routing-advice__config-comparison-row>span{color:#e1f2ff;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.routing-advice__config-comparison-row>span:last-child{color:#8fe0ff}
+@media(max-width:900px){.routing-advice-page{padding:12px}.routing-advice__risk-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.routing-advice__list-panel>header{align-items:flex-start;flex-direction:column}.routing-advice__search{width:100%}}
+@media(max-width:520px){.routing-advice__filters{align-items:flex-start;flex-direction:column}.routing-advice__comparison{grid-template-columns:1fr}.routing-advice__comparison>svg{transform:rotate(90deg);justify-self:center}}
+.routing-advice__change-cart{margin-top:12px;padding:12px 14px;border:1px solid var(--ra-border);border-radius:8px;background:linear-gradient(160deg,#082349,#061c37)}
+.routing-advice__change-cart>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:9px;border-bottom:1px solid #123c63;color:var(--ra-muted)}
+.routing-advice__change-cart h2{margin:0;color:var(--ra-text);font-size:14px}.routing-advice__change-cart h2 span{margin-left:5px;color:#80cfff;font-size:11px}.routing-advice__change-cart header p{margin:2px 0 0;font-size:10px}.routing-advice__change-cart header>b{color:#8dcdf3;font-size:10px}
+.routing-advice__change-cart-empty{padding:14px 4px;color:var(--ra-muted);font-size:11px}.routing-advice__change-cart ul{display:grid;gap:6px;margin:10px 0;padding:0;list-style:none}.routing-advice__change-cart li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;padding:8px;border:1px solid #123c63;border-radius:6px;background:#071d39}.routing-advice__change-cart li>div{display:grid;gap:2px;min-width:0}.routing-advice__change-cart li b{color:var(--ra-text);font-size:10px}.routing-advice__change-cart li small{overflow-wrap:anywhere;color:var(--ra-muted);font-size:9px}.routing-advice__change-cart li button,.routing-advice__cart-add{border:1px solid #176aa2;border-radius:5px;background:#0a3b63;color:#dff4ff;padding:5px 9px;font:inherit;font-size:10px;cursor:pointer}.routing-advice__change-cart>footer{display:flex;flex-wrap:wrap;gap:12px;padding-top:8px;border-top:1px solid #123c63;color:#afc5da;font-size:9px}.routing-advice__change-cart-note{margin-top:6px;color:#86b3d3;font-size:9px}
+.routing-advice__cart-add{width:100%;margin-top:14px;padding:9px 12px;border-color:#159dff;background:#0a4e83;font-size:11px}.routing-advice__cart-unavailable,.routing-advice__cart-feedback{color:#9fbad1;font-size:10px}.routing-advice__cart-feedback{color:#f3cf78}
+.routing-advice__cart-validate{margin-top:8px;padding:7px 10px;border:1px solid #1d9ee8;border-radius:5px;background:#0a426e;color:#e8f6ff;font:inherit;font-size:10px;cursor:pointer}.routing-advice__validation-result{display:grid;gap:4px;margin-top:8px;padding:9px;border:1px solid #a76060;border-radius:6px;background:#351f2a;color:#ffdce0;font-size:10px}.routing-advice__validation-result.status-mock_warning{border-color:#96702c;background:#302711;color:#ffe5a0}.routing-advice__validation-result.status-mock_validated{border-color:#168d75;background:#0b302e;color:#b8ffea}.routing-advice__validation-result small{color:#a9c0d6}
+.routing-advice__cart-validate:focus-visible{outline:2px solid #92ddff;outline-offset:2px}.routing-advice__validation-result>span{overflow-wrap:anywhere}.routing-advice__validation-result[data-status="MOCK_BLOCKED"] b::before{content:"BLOCKED · "}.routing-advice__validation-result[data-status="MOCK_WARNING"] b::before{content:"WARNING · "}.routing-advice__validation-result[data-status="MOCK_VALIDATED"] b::before{content:"MOCK ONLY · "}
+.routing-advice__candidate-test{display:grid;gap:6px;margin-top:10px;padding:10px;border:1px solid #15598f;border-radius:6px;background:#071f3d}.routing-advice__candidate-test-button{min-height:32px;padding:0 10px;border:1px solid #159dff;border-radius:5px;background:#0a4e83;color:#eff9ff;font:inherit;font-size:10px;cursor:pointer}.routing-advice__candidate-test-button:disabled{opacity:.6;cursor:not-allowed}.routing-advice__candidate-test-button:focus-visible{outline:2px solid #92ddff;outline-offset:2px}.routing-advice__candidate-test-state{display:grid;gap:3px;color:#a7c3dd;font-size:10px}.routing-advice__candidate-test-state.state-success{color:#72e5bf}.routing-advice__candidate-test-state.state-failure,.routing-advice__candidate-test-state.state-error{color:#ff9aa8}.routing-advice__candidate-test-state.state-loading{color:#7dcfff}.routing-advice__candidate-test-state small{overflow-wrap:anywhere;color:#92abc3;font-size:9px}
+.routing-advice__action-boundary{display:grid;gap:3px;margin-bottom:8px;padding:8px 10px;border:1px solid #805e28;border-radius:6px;background:#2d2718;color:#f1d28c;font-size:9px}.routing-advice__action-boundary b{color:#ffe5a0;font-size:10px}.routing-advice__route-actions{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:9px}.routing-advice__route-actions button{min-height:29px;padding:4px 9px;border:1px solid #176aa2;border-radius:5px;background:#0a3156;color:#cce8fb;font:inherit;font-size:9px}.routing-advice__route-actions button:disabled{opacity:.58;cursor:not-allowed}.routing-advice__route-actions button:not(:disabled){border-color:#159dff;background:#0a4e83;cursor:pointer}.routing-advice__preview-receipt{display:grid;gap:3px;margin-bottom:9px;padding:8px;border:1px solid #168d75;border-radius:6px;background:#0b302e;color:#b8ffea;font-size:9px}.routing-advice__preview-backdrop{position:fixed;inset:0;z-index:1100;display:grid;place-items:center;padding:18px;background:#020b15bb}.routing-advice__preview-dialog{width:min(620px,96vw);max-height:min(82vh,740px);overflow:auto;padding:18px;border:1px solid #1673af;border-radius:9px;background:linear-gradient(165deg,#0a2b50,#06182f);color:var(--ra-text);box-shadow:0 18px 55px #0008}.routing-advice__preview-dialog>header{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;padding-bottom:12px;border-bottom:1px solid #16466f}.routing-advice__preview-dialog>header small{color:#8dcdf3;font-size:9px}.routing-advice__preview-dialog h2{margin:4px 0 0;font-size:16px}.routing-advice__preview-dialog>header button{width:30px;height:30px;border:1px solid #205d89;border-radius:5px;background:#0a3156;color:#cce8fb;cursor:pointer}.routing-advice__preview-dialog>p{color:#f1d28c;font-size:10px}.routing-advice__preview-dialog ol{display:grid;gap:7px;padding-left:22px}.routing-advice__preview-dialog li{display:grid;gap:3px;padding:9px;border:1px solid #123c63;border-radius:6px;background:#071d39;color:#c8dced;font-size:10px}.routing-advice__preview-dialog li b{color:#edf6ff}.routing-advice__preview-dialog li small{color:#a7c3dd}.routing-advice__preview-dialog>footer{display:flex;justify-content:flex-end;gap:8px;padding-top:12px;border-top:1px solid #16466f}.routing-advice__preview-dialog>footer button{min-height:32px;padding:0 10px;border:1px solid #176aa2;border-radius:5px;background:#0a3156;color:#dff4ff;font:inherit;font-size:10px;cursor:pointer}.routing-advice__preview-dialog>footer button:last-child{border-color:#159dff;background:#0a4e83}.routing-advice__preview-dialog button:focus-visible{outline:2px solid #92ddff;outline-offset:2px}
+.routing-advice__preflight-expired{margin:0 0 8px;padding:7px 9px;border:1px solid #865d20;border-radius:5px;background:#302711;color:#f3cf78;font-size:9px}
+
+/* A33 list filter controls follow the reference toolbar; option values come only from the recommendation DTO. */
+.routing-advice__filters{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch;gap:8px;padding:9px 15px;border-bottom:1px solid #123c63;color:#91adc7;font-size:10px}
+.routing-advice__category-tabs{display:flex;align-items:center;gap:5px;min-width:0;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#17639b #071d39}
+.routing-advice__category-tabs button{display:inline-flex;align-items:center;gap:6px;flex:none;min-height:29px;padding:0 11px;border:1px solid #17639b;border-radius:5px;background:#08274a;color:#a9c7df;font:inherit;white-space:nowrap;cursor:pointer}
+.routing-advice__category-tabs button:hover,.routing-advice__category-tabs button:focus-visible{border-color:#24a9f1;color:#eaf7ff;outline:none}
+.routing-advice__category-tabs button.is-selected{border-color:#06a9ff;background:linear-gradient(180deg,#0879d5,#0756b0);color:#f3fbff;box-shadow:0 0 8px #008dff44}
+.routing-advice__category-tabs button b{font-size:9px;font-weight:600;opacity:.9}
+.routing-advice__filter-controls{display:flex;align-items:center;gap:7px;min-width:0}
+.routing-advice__filter-controls>label:not(.routing-advice__search){display:flex;align-items:center;gap:6px;min-width:0;color:#a8c4dc;white-space:nowrap}
+.routing-advice__filter-controls select{height:31px;min-width:112px;max-width:190px;padding:0 25px 0 9px;border:1px solid #17639b;border-radius:5px;background:#08274a;color:#dceeff;font:inherit;cursor:pointer}
+.routing-advice__filter-controls select:focus-visible{outline:2px solid #19a9f7;outline-offset:1px}
+.routing-advice__filter-controls .is-unavailable select{min-width:174px;border-style:dashed;color:#91a9be;cursor:not-allowed;opacity:.78}
+.routing-advice__filter-controls .is-unavailable span{color:#829db5}
+.routing-advice__search{flex:1 1 190px;width:auto;min-width:150px;max-width:330px;height:31px;margin-left:auto}
+.routing-advice__filter-note{display:flex;align-items:center;gap:5px;margin:0;color:#7f9eb8;font-size:9px;line-height:1.35}
+.routing-advice__filter-note svg{flex:none;color:#50bcec}
+.routing-advice__clear-filters{flex:none;height:29px;padding:0 9px;border:1px solid #286994;border-radius:5px;background:#092644;color:#a8d8f6;font:inherit;cursor:pointer}
+.routing-advice__clear-filters:hover,.routing-advice__clear-filters:focus-visible{border-color:#1cafff;color:#effaff;outline:none}
+@media(max-width:1320px){.routing-advice__filter-controls{flex-wrap:wrap}.routing-advice__search{margin-left:0;max-width:none}}
+@media(max-width:900px){.routing-advice__filters{padding:7px 11px}.routing-advice__filter-controls>label:not(.routing-advice__search){flex:1 1 155px;justify-content:space-between}.routing-advice__filter-controls select{flex:1;max-width:none}.routing-advice__filter-controls .is-unavailable select{min-width:0}.routing-advice__search{flex-basis:100%;width:100%;max-width:none}.routing-advice__filter-note{align-items:flex-start}}
+@media(max-width:520px){.routing-advice__category-tabs button{min-height:28px;padding:0 8px}.routing-advice__filter-controls{gap:6px}}
+
+/* Keep category tabs and secondary selectors on the single reference toolbar row when space allows. */
+.routing-advice__filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.routing-advice__category-tabs{flex:1 1 420px;max-width:560px}
+.routing-advice__filter-controls{flex:3 1 740px}
+.routing-advice__filter-note{flex:1 0 100%}
+@media(max-width:1320px){.routing-advice__category-tabs{max-width:none}}
+
+/* A33 model and risk menus use an in-app listbox so their open state stays visible and testable. */
+.routing-advice__select-field{display:flex;align-items:center;gap:6px;min-width:0;color:#a8c4dc;white-space:nowrap}
+.routing-advice-select{position:relative;min-width:112px;max-width:190px}
+.routing-advice-select__trigger{display:flex;width:100%;height:31px;align-items:center;justify-content:space-between;gap:9px;padding:0 9px;border:1px solid #17639b;border-radius:5px;background:#08274a;color:#dceeff;font:inherit;text-align:left;cursor:pointer}
+.routing-advice-select__trigger>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.routing-advice-select__trigger>svg{flex:none;color:#8dcdf3}
+.routing-advice-select__trigger:hover,.routing-advice-select__trigger[aria-expanded="true"]{border-color:#20a7ef;background:#0a3156}
+.routing-advice-select__trigger:focus-visible{outline:2px solid #19a9f7;outline-offset:2px}
+.routing-advice-select__trigger:disabled{cursor:not-allowed;opacity:.58}
+.routing-advice-select__listbox{position:fixed;z-index:10050;box-sizing:border-box;width:max-content;max-width:min(280px,80vw);max-height:252px;overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain;margin:0;padding:4px;border:1px solid #17639b;border-radius:6px;background:linear-gradient(160deg,#0b2f54,#061d38);box-shadow:0 10px 28px #0009;list-style:none}
+.routing-advice-select__listbox [role="option"]{min-height:30px;display:flex;align-items:center;padding:5px 9px;border-radius:4px;color:#c6dced;white-space:normal;overflow-wrap:anywhere;cursor:pointer}
+.routing-advice-select__listbox [role="option"]:hover,.routing-advice-select__listbox [role="option"].is-active{background:#0a4b79;color:#f3fbff}
+.routing-advice-select__listbox [role="option"][aria-selected="true"]{color:#8fe0ff}
+.routing-advice__select-field .routing-advice-select{flex:0 1 170px}
+@media(max-width:900px){.routing-advice__select-field{flex:1 1 155px;justify-content:space-between}.routing-advice__select-field .routing-advice-select{flex:1;max-width:none}}
+
+/* A34 recommendation detail: compact route comparison, impact estimates and anchored actions. */
+.routing-advice__drawer{display:flex;flex-direction:column;gap:0;width:min(520px,94vw);padding:0;overflow:hidden}
+.routing-advice__detail-header{flex:none;align-items:center;padding:17px 20px!important;background:#082448}
+.routing-advice__detail-header>div{display:flex;align-items:center;gap:10px}
+.routing-advice__detail-header>div>small{color:#edf6ff;font-size:15px;font-weight:700}
+.routing-advice__detail-content{flex:1;min-height:0;overflow:auto;padding:20px}
+.routing-advice__detail-summary{padding:0 0 16px;border-bottom:1px solid #16466f}
+.routing-advice__detail-type{display:inline-flex;padding:4px 8px;border:1px solid #1c5f91;border-radius:12px;color:#9bd9ff;background:#092949;font-size:10px}
+.routing-advice__detail-summary h2{margin:11px 0 7px;color:#f0f8ff;font-size:19px;line-height:1.35}
+.routing-advice__detail-summary p{margin:0;color:#a8c4da;font-size:12px;line-height:1.55}
+.routing-advice__route-compare{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);align-items:center;gap:10px;margin-top:16px}
+.routing-advice__route-compare>div{display:grid;align-content:start;gap:7px;min-width:0;min-height:84px;padding:11px;border:1px solid #15598f;border-radius:7px;background:#082448}
+.routing-advice__route-compare>div>small,.routing-advice__estimated-effects article>small{color:#84abc9;font-size:10px}
+.routing-advice__route-compare>div>b{color:#eaf7ff;font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.routing-advice__route-compare>div>span{color:#9db7ce;font-size:9px;overflow-wrap:anywhere}
+.routing-advice__route-compare>svg{color:#34c9ff}
+.routing-advice__estimated-effects{margin-top:18px}
+.routing-advice__estimated-effects h3{margin:0 0 9px;color:#eaf6ff;font-size:12px}
+.routing-advice__estimated-effects>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.routing-advice__estimated-effects article{display:grid;gap:7px;min-width:0;min-height:76px;padding:10px;border:1px solid #15507e;border-radius:7px;background:#082448}
+.routing-advice__estimated-effects article>b{color:#f0f8ff;font-size:16px}
+.routing-advice__estimated-effects article>span{color:#789ab8;font-size:9px}
+.routing-advice__detail-proposal-controls{display:grid;gap:9px;margin-top:16px;padding-top:13px;border-top:1px solid #16466f}
+.routing-advice__detail-proposal-controls .routing-advice__cart-add{width:100%;margin:0}
+.routing-advice__detail-proposal-controls .routing-advice__candidate-test{margin:0}
+.routing-advice__detail-actions{display:flex;flex:none;justify-content:flex-end;gap:9px;padding:13px 20px;border-top:1px solid #16466f;background:#071f3d}
+.routing-advice__detail-actions button{min-height:36px;padding:0 14px;border:1px solid #25618b;border-radius:6px;background:#0a3156;color:#d7edfc;font-size:11px;cursor:pointer}
+.routing-advice__detail-actions button:last-child{border-color:#15558a;background:#0756a0;color:#d7edfc}
+.routing-advice__detail-actions button:disabled{border-color:#28445c;background:#142b40;color:#7890a4;cursor:not-allowed}
+@media(max-width:520px){.routing-advice__detail-content{padding:15px}.routing-advice__route-compare{grid-template-columns:1fr}.routing-advice__route-compare>svg{justify-self:center;transform:rotate(90deg)}.routing-advice__estimated-effects>div{grid-template-columns:1fr}.routing-advice__estimated-effects article{min-height:56px}}
+/* A34 reference pass: keep category, risk, recommendation anatomy and mock tools distinct. */
+.routing-advice__detail-summary h2{display:grid;gap:5px;margin:10px 0 8px}
+.routing-advice__detail-summary h2>small,.routing-advice__detail-problem>b{color:#84abc9;font-size:10px;font-weight:500}
+.routing-advice__detail-type{width:max-content;max-width:100%;overflow-wrap:anywhere}
+.routing-advice__detail-problem{padding-top:2px}
+.routing-advice__detail-problem p{margin:5px 0 0;color:#a8c4da;font-size:12px;line-height:1.55}
+.routing-advice__route-recommendation{margin-top:15px}
+.routing-advice__route-recommendation>h3{margin:0 0 8px;color:#eaf6ff;font-size:12px}
+.routing-advice__route-compare{margin-top:0}
+.routing-advice__traffic-share{display:flex;justify-content:space-between;gap:8px;margin:2px 0 0;padding-top:6px;border-top:1px solid #16466f;color:#84abc9;font-size:9px}
+.routing-advice__traffic-share b{color:#eaf7ff;font-weight:600}
+.routing-advice__estimated-effects>div{grid-template-columns:repeat(3,minmax(0,1fr))}
+.routing-advice__full-config,.routing-advice__mock-tools{margin-top:12px;border:1px solid #16466f;border-radius:6px;background:#071f3d}
+.routing-advice__full-config>summary,.routing-advice__mock-tools>summary{padding:9px 11px;color:#9fc1dc;font-size:10px;cursor:pointer;list-style-position:inside}
+.routing-advice__full-config[open],.routing-advice__mock-tools[open]{padding-bottom:8px}
+.routing-advice__full-config .routing-advice__config-comparison{margin:0 8px;padding:9px}
+.routing-advice__mock-tools .routing-advice__cart-add,.routing-advice__mock-tools .routing-advice__candidate-test,.routing-advice__mock-tools .routing-advice__cart-unavailable,.routing-advice__mock-tools .routing-advice__cart-feedback{margin:8px}
+.routing-advice__mock-tools .routing-advice__cart-add{width:calc(100% - 16px)}
+.routing-advice__mock-tools .routing-advice__candidate-test{padding:8px;border:1px dashed #28618a;border-radius:6px;background:#061a30}
+/* A34 reference closeout: badge adjacency, compact model/share rows and test-only diagnostics. */
+.routing-advice__detail-header>div{gap:8px}
+.routing-advice__detail-header>div>small{color:#edf6ff;font-size:15px;font-weight:700}
+.routing-advice__detail-risk{display:flex;align-items:center;gap:8px;margin-top:10px;color:#84abc9;font-size:10px}
+.routing-advice__detail-risk b{font-weight:500}
+.routing-advice__route-compare>div{min-height:68px;gap:8px}
+.routing-advice__traffic-share{font-size:9px}
+.routing-advice__test-mode{margin-top:14px;padding:10px;border:1px dashed #285b80;border-radius:7px;background:#061a30}
+.routing-advice__test-mode>header{display:grid;gap:3px;margin-bottom:8px;color:#9fc1dc;font-size:10px}
+.routing-advice__test-mode>header span{color:#7797b3;font-size:9px}
+.routing-advice__test-mode .routing-advice__full-config{margin:0 0 8px;background:#071f3d}
+.routing-advice__test-mode .routing-advice__full-config[open]{padding-bottom:7px}
+.routing-advice__test-mode .routing-advice__config-comparison{margin:0 7px;padding:8px}
+.routing-advice__test-tools{display:grid;gap:8px}
+.routing-advice__test-tools .routing-advice__cart-add{width:100%;margin:0}
+.routing-advice__test-tools .routing-advice__candidate-test{margin:0;padding:8px;border:1px solid #174b72;border-radius:6px;background:#071f3d}
+.routing-advice__estimated-effects>div{grid-template-columns:minmax(0,1.44fr) minmax(0,1fr) minmax(0,1fr)}
+.routing-advice__drawer>.routing-advice__detail-header>button{width:32px;height:32px;display:grid;place-items:center;padding:0;border:0;border-radius:50%;background:transparent;color:#a9c9e2;cursor:pointer}
+.routing-advice__drawer>.routing-advice__detail-header>button:hover{background:#123454;color:#f0f8ff}
+.routing-advice__drawer>.routing-advice__detail-header>button:focus-visible{outline:2px solid #77cfff;outline-offset:2px}

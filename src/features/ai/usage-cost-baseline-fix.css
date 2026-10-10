@@ -1,0 +1,90 @@
+.usage-cost-preview .usage-chart-grid{background:none}
+.usage-cost-preview .chart-y-axis{transform:translateY(9px)}
+.usage-cost-preview .chart-right-axis{transform:translateY(9px)}
+.usage-cost-preview .usage-dashboard-main{grid-template-rows:278px 220px}
+.usage-cost-preview .usage-dashboard-grid{grid-template-rows:278px 220px}
+.usage-cost-preview .usage-dashboard-main .usage-analytics{grid-auto-rows:278px}
+.usage-cost-preview .usage-analytics>.usage-panel{min-height:278px}
+.usage-cost-preview .usage-trend>footer,.usage-cost-preview .usage-provider-panel>footer{min-height:28px;margin-top:7px;padding:4px 0 3px;line-height:1.5}
+.usage-cost-preview .usage-main{padding:18px 12px 32px}
+.usage-cost-preview .usage-heading h1{font-size:32px;color:#fff}
+.usage-cost-preview .usage-heading p{font-size:14px;color:#bdd5ed}
+.usage-cost-preview .usage-panel{background:#001b3c;border-color:#145b91;box-shadow:none;padding:12px}
+.usage-cost-preview .usage-panel h2{font-size:17px;color:#fff;line-height:24px}
+.usage-cost-preview .usage-kpi small{font-size:14px;color:#eaf4ff}
+.usage-cost-preview .usage-kpi strong{font-size:22px;line-height:28px}
+.usage-cost-preview .usage-kpi>div>span{font-size:11px;line-height:17px}
+.usage-cost-preview .usage-kpi-icon{width:34px;height:34px;flex:none}
+.usage-cost-preview .usage-dashboard-grid{grid-template-columns:minmax(0,1fr) 330px;grid-template-rows:256px 218px;gap:10px}
+.usage-cost-preview .usage-dashboard-main{grid-template-rows:256px 218px;gap:10px}
+.usage-cost-preview .usage-dashboard-main .usage-analytics{grid-template-columns:minmax(0,1.73fr) minmax(0,1fr);grid-auto-rows:256px;margin:0;gap:10px}
+.usage-cost-preview .usage-analytics>.usage-panel{min-height:0}
+.usage-cost-preview .usage-dashboard-main .usage-secondary-grid{grid-template-columns:minmax(0,1.95fr) minmax(0,1.62fr) minmax(0,1fr);margin:0;gap:10px}
+.usage-cost-preview .usage-secondary-grid>.usage-panel{min-height:0}
+.usage-cost-preview .usage-budget{height:397px}
+.usage-cost-preview .usage-panel header select{font-size:12px;height:26px}
+.usage-cost-preview .usage-trend{display:flex;flex-direction:column}
+.usage-cost-preview .usage-trend>header{order:0}
+.usage-cost-preview .usage-chart-grid{order:1;height:178px;min-height:0;flex:1}
+.usage-cost-preview .usage-chart-legend{order:2;justify-content:center;font-size:12px;gap:12px;margin:7px 0 0}
+.usage-cost-preview .chart-y-axis,.usage-cost-preview .chart-right-axis,.usage-cost-preview .usage-chart-xaxis{font-size:10px}
+.usage-cost-preview .usage-donut-layout{grid-template-columns:140px minmax(0,1fr);gap:12px;min-height:195px}
+.usage-cost-preview .usage-donut{width:140px}
+.usage-cost-preview .usage-donut small{font-size:12px}
+.usage-cost-preview .usage-donut strong{font-size:15px;line-height:20px;font-weight:600;white-space:nowrap}
+.usage-cost-preview .usage-share-list li,.usage-cost-preview .usage-share-list strong{font-size:12px;gap:5px}
+.usage-cost-preview .usage-share-list{gap:15px}
+.usage-cost-preview .usage-model-list{gap:12px;margin:15px 0 0}
+.usage-cost-preview .usage-model-list>div{grid-template-columns:110px minmax(0,1fr) 45px 55px;font-size:12px;gap:6px}
+.usage-cost-preview .usage-model-list strong{grid-column:4;grid-row:1;font-size:12px}
+.usage-cost-preview .usage-model-list small{grid-column:3;grid-row:1;font-size:11px}
+.usage-cost-preview .usage-model-list i{height:10px}
+.usage-cost-preview .heatmap-days,.usage-cost-preview .heatmap-hours,.usage-cost-preview .usage-heatmap-legend{font-size:10px}
+.usage-cost-preview .heatmap-cells{grid-template-rows:repeat(7,15px);gap:3px}
+.usage-cost-preview .usage-type-layout{display:flex;flex-direction:column;gap:9px;min-height:0}
+.usage-cost-preview .usage-type-donut{width:118px;flex:none}
+.usage-cost-preview .usage-type-layout ul{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 8px}
+.usage-cost-preview .usage-type-layout li{font-size:10px;display:flex;gap:3px;white-space:nowrap}
+.usage-cost-preview .usage-type-layout li span{white-space:nowrap}
+.usage-cost-preview .usage-type-layout li b{font-size:10px}
+.usage-cost-preview .usage-budget-total{background:#002349;border-color:#145b91;padding:12px}
+.usage-cost-preview .usage-budget-total>b{font-size:26px}
+.usage-cost-preview .usage-budget-total small,.usage-cost-preview .usage-budget-total>span,.usage-cost-preview .usage-budget-stats small,.usage-cost-preview .usage-budget-stats span{font-size:12px}
+.usage-cost-preview .usage-budget-stats b{font-size:19px}
+.usage-cost-preview .usage-alerts{gap:10px;padding:10px;margin-top:12px}
+.usage-cost-preview .usage-alerts>b,.usage-cost-preview .usage-alerts>div{font-size:12px}
+.usage-cost-preview .usage-table-wrap table,.usage-cost-preview .usage-table-wrap th,.usage-cost-preview .usage-table-wrap td{font-size:12px}
+.usage-cost-preview .usage-table-wrap td{height:30px}
+.usage-cost-preview .usage-record-tools input,.usage-cost-preview .usage-record-tools select{font-size:12px;height:28px}
+.usage-cost-preview.is-visual-fixture .usage-source-pill,.usage-cost-preview.is-visual-fixture .usage-refresh,.usage-cost-preview.is-visual-fixture .usage-state-picker,.usage-cost-preview.is-visual-fixture .usage-panel header p,.usage-cost-preview.is-visual-fixture .usage-demo-tag,.usage-cost-preview.is-visual-fixture .usage-trend>footer,.usage-cost-preview.is-visual-fixture .usage-provider-panel>footer,.usage-cost-preview.is-visual-fixture .usage-model-ranking>footer,.usage-cost-preview.is-visual-fixture .usage-budget-contract,.usage-cost-preview.is-visual-fixture .usage-bottom-contract,.usage-cost-preview.is-visual-fixture .legend-unknown,.usage-cost-preview.is-visual-fixture .usage-advanced-filters,.usage-cost-preview.is-visual-fixture .usage-filter-clear,.usage-cost-preview.is-visual-fixture .usage-record-tools .usage-export,.usage-cost-preview.is-visual-fixture .usage-record-heading h2 span,.usage-cost-preview.is-visual-fixture .usage-table-wrap td small{display:none}
+@media(max-width:1200px){.usage-cost-preview .usage-dashboard-grid{grid-template-columns:minmax(0,1fr);grid-template-rows:auto}.usage-cost-preview .usage-budget{grid-column:auto;grid-row:auto;height:auto}.usage-cost-preview .usage-dashboard-main{grid-template-rows:auto auto}.usage-cost-preview .usage-dashboard-main .usage-analytics{grid-template-columns:1.5fr 1fr}.usage-cost-preview .usage-dashboard-main .usage-secondary-grid{grid-template-columns:1fr 1fr}.usage-cost-preview .usage-type-panel{grid-column:1/-1}.usage-cost-preview .usage-type-layout{flex-direction:row;justify-content:center}.usage-cost-preview .usage-type-layout ul{max-width:280px}.usage-cost-preview .usage-model-list>div{grid-template-columns:100px minmax(0,1fr) 40px 50px}}
+@media(max-width:780px){.usage-cost-preview .usage-dashboard-main .usage-analytics,.usage-cost-preview .usage-dashboard-main .usage-secondary-grid{grid-template-columns:1fr;grid-auto-rows:auto}.usage-cost-preview .usage-dashboard-main{display:flex;flex-direction:column}.usage-cost-preview .usage-panel{min-height:220px}.usage-cost-preview .usage-trend{height:280px}.usage-cost-preview .usage-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.usage-cost-preview .usage-heading{flex-wrap:wrap}.usage-cost-preview .usage-heading-tools{flex-wrap:wrap}.usage-cost-preview .usage-model-list>div{grid-template-columns:100px minmax(0,1fr) 40px 50px}}
+.usage-cost-preview .usage-main{padding-left:18px;padding-right:12px}
+.usage-cost-preview .usage-type-layout{display:grid;grid-template-columns:126px minmax(0,1fr);align-items:center;gap:9px;min-height:155px}
+.usage-cost-preview .usage-type-layout ul{display:grid;gap:6px;justify-content:normal}
+.usage-cost-preview .usage-type-layout li{display:grid;grid-template-columns:8px minmax(0,1fr);gap:2px 5px;line-height:12px;align-items:start;white-space:normal}
+.usage-cost-preview .usage-type-layout li i{grid-row:1 / span 2;margin-top:3px}
+.usage-cost-preview .usage-type-layout li b{grid-column:2;text-align:left;color:#b9d5ee}
+.usage-cost-preview .usage-type-layout li span{white-space:normal;font-size:10px}
+.usage-cost-preview .usage-type-donut{width:126px}
+.usage-cost-preview .usage-ranking-head{display:grid;grid-template-columns:110px 1fr 70px;font-size:11px;color:#b7d2ec;margin-top:2px}
+.usage-cost-preview .usage-ranking-head span:last-child{text-align:right}
+.usage-cost-preview .usage-model-list{margin-top:7px;gap:9px}
+.usage-cost-preview .usage-kpi{position:relative;min-height:109px;gap:10px;padding:11px 10px 25px}
+.usage-cost-preview .usage-kpi>div>span{position:absolute;left:10px;bottom:11px;right:8px;font-size:12px;color:#00e3b0;overflow:visible;text-overflow:clip;white-space:nowrap}
+.usage-cost-preview .usage-kpi strong{font-size:20px}
+.usage-cost-preview .usage-kpi-icon{width:44px;height:44px}
+.usage-cost-preview .usage-kpi small{font-size:13px}
+@media(max-width:1450px){.usage-cost-preview .usage-kpi>div>span{font-size:10px}.usage-cost-preview .usage-kpi-icon{width:30px;height:34px}.usage-cost-preview .usage-kpi strong{font-size:18px}.usage-cost-preview .usage-type-layout{grid-template-columns:105px minmax(0,1fr)}.usage-cost-preview .usage-type-donut{width:105px}}
+@media(max-width:780px){.usage-cost-preview .usage-type-layout{grid-template-columns:126px minmax(0,1fr)}.usage-cost-preview .usage-type-donut{width:126px}.usage-cost-preview .usage-kpi>div>span{font-size:11px}.usage-cost-preview .usage-panel h2{font-size:16px}}
+.usage-cost-preview .usage-type-layout{grid-template-columns:118px minmax(0,1fr);gap:7px}
+.usage-cost-preview .usage-type-donut{width:118px}
+.usage-cost-preview .usage-type-layout li span{font-size:9px;white-space:nowrap}
+.usage-cost-preview .usage-type-layout li b{font-size:9px}
+.usage-cost-preview .usage-type-layout ul{gap:5px}
+.usage-cost-preview .usage-donut>span,.usage-cost-preview .usage-type-donut>span{display:flex;flex-direction:column}
+.usage-cost-preview .usage-donut strong,.usage-cost-preview .usage-type-donut strong{order:-1}
+.usage-cost-preview.is-visual-fixture .usage-heading{border:0;margin-bottom:12px;padding-bottom:0}
+.usage-cost-preview .usage-heading-tools button{font-size:14px;height:38px}
+.usage-cost-preview .usage-record-tools input{width:110px}
+.usage-cost-preview .usage-record-tools select{width:130px;max-width:130px}

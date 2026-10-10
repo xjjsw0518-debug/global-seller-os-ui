@@ -1,0 +1,34 @@
+.usage-budget-overlay{position:fixed;inset:0;z-index:10030;display:grid;place-items:center;padding:20px;background:#020916b3;backdrop-filter:blur(2px);font:14px/1.5 "Microsoft YaHei",sans-serif;color:#fff}
+.usage-budget-dialog{width:min(440px,100%);border:1px solid #145b91;background:#001b3c;border-radius:10px;box-shadow:0 20px 70px #0006;max-height:calc(100dvh - 40px);overflow:auto}
+.usage-budget-dialog header{display:flex;justify-content:space-between;align-items:center;padding:22px 24px 18px;border-bottom:1px solid #195078}
+.usage-budget-dialog h2{font-size:22px;margin:3px 0 0;color:#fff}
+.usage-budget-dialog small,.usage-budget-dialog form>p{color:#a8c5de;font-size:12px}
+.usage-budget-dialog header button{width:32px;height:32px;display:grid;place-items:center;background:#06284a;border:1px solid #195078;border-radius:5px;color:#cce4f7;cursor:pointer}
+.usage-budget-dialog form{padding:20px 24px 24px}
+.usage-budget-dialog form>p{margin:0 0 18px}
+.usage-budget-dialog label{display:block;margin-bottom:8px}
+.usage-budget-input{display:flex;align-items:center;border:1px solid #195078;border-radius:6px;background:#06284a;height:42px;margin-bottom:10px}
+.usage-budget-input:focus-within{border-color:#00a8ff;box-shadow:0 0 0 2px #00a8ff26}
+.usage-budget-input span{padding-left:13px;color:#a8c5de}
+.usage-budget-input input{flex:1;min-width:0;border:0;background:transparent;outline:0!important;box-shadow:none!important;color:#fff;font:16px "Microsoft YaHei",sans-serif;padding:8px 12px;width:100%}
+.usage-budget-dialog #usage-budget-error{color:#ff8d9d;margin-top:10px;min-height:18px}
+.usage-budget-dialog footer{display:flex;justify-content:flex-end;gap:10px;margin-top:20px}
+.usage-budget-dialog footer button{height:38px;padding:0 20px;border:1px solid #195078;border-radius:6px;background:#06284a;color:#fff;font:14px "Microsoft YaHei",sans-serif;cursor:pointer}
+.usage-budget-dialog footer button[type=submit]{background:#087cd4;border-color:#169cec}
+.usage-budget-dialog button:focus-visible{outline:2px solid #62d6ff;outline-offset:3px}
+.usage-cost-preview .usage-table-wrap th,.usage-cost-preview .usage-table-wrap td{text-align:center!important;vertical-align:middle!important}
+.usage-cost-preview .usage-table-wrap td button{display:inline-flex;align-items:center;justify-content:center}
+.usage-cost-preview .usage-table-wrap .usage-status{display:inline-flex;align-items:center;justify-content:center}
+.usage-cost-preview .usage-date-error,.usage-cost-preview .usage-range-empty{padding:10px 14px;border:1px solid #195078;border-radius:6px;color:#bed6ea;margin:10px 0;font-size:13px}
+.usage-cost-preview .usage-date-error{border-color:#a24d5e;color:#ff9ca9}
+.usage-cost-preview .usage-chart-xaxis{position:relative;display:block;padding:0;height:18px;min-height:18px}
+.usage-cost-preview .usage-chart-xaxis span{position:absolute;top:0;transform:translateX(-50%);line-height:18px}
+.usage-cost-preview .usage-chart-legend{font-size:11px;gap:10px}
+.usage-cost-preview .usage-share-list li{grid-template-columns:8px minmax(46px,1fr) auto auto}
+.usage-cost-preview .usage-alerts> b em{min-width:18px;padding:0 3px}
+.usage-cost-preview .usage-record-provider{display:inline-flex;align-items:center;justify-content:center;gap:8px;vertical-align:middle;white-space:nowrap}
+.usage-cost-preview .usage-record-provider .provider-logo{width:20px!important;height:20px!important;min-width:20px!important;flex:0 0 20px!important;margin:0!important;padding:0!important;display:inline-flex;align-items:center;justify-content:center;overflow:visible;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;filter:none!important}
+.usage-cost-preview .usage-record-provider .provider-logo img{width:20px!important;height:20px!important;max-width:20px!important;max-height:20px!important;object-fit:contain!important;filter:none!important;transform:none!important;border-radius:0!important}
+.usage-cost-preview .usage-record-provider .provider-logo svg{width:20px;height:20px}
+.usage-cost-preview .usage-record-provider .provider-logo--wordmark{font-size:9px;overflow-wrap:anywhere;white-space:normal}
+.usage-cost-preview .usage-type-layout li span{font-size:11px;white-space:nowrap}

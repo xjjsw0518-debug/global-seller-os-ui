@@ -1,0 +1,45 @@
+/* Density and information hierarchy aligned to the supplied 1672 × 941 model/quota reference. */
+.ai-feature .ai-main{padding:17px 11px 1px;max-width:1900px;margin:auto}
+.ai-feature .page-heading{margin-bottom:15px}
+.ai-feature .kpi{height:120px;padding-top:14px;padding-bottom:12px;grid-template-columns:60px 1fr;column-gap:18px}
+.ai-feature .kpi-icon{width:60px;height:58px}
+.ai-feature .data-layout{grid-template-columns:178px minmax(500px,1fr) 350px}
+.ai-feature .provider-filter>button{font-size:13px}
+.ai-feature .table-scroll table{font-size:11px}
+.ai-feature th{height:38px}
+.ai-feature td{height:45px}
+.ai-feature .pagination{font-size:11px}
+.ai-feature .distribution-body{gap:17px;padding-top:16px}
+.ai-feature .donut{width:146px;height:146px}
+.ai-feature .donut:before{inset:21px}
+.ai-feature .health-cards article{height:84px}
+.ai-feature .bottom-grid>.panel{height:218px;padding:13px}
+.ai-feature .chart-placeholder{height:165px;margin-top:9px}
+.ai-feature .chart-bars{inset:15px 18px 16px}
+.ai-feature .chart-days{bottom:-14px}
+.ai-feature .globe-art{inset:5px -12px 24px;border-radius:50%;background:radial-gradient(ellipse at 50% 65%,#0b58a2aa 0,#06447b83 44%,transparent 70%),repeating-radial-gradient(ellipse at center,transparent 0 11px,#25a2f84d 12px,#25a2f84d 13px,transparent 14px 22px),repeating-linear-gradient(0deg,transparent 0 14px,#34a8f733 15px,#34a8f733 16px,transparent 17px 28px);mask-image:radial-gradient(ellipse at center,#000 45%,transparent 75%)}
+.ai-feature .globe-art:before{content:"";position:absolute;inset:5px 25%;border:1px solid #35b6ff66;border-radius:50%;box-shadow:inset 18px 0 0 -17px #31a4f86e,inset -18px 0 0 -17px #31a4f86e}
+.ai-feature .globe-art:after{content:"";position:absolute;inset:30% 4%;border-top:1px solid #35b6ff66;border-bottom:1px solid #35b6ff66;border-radius:50%}
+@media(max-width:1450px){.ai-feature .data-layout{grid-template-columns:150px minmax(440px,1fr) 290px}.ai-feature .kpi{height:120px}}
+
+/* Row actions: compact menu stays inside the model table. */
+.ai-feature .action-cell{position:relative;width:48px}.ai-feature .row-action-wrap{position:relative;display:flex;justify-content:center}.ai-feature .row-action-menu{position:absolute;z-index:12;right:26px;top:50%;min-width:116px;padding:5px;border:1px solid rgba(115,174,221,.22);border-radius:9px;background:#0c1d31;box-shadow:0 12px 30px rgba(0,0,0,.32)}.ai-feature .row-action-menu button{width:100%;padding:8px 10px;border:0;border-radius:6px;background:transparent;color:#dcecff;text-align:left;font:inherit;white-space:nowrap;cursor:pointer}.ai-feature .row-action-menu button:hover{background:rgba(34,145,255,.13);color:#fff}
+.ai-feature .action-cell { z-index: 20; }
+.ai-feature .row-action-wrap { z-index: 21; }
+.ai-feature .row-action-menu { right: 0; z-index: 30; min-width: 130px; }
+.ai-feature .row-action-menu button { display: block; box-sizing: border-box; }
+.ai-feature .row-action-menu { position: fixed; right: auto; top: auto; }
+
+.ai-feature .kpis{border:1px solid #0c5594;border-radius:11px;padding:0 11px 10px;box-sizing:border-box;margin-bottom:7px}
+
+.ai-feature select{color-scheme:dark}
+.ai-feature select option{background-color:#082345;color:#dcecff}
+.ai-feature select option:checked{background-color:#0878e1;color:#fff}
+
+.ai-feature .page-heading>div:first-child{margin-left:8px}
+.ai-feature .heading-actions{margin-right:5px}
+.ai-feature .data-layout{grid-template-columns:182px minmax(0,1fr) 361px;gap:6px}
+.ai-feature .right-stack{grid-template-rows:minmax(250px,1.88fr) minmax(133px,1fr);gap:7px}
+.ai-feature .bottom-grid{grid-template-columns:1.2fr 1fr 1.02fr;gap:7px}
+@media(max-width:1450px){.ai-feature .data-layout{grid-template-columns:150px minmax(440px,1fr) 290px;gap:9px}}
+

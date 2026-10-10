@@ -1,0 +1,26 @@
+{
+  "baseline_id": "WORKER_UI_LOCK_BASELINE_20261007",
+  "user_confirmed": true,
+  "confirmed_at_local": "2026-10-07T15:00:00+07:00",
+  "source_surface": "http://127.0.0.1:5173/ui-v2/worker-resources?workerVisualFixture=1",
+  "vite_root": "C:\\Users\\DELL\\Documents\\Codex\\VITE_UI_SANDBOX_WORKER_TEST",
+  "screenshot_name": "WORKER_UI_LOCK_HOME_1536x864.png",
+  "screenshot_sha256": "0fc0bb93fcc2e9a9d7a2ac9b92ed3e27dacbaf3ec184f00c1c7796ef223952f4",
+  "viewport": {
+    "width": 1536,
+    "height": 864
+  },
+  "lock_scope": [
+    "Worker home page geometry/layout/theme",
+    "Sidebar/Header/KPI cards",
+    "Map/List/Table composition",
+    "Buttons/filters/search/dropdowns visual placement",
+    "Card/table/form spacing and visual hierarchy",
+    "Current dark theme and typography",
+    "Existing interaction placement and page structure"
+  ],
+  "data_policy": "Fixture data itself is NOT locked. Functional wiring may replace fixture values with real VPS/API/DB data, but must preserve the locked visual structure.",
+  "hard_rule": "All Worker functional wiring must target this baseline and current Vite root. If route/layout/source workspace differs, STOP and FAIL the batch before wiring.",
+  "regression_gate": "Any P0/P1 visual regression from this baseline blocks batch PASS.",
+  "status": "FROZEN_VISUAL_BASELINE"
+}

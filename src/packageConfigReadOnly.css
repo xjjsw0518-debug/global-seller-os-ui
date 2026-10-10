@@ -1,0 +1,4 @@
+.package-catalog-state{display:flex;align-items:center;justify-content:center;gap:12px;min-height:120px;padding:16px;color:var(--text-muted)}
+.package-catalog-state button{height:30px;padding:0 10px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--primary-bright);cursor:pointer}
+.package-readonly-notice{display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px;border:1px solid var(--border-default);border-radius:var(--radius-sm);background:var(--panel-2);color:var(--text-muted);font-size:12px;line-height:1.5}
+.package-config-option>span>b{color:var(--text-primary);font-size:18px}

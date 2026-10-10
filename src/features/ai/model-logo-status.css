@@ -1,0 +1,34 @@
+.ai-feature .add-page-logo-contract{display:flex;align-items:center;gap:10px;min-width:0;margin:0 0 12px;padding:9px 12px;border:1px solid #174c77;border-radius:7px;background:#081d39;color:#9bb8d0;font-size:10px}
+.ai-feature .add-page-logo-contract>span{color:#61c8fa;font-size:9px;font-weight:700;letter-spacing:.08em}
+.ai-feature .add-page-logo-contract>strong{flex:1;color:#e7c66e;font-size:10px;font-weight:500}
+.ai-feature .add-page-logo-contract>button{flex:none;border:0;background:none;color:#78d2ff;font:inherit;text-decoration:underline;cursor:pointer}
+.ai-feature .add-page-logo-contract>small{color:#ff9da5}
+.ai-feature .logo-persistence-state{display:block!important;flex-basis:100%;color:#e7c66e!important;font-size:9px!important;line-height:1.4}
+.ai-feature .edit-logo-contract{display:flex;align-items:center;gap:12px;margin:12px 24px;padding:10px;border:1px solid #174c77;border-radius:7px;background:#081d39;color:#d7e9f8;font-size:11px}
+.ai-feature .edit-logo-contract>img{width:36px;height:36px;object-fit:contain;border-radius:5px}
+.ai-feature .edit-logo-contract>div{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-width:0}
+.ai-feature .edit-logo-contract small[data-state]{color:#e7c66e;font-size:9px}
+.ai-feature .edit-logo-contract small[role=alert]{color:#ff9da5}
+.ai-feature .edit-logo-file{position:relative;display:inline-flex;align-items:center;padding:5px 8px;border:1px solid #24577f;border-radius:5px;background:#0a1d39;color:#bfe4f5;font-size:10px;cursor:pointer}
+.ai-feature .edit-logo-file input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.ai-feature .edit-logo-contract button{padding:5px 8px;border:1px solid #24577f;border-radius:5px;background:#0a1d39;color:#bfe4f5;font-size:10px;cursor:pointer}
+.ai-feature .provider-logo--model-custom{display:inline-flex!important;align-items:center;gap:4px;width:auto!important;max-width:none!important;vertical-align:middle}
+.ai-feature .provider-logo--model-custom img{flex:none}
+.ai-feature .provider-logo-state-chip{padding:2px 4px;border:1px solid #665828;border-radius:8px;background:#302a18;color:#edcf77;font-size:7px;line-height:1;white-space:nowrap}
+.ai-feature .ai-adapter-failure{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;margin:0 0 12px;padding:9px 12px;border:1px solid #87514a;border-radius:7px;background:#301b25;color:#f0c7c2;font-size:11px}
+.ai-feature .ai-adapter-failure b{color:#ffb2a8}.ai-feature .ai-adapter-failure small{grid-column:1/-1;color:#bf9996;font-size:9px}
+.ai-feature .ai-adapter-failure[data-state=PERMISSION_DENIED],.ai-feature .ai-adapter-failure[data-state=AUTH_REQUIRED]{border-color:#815f3f}
+.ai-feature .provider-logo--generic .provider-logo-state-chip{position:static;width:max-content}
+.ai-feature .provider-logo--image img{filter:brightness(1.3) saturate(1.18) drop-shadow(0 0 3px #24bfff9c)}
+.ai-feature .provider-logo--anthropic img{filter:brightness(0) invert(1) drop-shadow(0 0 4px #ffbd59b8)}
+.ai-feature .model-vendor-mark .provider-logo--anthropic img,
+.ai-feature .live-preview-logo .provider-logo--anthropic img{width:31px;height:auto;max-width:calc(100% - 7px);filter:brightness(0) invert(1) drop-shadow(0 0 5px #c9eaff) drop-shadow(0 0 9px #51bfff9c)}
+.ai-feature .model-vendor-mark .provider-logo--deepseek img,
+.ai-feature .live-preview-logo .provider-logo--deepseek img{filter:brightness(1.65) saturate(1.65) contrast(1.18) drop-shadow(0 0 5px #176bff) drop-shadow(0 0 10px #075bffb8)}
+.ai-feature .provider-logo--openai img{border-radius:5px;filter:brightness(1.14) contrast(1.1) saturate(1.12) drop-shadow(0 0 5px #2de9bd9c)}
+.ai-feature .provider-logo--wordmark{display:inline-flex!important;align-items:center;justify-content:center;width:auto!important;min-width:34px;padding:0 4px;color:#45627e;font-size:9px;font-weight:700;letter-spacing:-.04em;white-space:nowrap}
+.ai-feature .provider-logo--inline{display:inline-flex!important;align-items:center;justify-content:flex-start;width:auto!important;min-width:20px;height:20px;margin-right:6px;vertical-align:middle}
+.ai-feature .provider-logo--inline.provider-logo--wide img{width:auto;height:14px;max-width:78px;object-fit:contain}
+.ai-feature .provider-logo--generic svg{width:22px;height:22px;max-width:100%;max-height:100%;color:currentColor;filter:drop-shadow(0 0 2px #159cff66)}
+@media(max-width:680px){.ai-feature .add-page-logo-contract{flex-wrap:wrap}.ai-feature .edit-logo-contract{margin:10px 12px}.ai-feature .provider-logo--model-custom{gap:2px}}
+

@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" role="img" aria-label="MCP Connector">
+  <defs><linearGradient id="g" x1="3" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse"><stop stop-color="#45E8FA"/><stop offset="1" stop-color="#1689FF"/></linearGradient></defs>
+  <path d="m6.1 17.4 5.7-10.6 6.1 10.6M7.5 17.4h9" stroke="url(#g)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="12" cy="5.5" r="2.4" fill="#092F65" stroke="url(#g)" stroke-width="1.8"/>
+  <circle cx="5.6" cy="18.2" r="2.4" fill="#092F65" stroke="url(#g)" stroke-width="1.8"/>
+  <circle cx="18.4" cy="18.2" r="2.4" fill="#092F65" stroke="url(#g)" stroke-width="1.8"/>
+</svg>
