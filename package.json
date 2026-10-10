@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
+    "test:smoke": "playwright test",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {
@@ -20,5 +21,8 @@
     "vite": "6.4.2",
     "world-atlas": "^2.0.2",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0"
   }
 }
