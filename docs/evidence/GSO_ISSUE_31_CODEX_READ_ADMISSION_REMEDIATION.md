@@ -70,7 +70,7 @@ The previous authorization remains consumed. Issue #21 remains effectively BLOCK
 
 ## Local verification result
 
-- executor plus bridge contract tests: 37 PASS, 0 FAIL
+- executor plus bridge contract tests: 44 PASS, 0 FAIL
 - production build: PASS
 - dependency-cruiser: PASS
 - Knip gate: PASS under the repository's existing policy
@@ -100,3 +100,21 @@ The final PR revision adds an explicit recovery admission without changing or cl
 - an interrupted new lease is detected on restart and cannot create a second model opportunity.
 
 The ordinary DRY_RUN continues to report the historical Issue #21 state as BLOCKED. The separate no-model recovery simulation uses that actual trusted lineage and the preserved old-base worktree, but creates only an in-memory mock authorization bound to the prospective reviewed head. It must reach `NEW_ATTEMPT_READY` with a distinct new-base worktree, a verified controller attestation, sandbox preflight PASS, zero model calls, and zero GitHub mutations. The mock authorization is neither persisted as a pending authorization nor consumed.
+
+Observed recovery simulation result:
+
+- historical state: `BLOCKED`
+- historical RUN_ID/LEASE_ID and consumed authorization: matched and preserved
+- historical model run count: 1
+- prior old-base worktree: clean and preserved
+- mock authorization: fresh, version-bound, validated, not persisted, not consumed
+- new lease: distinct and deterministic for the mock authorization
+- new worktree/branch: distinct, clean, non-main, bound to the prospective reviewed head
+- controller attestation: PASS
+- credential isolation: PASS
+- sandbox source-read and scratch write/remove preflight: PASS
+- final state: `NEW_ATTEMPT_READY`
+- repeated simulation: idempotent; same lease, no second execution opportunity
+- model calls: 0
+- GitHub mutations: 0
+- Issue #22/#23 selection: false
