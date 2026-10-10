@@ -1,0 +1,27 @@
+:root { color-scheme: light; }
+.dev-status-page { min-height: 100vh; box-sizing: border-box; padding: 24px 16px 40px; background: #f5f7fb; color: #132238; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.dev-status-header, .dev-status-section, .dev-status-next { max-width: 760px; margin: 0 auto; }
+.dev-status-kicker { margin: 0 0 8px; color: #55708d; font-size: 11px; font-weight: 800; letter-spacing: .12em; }
+.dev-status-header h1 { margin: 0; font-size: clamp(28px, 8vw, 42px); letter-spacing: -.04em; }
+.dev-status-subtitle { margin: 8px 0 18px; color: #52657a; font-size: 14px; }
+.dev-status-error { margin: 12px 0; padding: 10px 12px; border-radius: 10px; background: #fff0f0; color: #a62929; font-weight: 700; }
+.dev-status-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.dev-status-summary div { min-width: 0; padding: 12px; border: 1px solid #dce5ef; border-radius: 12px; background: #fff; }
+.dev-status-summary span, .dev-status-next span { display: block; color: #6a7d91; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; }
+.dev-status-summary strong, .dev-status-summary a { display: block; margin-top: 5px; overflow-wrap: anywhere; color: #17324d; font-size: 14px; text-decoration: none; }
+.dev-status-summary div:first-child strong { color: #147a4a; }
+.dev-status-grid { display: grid; gap: 12px; max-width: 760px; margin: 18px auto; }
+.dev-status-section { width: 100%; }
+.dev-status-section h2 { display: flex; justify-content: space-between; align-items: center; margin: 0 0 8px; font-size: 17px; }
+.dev-status-section h2 span { min-width: 24px; padding: 3px 7px; border-radius: 99px; background: #e5edf6; color: #45617c; font-size: 12px; text-align: center; }
+.dev-status-section ul { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.dev-status-item { padding: 12px; border: 1px solid #dce5ef; border-radius: 12px; background: #fff; box-shadow: 0 2px 8px #1b416b0b; }
+.dev-status-item > div { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.dev-status-item strong { color: #52657a; font-size: 11px; }
+.dev-status-name { flex: 1 1 180px; font-size: 14px; font-weight: 750; }
+.dev-status-pill { padding: 3px 7px; border-radius: 99px; background: #eaf0f6; color: #52657a; font-size: 10px; font-weight: 800; }
+.status-pass, .status-clear { background: #e3f7eb; color: #147a4a; }.status-running { background: #e5efff; color: #2164ad; }.status-todo { background: #fff3d7; color: #8b5c00; }
+.dev-status-item dl { display: grid; grid-template-columns: 46px 1fr; gap: 4px 8px; margin: 9px 0 0; color: #52657a; font-size: 12px; }
+.dev-status-item dt { color: #8292a3; font-weight: 700; }.dev-status-item dd { margin: 0; overflow-wrap: anywhere; }
+.dev-status-next { padding: 14px; border: 1px solid #bad8f6; border-radius: 12px; background: #eef7ff; }.dev-status-next strong { display: block; margin-top: 5px; color: #15558e; font-size: 15px; }
+@media (min-width: 700px) { .dev-status-page { padding: 40px 24px; }.dev-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }.dev-status-section { max-width: none; } }
