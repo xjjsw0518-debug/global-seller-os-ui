@@ -30,10 +30,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare isolated Codex environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          codex_home="$RUNNER_TEMP/gso-codex-preflight-$GITHUB_RUN_ID"
+          mkdir -p "$codex_home"
+          chmod 700 "$codex_home"
+          printf 'CODEX_HOME=%s\n' "$codex_home" >> "$GITHUB_ENV"
+          printf '%s\n' "$HOME/.local/bin" >> "$GITHUB_PATH"
+
       - name: Verify diagnostic contract
         run: node --test scripts/codex-runner-preflight.test.mjs
 
       - name: Inspect Codex runner without model invocation
+        env:
+          CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
         run: node scripts/codex-runner-preflight.mjs
 
       - name: Upload redacted preflight report

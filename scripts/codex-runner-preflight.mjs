@@ -56,6 +56,36 @@ export function detectExecCapabilities(rawHelp, commandAvailable) {
   };
 }
 
+export function buildPreflightDecision({
+  cliInstalled,
+  authenticated,
+  execAvailable,
+  workspaceWritable,
+  accessTokenSet,
+}) {
+  const blockers = [];
+  if (!cliInstalled) blockers.push('CODEX_CLI_NOT_INSTALLED');
+  if (!authenticated) {
+    blockers.push(accessTokenSet ? 'CODEX_AUTHENTICATION_INVALID' : 'BLOCKED_SECRET_MISSING:CODEX_ACCESS_TOKEN');
+  }
+  if (!execAvailable) blockers.push('CODEX_EXEC_NOT_AVAILABLE');
+  if (!workspaceWritable) blockers.push('GITHUB_WORKSPACE_NOT_WRITABLE');
+  const status = blockers.length === 0 ? 'PASS' : 'BLOCKED';
+
+  return {
+    status,
+    blockers,
+    required_status: {
+      CODEX_CLI_INSTALLED: cliInstalled,
+      CODEX_AUTHENTICATED: authenticated,
+      CODEX_EXEC_AVAILABLE: execAvailable,
+      NON_INTERACTIVE_SUPPORTED: execAvailable,
+      STATUS: status,
+      NEXT_SAFE_UNIT: status === 'PASS' ? 'STEP_17C_AUTONOMOUS_EXECUTOR_DRY_RUN' : null,
+    },
+  };
+}
+
 function directoryPermissions(directory) {
   if (!directory) return { configured: false, readable: false, writable: false, executable: false };
   const allowed = (mode) => {
@@ -91,11 +121,13 @@ export function buildReport({ env = process.env, run = runCommand } = {}) {
     runner_workspace: directoryPermissions(env.RUNNER_WORKSPACE),
     github_workspace: directoryPermissions(env.GITHUB_WORKSPACE),
   };
-  const blockers = [];
-  if (!codexVersion.available || !codexVersion.ok) blockers.push('CODEX_CLI_NOT_INSTALLED');
-  if (!codexLogin.ok) blockers.push('CODEX_NOT_AUTHENTICATED');
-  if (!capabilities.non_interactive_exec) blockers.push('CODEX_EXEC_NOT_AVAILABLE');
-  if (!directories.github_workspace.writable) blockers.push('GITHUB_WORKSPACE_NOT_WRITABLE');
+  const executorPreflight = buildPreflightDecision({
+    cliInstalled: codexVersion.available && codexVersion.ok,
+    authenticated: codexLogin.ok,
+    execAvailable: capabilities.non_interactive_exec,
+    workspaceWritable: directories.github_workspace.writable,
+    accessTokenSet: Boolean(env.CODEX_ACCESS_TOKEN),
+  });
 
   return {
     schema_version: 1,
@@ -149,10 +181,7 @@ export function buildReport({ env = process.env, run = runCommand } = {}) {
       git_write_exercised: false,
       network_model_request_exercised: false,
     },
-    executor_preflight: {
-      status: blockers.length === 0 ? 'PASS' : 'BLOCKED',
-      blockers,
-    },
+    executor_preflight: executorPreflight,
   };
 }
 
