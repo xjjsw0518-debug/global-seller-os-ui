@@ -710,6 +710,24 @@ export function deriveAttemptWorkspace({ manifest, identity, authorizationId }) 
   return { suffix, branch, relativePath };
 }
 
+export function resolvePriorAttemptWorkspace({ manifest, priorReceipt, leaseId }) {
+  if (priorReceipt?.attempt_kind === 'NEW_ATTEMPT') {
+    return deriveAttemptWorkspace({
+      manifest,
+      identity: { leaseId },
+      authorizationId: priorReceipt.authorization_id,
+    });
+  }
+  if (!manifest.planned_worktree_relative_path || !manifest.planned_branch) {
+    throw new Error('PRIOR_WORKTREE_IDENTITY_MISSING');
+  }
+  return {
+    suffix: null,
+    branch: manifest.planned_branch,
+    relativePath: manifest.planned_worktree_relative_path,
+  };
+}
+
 export function createTaskWorktree({ repoRoot, stateDir, manifest, baseSha, identity, authorizationId }) {
   const attempt = deriveAttemptWorkspace({ manifest, identity, authorizationId });
   const worktreePath = safeChild(stateDir, join(stateDir, attempt.relativePath));
@@ -916,7 +934,9 @@ export function validateAuthorizationEnvelope(envelope, context) {
   if (envelope?.approved_base_sha !== context.baseSha) errors.push('AUTHORIZATION_BASE_MISMATCH');
   if (envelope?.max_model_runs !== 1) errors.push('AUTHORIZATION_MODEL_LIMIT_INVALID');
   if (envelope?.max_automatic_retries !== 0) errors.push('AUTHORIZATION_RETRY_LIMIT_INVALID');
-  if (envelope?.simulation_only === true) errors.push('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE');
+  if (envelope?.simulation_only === true && context?.allowSimulationOnlyForDryRun !== true) {
+    errors.push('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE');
+  }
   if (!envelope?.expires_at || Date.parse(envelope.expires_at) <= Date.now()) errors.push('AUTHORIZATION_EXPIRED');
   if (envelope?.attempt_kind && !['INITIAL', 'NEW_ATTEMPT'].includes(envelope.attempt_kind)) errors.push('AUTHORIZATION_ATTEMPT_KIND_INVALID');
   return { valid: errors.length === 0, errors };
@@ -1586,6 +1606,8 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       manifestHash,
       issueRevision: sha256(normalizeReviewText(issue.body || '')),
     });
+    const canonicalExecutorBlob = run('git', ['-C', repoRoot, 'show', `${manifest.base_ref}:scripts/gso-windows-auto-executor.mjs`]);
+    if (!canonicalExecutorBlob.ok) throw new Error('DRY_RUN_EXECUTOR_GIT_BLOB_MISSING');
     const worktree = prepareProbeWorktree({ repoRoot, stateDir, issueNumber: manifest.issue_number, baseSha });
     const isolation = codex.executable_path
       ? probeCodexSandboxCredentialIsolation({ codexPath: codex.executable_path, repoRoot })
@@ -1601,7 +1623,7 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       issueBodyHash: sha256(normalizeReviewText(issue.body || '')),
       manifestHash,
       promptHash,
-      executorHash: sha256(readFileSync(EXECUTOR_PATH)),
+      executorHash: sha256(canonicalExecutorBlob.stdout),
       baseSha,
       runId: identity.runId,
       leaseId: identity.leaseId,
@@ -1783,6 +1805,7 @@ export async function buildNewAttemptDryRunReport({ repoRoot, stateDir, manifest
     promptHash,
     executorHash,
     baseSha: prospectiveBaseSha,
+    allowSimulationOnlyForDryRun: true,
   };
   const mockAuthorization = {
     authorization_id: mockAuthorizationId,
@@ -1821,16 +1844,24 @@ export async function buildNewAttemptDryRunReport({ repoRoot, stateDir, manifest
     authorizationId: mockAuthorizationId,
   });
   const simulationRoot = safeChild(stateDir, join(stateDir, 'rs', identity.leaseId.slice(0, 12)));
-  const priorWorktreePath = safeChild(stateDir, join(stateDir, manifest.planned_worktree_relative_path));
+  const priorAttemptWorkspace = resolvePriorAttemptWorkspace({
+    manifest,
+    priorReceipt,
+    leaseId: issueState.effective_lease_id,
+  });
+  const priorWorktreePath = safeChild(stateDir, join(stateDir, priorAttemptWorkspace.relativePath));
   if (!existsSync(priorWorktreePath)) throw new Error('NEW_ATTEMPT_SIMULATION_PRIOR_WORKTREE_MISSING');
   const priorWorktree = {
     path: '<LOCAL_EXECUTOR_STATE>/worktrees/prior-attempt',
     head: git(priorWorktreePath, ['rev-parse', 'HEAD']),
     branch: git(priorWorktreePath, ['branch', '--show-current']),
+    expected_branch: priorAttemptWorkspace.branch,
     clean: changedPaths(priorWorktreePath).length === 0,
     preserved: true,
   };
-  if (!priorWorktree.clean || priorWorktree.head !== priorReceipt.approved_base_sha) {
+  if (!priorWorktree.clean
+    || priorWorktree.head !== priorReceipt.approved_base_sha
+    || priorWorktree.branch !== priorAttemptWorkspace.branch) {
     throw new Error('NEW_ATTEMPT_SIMULATION_PRIOR_WORKTREE_EVIDENCE_MISMATCH');
   }
   const priorReportPath = safeChild(simulationRoot, join(simulationRoot, 'new-attempt-ready.json'));

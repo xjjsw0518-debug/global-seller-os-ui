@@ -13,6 +13,7 @@ import {
   createTaskWorktree, defaultStateDir, deriveAttemptWorkspace, evaluateAttemptAdmission,
   evaluateExecutorIssueState, evaluateNewAttemptRecovery, finalizeMergedRun,
   formatStateComment, parseStateComment, recordModelRun, releaseExecutorLock,
+  resolvePriorAttemptWorkspace,
   redactAuditText, runCodexProcess, scanForSecrets, sha256, simulateExecution, transitionJournal,
   validateAuthorizationEnvelope, verifyControllerAdmissionAttestation,
   verifyReviewedExecutionSources,
@@ -189,6 +190,17 @@ test('real execute rejects simulation-only authorization envelopes', () => {
   assert.ok(result.errors.includes('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE'));
 });
 
+test('simulation-only authorization is accepted only in an explicit no-model dry-run context', () => {
+  const envelope = authorization({ simulation_only: true });
+  const dryRun = validateAuthorizationEnvelope(envelope, {
+    ...authorizationContext,
+    allowSimulationOnlyForDryRun: true,
+  });
+  assert.equal(dryRun.valid, true);
+  assert.deepEqual(dryRun.errors, []);
+  assert.equal(validateAuthorizationEnvelope(envelope, authorizationContext).valid, false);
+});
+
 test('Codex child environment contains no controller or OpenAI credentials', () => {
   const child = buildRestrictedCodexEnv({ PATH: 'safe', GH_TOKEN: 'secret', GITHUB_TOKEN: 'secret', OPENAI_API_KEY: 'secret', CODEX_API_KEY: 'secret', GSO_GITHUB_BROKER_TOKEN: 'secret' });
   assert.equal(child.PATH, 'safe');
@@ -323,6 +335,17 @@ test('trusted historical BLOCKED lineage admits only a fresh version-bound NEW_A
     assert.equal(result.prior_lineage.lease_id, fixture.priorIdentity.leaseId);
     assert.equal(result.prior_lineage.preserved, true);
     assert.equal(JSON.parse(readFileSync(join(stateDir, 'leases', fixture.priorIdentity.leaseId, 'journal.json'), 'utf8')).state, 'BLOCKED');
+
+    const simulated = evaluateNewAttemptRecovery({
+      stateDir,
+      manifest: fixture.manifest,
+      issueState: fixture.issueState,
+      issueBodyHash: fixture.issueBodyHash,
+      authorizationEnvelope: { ...fixture.freshAuthorization, simulation_only: true },
+      authorizationContext: { ...fixture.currentContext, allowSimulationOnlyForDryRun: true },
+    });
+    assert.equal(simulated.allowed, true);
+    assert.equal(simulated.state, 'NEW_ATTEMPT_READY');
   } finally { rmSync(stateDir, { recursive: true, force: true }); }
 });
 
@@ -396,6 +419,34 @@ test('attempt workspace identity is stable for one authorization and distinct ac
   assert.notEqual(first.branch, second.branch);
   assert.notEqual(first.relativePath, second.relativePath);
   assert.notEqual(first.branch, 'main');
+});
+
+test('prior NEW_ATTEMPT worktree is derived from its consumed authorization instead of the legacy fixed path', () => {
+  const manifest = {
+    planned_branch: 'codex/wrc-p2-u01-single-issue',
+    planned_worktree_relative_path: 'worktrees/issue-21-wrc-p2-u01',
+    planned_branch_prefix: 'codex/wrc-p2-u01-attempt',
+    planned_worktree_relative_path_prefix: 'worktrees/issue-21-wrc-p2-u01-attempt',
+  };
+  const prior = resolvePriorAttemptWorkspace({
+    manifest,
+    priorReceipt: {
+      attempt_kind: 'NEW_ATTEMPT',
+      authorization_id: 'gh-comment-6100321725-20261011',
+    },
+    leaseId: 'ef1e890864010e857f9b663e2d8d52e7',
+  });
+  assert.equal(prior.suffix, 'a715b45fbb42');
+  assert.equal(prior.branch, 'codex/wrc-p2-u01-attempt-a715b45fbb42');
+  assert.equal(prior.relativePath, 'worktrees/issue-21-wrc-p2-u01-attempt-a715b45fbb42');
+
+  const initial = resolvePriorAttemptWorkspace({
+    manifest,
+    priorReceipt: { attempt_kind: 'INITIAL', authorization_id: 'initial-authorization-0001' },
+    leaseId: 'initial-lease-0001',
+  });
+  assert.equal(initial.branch, manifest.planned_branch);
+  assert.equal(initial.relativePath, manifest.planned_worktree_relative_path);
 });
 
 test('old-base worktree is preserved while a fresh authorization gets a distinct new-base worktree', () => {
@@ -528,6 +579,58 @@ test('reviewed executor must be exact clean origin/main content', () => {
   } finally { rmSync(repoRoot, { recursive: true, force: true }); }
 });
 
+test('reviewed executor uses canonical Git LF blob hash even when worktree is CRLF', () => {
+  const repoRoot = tempState();
+  try {
+    git(repoRoot, 'init', '-b', 'main');
+    git(repoRoot, 'config', 'user.email', 'test@example.invalid');
+    git(repoRoot, 'config', 'user.name', 'Test');
+    const executorPath = join(repoRoot, 'scripts', 'gso-windows-auto-executor.mjs');
+    const bridgePath = join(repoRoot, 'scripts', 'gso-windows-local-bridge-dry-run.mjs');
+    const controllerPath = join(repoRoot, 'scripts', 'gso-structured-model-output.mjs');
+    const manifestPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.execute.manifest.json');
+    const promptPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.prompt.md');
+    const checklistPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.checklist.md');
+    const schemaPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.model-output.schema.json');
+    for (const path of [executorPath, bridgePath, controllerPath, manifestPath, promptPath, checklistPath, schemaPath]) {
+      mkdirSync(dirname(path), { recursive: true });
+    }
+    const canonicalLf = 'const value = 1;\nexport const ok = value;\n';
+    writeFileSync(join(repoRoot, '.gitattributes'), 'scripts/gso-windows-auto-executor.mjs text eol=crlf\n');
+    writeFileSync(executorPath, canonicalLf.replace(/\n/g, '\r\n'));
+    writeFileSync(bridgePath, 'reviewed local bridge\n');
+    writeFileSync(controllerPath, 'reviewed controller\n');
+    writeFileSync(promptPath, 'prompt\n');
+    writeFileSync(checklistPath, 'checklist\n');
+    writeFileSync(schemaPath, '{}\n');
+    const manifest = {
+      mode: 'EXECUTE_ONE_AUTHORIZED_ISSUE',
+      prompt_path: 'control/local-bridge/issue-21.prompt.md',
+      issue_body_path: 'control/local-bridge/issue-21.checklist.md',
+      model_output_schema_path: 'control/local-bridge/issue-21.model-output.schema.json',
+      reviewed_executor_sha256: sha256(Buffer.from(canonicalLf, 'utf8')),
+    };
+    writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
+    git(repoRoot, 'add', '.');
+    git(repoRoot, 'commit', '-m', 'canonical reviewed source');
+    git(repoRoot, 'update-ref', 'refs/remotes/origin/main', 'HEAD');
+    const blob = spawnSync('git', ['-C', repoRoot, 'show', 'origin/main:scripts/gso-windows-auto-executor.mjs'], { windowsHide: true });
+    assert.equal(blob.status, 0);
+    assert.equal(sha256(blob.stdout), manifest.reviewed_executor_sha256);
+    assert.notEqual(sha256(readFileSync(executorPath)), manifest.reviewed_executor_sha256);
+    assert.match(readFileSync(executorPath, 'utf8'), /\r\n/);
+    assert.equal(git(repoRoot, 'status', '--porcelain'), '');
+    const verified = verifyReviewedExecutionSources({ repoRoot, manifestPath, manifest, fetchMain: false, runningExecutorPath: executorPath });
+    assert.equal(verified.passed, true);
+    assert.equal(verified.executor_sha256, manifest.reviewed_executor_sha256);
+    assert.throws(() => verifyReviewedExecutionSources({
+      repoRoot, manifestPath, manifest: { ...manifest, reviewed_executor_sha256: sha256(readFileSync(executorPath)) },
+      fetchMain: false, runningExecutorPath: executorPath,
+    }), /EXECUTOR_HASH_NOT_APPROVED_BY_MANIFEST/);
+  } finally {
+    rmSync(repoRoot, { recursive: true, force: true });
+  }
+});
 function attestationFixture(repoRoot) {
   mkdirSync(join(repoRoot, 'src'), { recursive: true });
   mkdirSync(join(repoRoot, 'public'), { recursive: true });

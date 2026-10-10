@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "bridge_revision": "step-c.4-controller-content-hash-readback",
+  "bridge_revision": "step-c.7-canonical-hash-prior-attempt-isolation",
   "mode": "DRY_RUN_NO_MODEL_NO_GITHUB_WRITE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -17,7 +17,7 @@
   "model_output_mode": "MODEL_JSON_CONTROLLER_APPLY",
   "model_output_schema_path": "control/local-bridge/issue-21.model-output.schema.json",
   "model_output_schema_sha256": "412020d39a397aad6f71c7d087d835b8f89cfe0eb00db50dea7c38284a1583be",
-  "reviewed_executor_sha256": "338dd154078364e313ff54d1b90edeb0079f3a5391ffab12a905ae15c1d8f655",
+  "reviewed_executor_sha256": "b9e39a4263142c9f18549a317791537f4da07c4f30c6d9928bb693a6947245e9",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
   "new_attempt_recovery_policy": {
