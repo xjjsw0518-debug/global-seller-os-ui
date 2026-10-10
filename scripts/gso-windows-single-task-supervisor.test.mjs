@@ -126,11 +126,15 @@ test('one mock controller launch completes once and restart cannot replay it', a
   const f = fixture();
   try {
     let launches = 0;
+    const dispatchEvents = [];
     const options = {
       config, repoRoot: f.repoRoot, stateDir: f.stateDir,
       manifestPath: join(f.repoRoot, config.manifest_path), manifestHash: hash,
       readRemoteState: async () => ({ open: true, effectiveState: 'READY' }),
+      onDispatched: (e) => dispatchEvents.push(e),
       launch: async ({ authorization, outputPath }) => {
+        assert.equal(dispatchEvents.length, 1);
+        assert.equal(dispatchEvents[0].action, 'CONTROLLER_DISPATCH_CLAIMED');
         launches += 1;
         assert.equal(authorization.authorization_id, authId);
         mkdirSync(dirname(outputPath), { recursive: true });
@@ -141,6 +145,7 @@ test('one mock controller launch completes once and restart cannot replay it', a
     const first = await runOneSupervisorPoll(options);
     assert.equal(first.action, 'STOP_PR_REVIEW_REQUIRED');
     assert.equal(first.launches, 1);
+    assert.equal(dispatchEvents.length, 1);
     const second = await runOneSupervisorPoll(options);
     assert.equal(second.action, 'STOP_BUDGET_EXHAUSTED');
     assert.equal(launches, 1);
@@ -183,5 +188,26 @@ test('mock remote BLOCKED state does not inspect or consume protected approval',
     assert.equal(status.action, 'STOP_BLOCKED');
     assert.equal(launches, 0);
     assert.ok(readFileSync(f.authFile, 'utf8').includes(authId));
+  } finally { rmSync(f.root, { recursive: true, force: true }); }
+});
+
+test('changed or dirty local checkout cannot dispatch any preauthorized model', async () => {
+  const f = fixture();
+  try {
+    let launches = 0;
+    const options = {
+      config, repoRoot: f.repoRoot, stateDir: f.stateDir,
+      manifestPath: join(f.repoRoot, config.manifest_path), manifestHash: hash,
+      readRemoteState: async () => ({ open: true, effectiveState: 'READY' }),
+      launch: async () => { launches += 1; return { exit_code: 0 }; },
+    };
+    writeFileSync(join(f.repoRoot, 'unreviewed.txt'), 'dirty');
+    await assert.rejects(runOneSupervisorPoll(options), /CHECKOUT_DIRTY/);
+    rmSync(join(f.repoRoot, 'unreviewed.txt'));
+    writeFileSync(join(f.repoRoot, 'README.md'), 'unreviewed branch change\n');
+    git(f.repoRoot, 'add', '.');
+    git(f.repoRoot, 'commit', '-m', 'new unreviewed commit');
+    await assert.rejects(runOneSupervisorPoll(options), /CHECKOUT_NOT_EXACT_MAIN/);
+    assert.equal(launches, 0);
   } finally { rmSync(f.root, { recursive: true, force: true }); }
 });
