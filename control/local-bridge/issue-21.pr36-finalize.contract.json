@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "mode": "FINALIZE_EXISTING_PR_CONTROLLER_ONLY",
+  "repository": "xjjsw0518-debug/global-seller-os-ui",
+  "issue_number": 21,
+  "pr_number": 36,
+  "pr_url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/pull/36",
+  "reviewed_main_sha": "433b064c636101ecfc3cca333b020c1b9f0b994a",
+  "original_base_sha": "32c3d23d9ecbe1d2064f921f3af4c5c512084cc9",
+  "expected_pr_head_sha": "56e7fa00bc14f3cde01f49169c5079b36d99b933",
+  "pr_branch": "codex/wrc-p2-u01-attempt-86d3685d4eb0",
+  "pr_base": "main",
+  "model_artifacts": [
+    {
+      "path": "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md",
+      "sha256": "eb7d1ae8c8c89ec410a761b438f2e5d3506971f7e881ed0690daba850583b4e5"
+    }
+  ],
+  "preliminary_gate": {
+    "run_id": 38082532704,
+    "head_sha": "56e7fa00bc14f3cde01f49169c5079b36d99b933",
+    "html_url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38082532704"
+  },
+  "historical": {
+    "run_id": "gso-21-1791662741018-642881d6",
+    "lease_id": "783788d75d0772dacc04629c78ec5aca",
+    "authorization_id": "gh-comment-6101610200-20261011",
+    "state": "BLOCKED",
+    "journal_sha256": "cf69b45ae751b516c5be2cf5601a99ed04c6374688961424ff63477f168e5ab8",
+    "receipt_sha256": "eeeca84de6a0211d81c0b56afc49103ee22fcb95118d17e36b38445aedab06e1"
+  },
+  "worktree_relative_path": "worktrees/issue-21-wrc-p2-u01-attempt-86d3685d4eb0",
+  "controller_status": {
+    "path": "public/dev-status.json",
+    "sha256": "16ea47c5408d8b66ff173585faec81cf5f560f770ea1dca1db5784baa3a1308a"
+  },
+  "task": {
+    "id": "WRC-P2-U01",
+    "name": "Worker homepage overview/map-data real-read acceptance",
+    "owner": "GSO Windows Codex Bridge",
+    "next_action_instruction": "Review the one-file Codex evidence change plus the controller-only dev-status update after the final full GSO Gate passes."
+  }
+}
