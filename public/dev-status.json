@@ -16,6 +16,7 @@
     "resume_instruction": "Continue from WRC-P2-U00E into WRC-P2-U00F as a contract-decision unit only. Record standalone resource-list API as DEFERRED for the current phase and continue to reuse overview/map-data. Define future pagination, filtering, sorting, query, response, error, and authorization semantics. Do not modify business UI/code, add a backend route, change the frontend read path, call a business-write API, or change BackstopJS baselines or Gate thresholds.",
     "platform_auto_start_supported": false
   },
+  "auto_continue": { "status": "ON", "latest_head_required": true, "gate_success_required": true, "mandatory_artifacts_required": true, "auto_merge_enabled": true, "auto_close_enabled": true, "auto_update_dev_status_enabled": true, "manual_work_claim_boundary": "A Work-capable runner must claim the next READY Issue" },
   "latest_actions_run": {
     "name": "GSO Gate #26",
     "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38042706076",
