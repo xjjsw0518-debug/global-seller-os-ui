@@ -1,47 +1,74 @@
-# Windows GSO Local Bridge — Step A Dry Run
+# Windows GSO Local Bridge — Step B admission dry run
 
-## Purpose
+## Outcome boundary
 
-This Windows-only bridge verifies the non-model control path for one GitHub Issue. It reads public Issue state, verifies the local Codex CLI without invoking a model, enforces a single-instance lock and deterministic task lease, creates an isolated detached worktree probe, checks changed paths, and emits a redacted audit report.
+This Windows-only bridge prepares one bounded local Codex run for GitHub Issue #21. It does not invoke a model, write GitHub, edit Worker business code, call server/root/database/container/production operations, change frozen UI or Backstop references, modify the GSO Gate, or push `main`.
 
-It does not write GitHub, invoke Codex inference, edit business code, call server/root/database/container/production operations, alter frozen UI or Backstop references, change the GSO Gate, or push `main`.
+`READY` and `RUNNING` are distinct. An Issue is considered actively running only after an actual Codex process supplies a `RUN_ID` and the bridge owns the matching atomic `LEASE_ID`. The earlier #21 comment and Project value that say `RUNNING` have no paired evidence, so the effective source state remains `READY`.
 
-## Source-state rule
+## Reviewed Issue #21 entry contract
 
-`READY` and `RUNNING` are not synonyms. A plain claim comment does not establish actual execution. The bridge recognizes actual `RUNNING` only when a GitHub comment contains both a bounded `RUN_ID=...` and `LEASE_ID=...` marker. Until then, the Issue body status remains the effective source state.
+The exact GitHub Issue body must match `control/local-bridge/issue-21.checklist.md` by normalized SHA-256 before a model can run. The fixed prompt must also match its manifest hash.
 
-## Lock and idempotency
+Codex may create or update exactly:
 
-- One local bridge process acquires an atomic lock directory before it reads or prepares work.
-- One deterministic lease ID is derived from repository, Issue, Issue revision, base Git SHA, prompt manifest hash, and prompt hash.
-- A second process cannot acquire an active lease.
-- A completed lease is an idempotent replay and never authorizes a second model call.
-- The bridge never auto-steals a stale or unknown lease. Recovery requires review.
+- `docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md`
 
-## Worktree isolation
+Only the bridge control process, after the exact PR head passes the full Gate, may update:
 
-The dry run creates a clean detached probe at the exact `origin/main` commit in a state directory outside the source checkout. The reviewed Step B plan reserves branch `codex/wrc-p2-u01-single-issue` and relative path `worktrees/issue-21-wrc-p2-u01`, but Step A does not create that execution branch or edit it.
+- `public/dev-status.json`
 
-## Files and safety
+All Worker implementation, UI, CSS, route, adapter, test, Gate, Backstop, dependency, package, baseline, and other unlisted paths are forbidden. The unit is evidence-only. It may reconcile the already accepted authenticated `overview=200` and `map-data=200` history with current `main`, but it may not repeat a login, inspect secrets, mutate business data, or invent a current live-read PASS.
 
-The fixed manifest is `control/local-bridge/issue-21.manifest.json`; its prompt is `control/local-bridge/issue-21.prompt.md`. The manifest fails closed: Issue execution is disabled, its allowed-file list is empty, and all files are forbidden until Issue #21 contains a complete development-entry checklist and an explicitly reviewed file list.
+## Lock, lease, and worktree
 
-Bridge validation changes are limited to the manifest, prompt, this document, the dry-run script, its tests, and the generated redacted evidence snapshot. Business files, `src/`, Worker code, Gate workflows, `public/dev-status.json`, Backstop configuration/reference images, package manifests, and hosting files are forbidden.
+- An atomic lock directory admits one local bridge process.
+- A deterministic lease binds repository, Issue number and revision, exact base SHA, manifest hash, prompt hash, and reviewed Issue-body hash.
+- A duplicate active lease is rejected. A completed lease is an idempotent replay and cannot authorize another model call.
+- Every base SHA receives a distinct detached probe worktree; a stale probe from an older `main` cannot be silently reused.
+- The planned execution branch is `codex/wrc-p2-u01-single-issue`, under the local bridge state root at `worktrees/issue-21-wrc-p2-u01`.
 
-## Step B budget, prepared but not authorized
+## Controlled GitHub writeback
 
-- existing Windows Codex CLI ChatGPT login only;
-- one Issue, one worktree, one Codex process;
-- at most one model run;
-- no automatic retries;
-- 30-minute wall-clock limit;
-- no OpenAI API key and no server-side Codex;
-- self-hosted runner remains limited to the existing non-AI GSO Gate;
-- stop before commit/push if any changed path is outside the reviewed Issue scope;
-- no GitHub status claim without the paired run and lease evidence;
-- no PASS without the complete exact-commit GSO Gate evidence.
+The Windows Git Credential Manager may be inspected and used only by the bridge control process. The bridge records only provider type, boolean readiness, permission names, and repository permission booleans. It never prints or persists the credential. A future Codex child receives a sanitized environment with GitHub tokens, OpenAI keys, GitHub App material, and ask-pass variables removed.
 
-Step B remains blocked until the Issue checklist is complete, its allowed files are non-empty, a supported credentialled GitHub writeback path is available, and the plan receives human review.
+The broker allowlist is limited to:
+
+1. read the single READY Issue;
+2. claim it only with a real `RUN_ID` and active `LEASE_ID`;
+3. append matching execution/Gate evidence;
+4. create the reviewed non-`main` branch and PR;
+5. read the exact-head GSO Gate and mandatory artifacts;
+6. update the Project item status;
+7. update `public/dev-status.json` only after exact-head Gate success.
+
+The current Git Credential Manager identity authenticates the GitHub API and can write repository content, Issues, and PRs, but its personal OAuth scopes do not include Project write access. It is also a broad personal credential and therefore must never be inherited by the Codex child. Full automatic writeback remains fail-closed until a controller-only least-privilege identity covers the Project update.
+
+Recommended GitHub App permissions, installed only on `xjjsw0518-debug/global-seller-os-ui`:
+
+- Repository metadata: read (implicit/minimum)
+- Repository contents: write (branch and controlled `/dev-status` commit)
+- Issues: write
+- Pull requests: write
+- Actions: read
+- Checks: read
+- Personal/user Projects: write for Project #1
+
+No administration, workflows write, secrets, environments, deployments, members, hooks, or runner-management permission is required. The private/app credential must stay in the Windows controller credential store; use short-lived access tokens at runtime and never pass them to Codex.
+
+## First real-run limits (prepared, not authorized)
+
+- Issue #21 only
+- existing Windows Codex CLI ChatGPT login only
+- concurrency 1
+- at most 1 model call
+- 0 automatic retries
+- 30-minute wall-clock timeout
+- no OpenAI API key and no server-side Codex
+- no direct push to `main`
+- stop before commit/push on any path-policy failure
+- self-hosted runner `ser603198648259` remains non-AI Gate-only
+- separate user confirmation is mandatory immediately before consuming Codex quota
 
 ## Invocation
 
@@ -50,9 +77,9 @@ Run from the reviewed bridge worktree with Node.js 20 or later:
 ```powershell
 node scripts/gso-windows-local-bridge-dry-run.mjs `
   --repo-root . `
-  --state-dir ..\gso-windows-local-bridge-state `
-  --output ..\gso-windows-local-bridge-state\latest-report.json `
+  --state-dir ..\gso-windows-local-bridge-step-b-state `
+  --output ..\gso-windows-local-bridge-step-b-state\latest-report.json `
   --redacted-output docs\evidence\gso-windows-local-bridge-dry-run-issue-21.json
 ```
 
-The command has no execute mode. `--execute` and `--model` are rejected.
+The command has no execution mode. `--execute` and `--model` are rejected.
