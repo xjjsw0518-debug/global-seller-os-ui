@@ -1,39 +1,227 @@
 {
-  "overall_status": "RUNNING",
-  "current_step": "Step 15 - GSO Auto-Loop Controller / Work Watcher / Resume Guard",
-  "last_updated": "2026-10-10T11:20:00Z",
+  "overall_status": "READY",
+  "current_step": "WRC-P2-U00F — Define standalone resource-list API contract (deferred decision)",
+  "last_updated": "2026-10-10T11:41:12.300Z",
   "auto_refresh_seconds": 30,
-  "auto_loop": { "status": "ON", "batch": "step-15-batch-1", "current_running_issue": "Step 15 controller implementation", "ready_queue": ["Step 15 controller", "Step 15 watcher", "Step 15 resume guard"], "last_controller_check": "2026-10-10T12:00:00Z", "last_recovery_action": "Paused Worker U00E; switched priority to Step 15", "user_approval_required": false },
-  "latest_actions_run": { "name": "GSO Gate #26", "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38042706076", "status": "SUCCESS" },
+  "auto_loop": {
+    "status": "ON",
+    "batch": "wrc-p2-resource-contract",
+    "current_running_issue": null,
+    "ready_queue": [
+      "WRC-P2-U00F"
+    ],
+    "last_controller_check": "2026-10-10T11:41:12.300Z",
+    "last_recovery_action": "Detected WRC-P2-U00E completion and published the WRC-P2-U00F next action.",
+    "user_approval_required": false,
+    "resume_instruction": "Continue from WRC-P2-U00E into WRC-P2-U00F as a contract-decision unit only. Record standalone resource-list API as DEFERRED for the current phase and continue to reuse overview/map-data. Define future pagination, filtering, sorting, query, response, error, and authorization semantics. Do not modify business UI/code, add a backend route, change the frontend read path, call a business-write API, or change BackstopJS baselines or Gate thresholds.",
+    "platform_auto_start_supported": false
+  },
+  "latest_actions_run": {
+    "name": "GSO Gate #26",
+    "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38042706076",
+    "status": "SUCCESS"
+  },
   "runner": "ser603198648259",
   "completed": [
-    { "id": "gate-1", "name": "Build Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "gate-2", "name": "dependency-cruiser Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "gate-3", "name": "Knip Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "gate-4", "name": "Playwright Smoke Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "gate-5", "name": "BackstopJS Visual Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "gate-6", "name": "axe-core Accessibility Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "gate-7", "name": "Evidence Template Gate", "status": "PASS", "owner": "GSO Automation", "evidence": "GSO Gate #22", "next_step": "保持基线" },
-    { "id": "step-10", "name": "Step 10 Evidence Standard", "status": "PASS", "owner": "GSO Automation", "evidence": "PR #5", "next_step": "保持规则" },
-    { "id": "step-11", "name": "Step 11 Failure Handling Standard", "status": "PASS", "owner": "GSO Automation", "evidence": "PR #6", "next_step": "保持规则" },
-    { "id": "step-12", "name": "Step 12 Development Entry Standard", "status": "PASS", "owner": "GSO Automation", "evidence": "PR #7", "next_step": "按准入规则执行" },
-    { "id": "step-13", "name": "Step 13 /dev-status Mobile Progress Page", "status": "PASS", "owner": "GSO Automation", "evidence": "PR #8 / GSO Gate #24", "next_step": "保持状态页可访问" }
+    {
+      "id": "gate-1",
+      "name": "Build Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "gate-2",
+      "name": "dependency-cruiser Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "gate-3",
+      "name": "Knip Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "gate-4",
+      "name": "Playwright Smoke Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "gate-5",
+      "name": "BackstopJS Visual Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "gate-6",
+      "name": "axe-core Accessibility Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "gate-7",
+      "name": "Evidence Template Gate",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GSO Gate #22",
+      "next_step": "保持基线"
+    },
+    {
+      "id": "step-10",
+      "name": "Step 10 Evidence Standard",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "PR #5",
+      "next_step": "保持规则"
+    },
+    {
+      "id": "step-11",
+      "name": "Step 11 Failure Handling Standard",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "PR #6",
+      "next_step": "保持规则"
+    },
+    {
+      "id": "step-12",
+      "name": "Step 12 Development Entry Standard",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "PR #7",
+      "next_step": "按准入规则执行"
+    },
+    {
+      "id": "step-13",
+      "name": "Step 13 /dev-status Mobile Progress Page",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "PR #8 / GSO Gate #24",
+      "next_step": "保持状态页可访问"
+    },
+    {
+      "id": "WRC-P2-U00E",
+      "name": "Worker standalone resource-list route audit",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "FINAL_STATE=WRC_P2_U00E_ROUTE_AUDIT_READY",
+      "next_step": "WRC-P2-U00F — Define standalone resource-list API contract (deferred decision)"
+    }
   ],
   "in_progress": [
-    { "id": "WRC-P2-U00", "name": "WRC-P2-U00：Worker source/deployment identity + read-path failure audit", "status": "PASS", "owner": "GSO Automation", "evidence": "GitHub Issue #12；只读服务器核验", "next_step": "进入浏览器会话验证" }
+    {
+      "id": "WRC-P2-U00",
+      "name": "WRC-P2-U00：Worker source/deployment identity + read-path failure audit",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GitHub Issue #12；只读服务器核验",
+      "next_step": "进入浏览器会话验证"
+    }
   ],
   "todo": [
-    { "id": "WRC-P2-U00A", "name": "恢复 Worker staging 数据库、专用 API 容器和后端账号", "status": "PASS", "owner": "GSO Automation", "evidence": "GitHub Issue #11；数据库/容器/健康检查证据", "next_step": "U00A-D complete" },
-    { "id": "WRC-P2-U00B", "name": "Worker 浏览器会话验证", "status": "PASS", "owner": "GSO Automation", "evidence": "LOGIN_POST SUCCESS；SESSION ESTABLISHED", "next_step": "U00B-D complete" },
-    { "id": "WRC-P2-U00C", "name": "Worker authenticated overview/map-data read-only diagnosis", "status": "PASS", "owner": "GSO Automation", "evidence": "InsufficientPrivilegeError root cause identified", "next_step": "U00C-D complete" },
-    { "id": "WRC-P2-U00D", "name": "Grant audited read-only privileges for Worker staging role", "status": "PASS", "owner": "GSO Automation", "evidence": "overview=200；map-data=200；health=200；ready=200", "next_step": "进入 U00E" }
+    {
+      "id": "WRC-P2-U00A",
+      "name": "恢复 Worker staging 数据库、专用 API 容器和后端账号",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "GitHub Issue #11；数据库/容器/健康检查证据",
+      "next_step": "U00A-D complete"
+    },
+    {
+      "id": "WRC-P2-U00B",
+      "name": "Worker 浏览器会话验证",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "LOGIN_POST SUCCESS；SESSION ESTABLISHED",
+      "next_step": "U00B-D complete"
+    },
+    {
+      "id": "WRC-P2-U00C",
+      "name": "Worker authenticated overview/map-data read-only diagnosis",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "InsufficientPrivilegeError root cause identified",
+      "next_step": "U00C-D complete"
+    },
+    {
+      "id": "WRC-P2-U00D",
+      "name": "Grant audited read-only privileges for Worker staging role",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "overview=200；map-data=200；health=200；ready=200",
+      "next_step": "进入 U00E"
+    },
+    {
+      "id": "WRC-P2-U00F",
+      "name": "WRC-P2-U00F — Define standalone resource-list API contract (deferred decision)",
+      "status": "READY",
+      "owner": "GSO Automation",
+      "evidence": "GitHub Issue #18",
+      "next_step": "A Work-capable runner may claim the contract-decision unit; no business coding is authorized."
+    }
   ],
   "issues_to_resolve": [
-    { "id": "WRC-P2-U00A", "name": "WRC-P2-U00A：Worker staging 后端环境不存在", "status": "BLOCKED", "owner": "GSO Automation", "evidence": "GitHub Issue #11", "next_step": "等待恢复授权" },
-    { "id": "worker-staging-database", "name": "global_seller_staging 数据库不存在", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery", "next_step": "保持 staging 数据库" },
-    { "id": "worker-staging-container", "name": "gso-worker-staging-api-20261004 容器不存在", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery", "next_step": "保持专用 API 容器" },
-    { "id": "worker-staging-listener", "name": "127.0.0.1:18765 无监听", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery; loopback 18765→8000", "next_step": "保持端口映射" },
-    { "id": "worker-resource-list-route", "name": "resource-list 路由未注册", "status": "READY", "owner": "GSO Automation", "evidence": "HTTP 404；U00E", "next_step": "执行 Worker resource-list route audit / route decision" }
+    {
+      "id": "WRC-P2-U00A",
+      "name": "WRC-P2-U00A：Worker staging 后端环境不存在",
+      "status": "BLOCKED",
+      "owner": "GSO Automation",
+      "evidence": "GitHub Issue #11",
+      "next_step": "等待恢复授权"
+    },
+    {
+      "id": "worker-staging-database",
+      "name": "global_seller_staging 数据库不存在",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "WRC-P2-U00A recovery",
+      "next_step": "保持 staging 数据库"
+    },
+    {
+      "id": "worker-staging-container",
+      "name": "gso-worker-staging-api-20261004 容器不存在",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "WRC-P2-U00A recovery",
+      "next_step": "保持专用 API 容器"
+    },
+    {
+      "id": "worker-staging-listener",
+      "name": "127.0.0.1:18765 无监听",
+      "status": "PASS",
+      "owner": "GSO Automation",
+      "evidence": "WRC-P2-U00A recovery; loopback 18765→8000",
+      "next_step": "保持端口映射"
+    },
+    {
+      "id": "worker-resource-list-route",
+      "name": "resource-list 路由未注册",
+      "status": "DEFERRED",
+      "owner": "GSO Automation",
+      "evidence": "U00E route audit: overview/map-data are the active read contract",
+      "next_step": "Resolve the future API contract in GitHub Issue #18; do not add a route in the current phase."
+    }
   ],
-  "next_safe_unit": "Step 15 — GSO Auto-Loop Controller / Work Watcher / Resume Guard"
+  "next_safe_unit": "WRC-P2-U00F — Define standalone resource-list API contract (deferred decision)",
+  "next_action": {
+    "id": "WRC-P2-U00F",
+    "status": "READY",
+    "issue_number": 18,
+    "issue_url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/issues/18",
+    "instruction": "Continue from WRC-P2-U00E into WRC-P2-U00F as a contract-decision unit only. Record standalone resource-list API as DEFERRED for the current phase and continue to reuse overview/map-data. Define future pagination, filtering, sorting, query, response, error, and authorization semantics. Do not modify business UI/code, add a backend route, change the frontend read path, call a business-write API, or change BackstopJS baselines or Gate thresholds.",
+    "requires_manual_prompt_copying": false,
+    "requires_work_session_start": true
+  }
 }
