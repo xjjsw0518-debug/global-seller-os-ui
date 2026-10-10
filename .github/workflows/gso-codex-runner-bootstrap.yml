@@ -1,0 +1,91 @@
+name: Step 17B Runner Codex Bootstrap
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gso-step17b-runner-codex-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  bootstrap:
+    runs-on: self-hosted
+    timeout-minutes: 10
+    env:
+      CODEX_CLI_VERSION: "0.162.1"
+      PREFLIGHT_OUTPUT: codex-runner-preflight.json
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Enforce non-root runner boundary
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$(id -u)" -eq 0 ]; then
+            echo "::error title=BLOCKED_ROOT_RUNNER::Codex must not run as root"
+            exit 1
+          fi
+          echo "RUNNER_NON_ROOT=true"
+
+      - name: Install fixed Codex CLI in runner user space
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          install_root="$HOME/.local/share/gso-codex/$CODEX_CLI_VERSION"
+          bin_dir="$HOME/.local/bin"
+          mkdir -p "$install_root" "$bin_dir"
+          npm install --prefix "$install_root" "@openai/codex@$CODEX_CLI_VERSION"
+          ln -sfn "$install_root/node_modules/.bin/codex" "$bin_dir/codex"
+          actual_version="$($bin_dir/codex --version)"
+          if [ "$actual_version" != "codex-cli $CODEX_CLI_VERSION" ]; then
+            echo "::error title=BLOCKED_VERSION_MISMATCH::Installed Codex CLI does not match the pinned version"
+            exit 1
+          fi
+          printf '%s\n' "$bin_dir" >> "$GITHUB_PATH"
+          echo "CODEX_CLI_INSTALLED=true"
+          echo "CODEX_CLI_VERSION=$CODEX_CLI_VERSION"
+
+      - name: Prepare isolated authentication context
+        shell: bash
+        run: |
+          set -euo pipefail
+          codex_home="$RUNNER_TEMP/gso-codex-step17b-$GITHUB_RUN_ID"
+          mkdir -p "$codex_home"
+          chmod 700 "$codex_home"
+          printf 'CODEX_HOME=%s\n' "$codex_home" >> "$GITHUB_ENV"
+
+      - name: Verify dedicated non-interactive authentication
+        shell: bash
+        env:
+          CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${CODEX_ACCESS_TOKEN:-}" ]; then
+            echo "::error title=BLOCKED_SECRET_MISSING::CODEX_ACCESS_TOKEN"
+            exit 78
+          fi
+          if ! codex login status >/dev/null 2>&1; then
+            echo "::error title=BLOCKED_CODEX_AUTHENTICATION_INVALID::CODEX_ACCESS_TOKEN"
+            exit 1
+          fi
+          echo "CODEX_AUTHENTICATED=true"
+
+      - name: Run no-model preflight
+        if: always()
+        env:
+          CODEX_ACCESS_TOKEN: ${{ secrets.CODEX_ACCESS_TOKEN }}
+        run: node scripts/codex-runner-preflight.mjs
+
+      - name: Upload redacted Step 17B report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: step17b-codex-runner-preflight-${{ github.run_id }}
+          path: codex-runner-preflight.json
+          if-no-files-found: error
+          retention-days: 7
