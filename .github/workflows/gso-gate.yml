@@ -46,15 +46,11 @@ jobs:
         run: npm run test:smoke
 
       - name: Generate candidate BackstopJS visual baseline
-        if: >-
-          (github.event_name == 'workflow_dispatch' && inputs.update_visual_baseline) ||
-          hashFiles('backstop_data/bitmaps_reference/*.png') == ''
+        if: github.event_name == 'workflow_dispatch' && inputs.update_visual_baseline
         run: npm run test:visual:reference
 
       - name: BackstopJS visual baseline gate
-        if: >-
-          hashFiles('backstop_data/bitmaps_reference/*.png') != '' &&
-          (github.event_name != 'workflow_dispatch' || !inputs.update_visual_baseline)
+        if: github.event_name != 'workflow_dispatch' || !inputs.update_visual_baseline
         run: npm run test:visual
 
       - name: Upload Playwright evidence
