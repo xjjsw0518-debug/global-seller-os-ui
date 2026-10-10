@@ -38,6 +38,7 @@ function waitForViteStartup() {
       if (chunk.toString().includes("Local:")) {
         clearTimeout(timeout);
         server.stdout.off("data", onData);
+        server.stderr.off("data", onData);
         server.off("exit", onExit);
         resolve();
       }
@@ -45,10 +46,12 @@ function waitForViteStartup() {
     const onExit = (code) => {
       clearTimeout(timeout);
       server.stdout.off("data", onData);
+      server.stderr.off("data", onData);
       reject(new Error(`Vite exited before becoming ready (${code})`));
     };
 
     server.stdout.on("data", onData);
+    server.stderr.on("data", onData);
     server.once("exit", onExit);
   });
 }
