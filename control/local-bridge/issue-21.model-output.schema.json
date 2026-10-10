@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "GSO Codex controller-applied evidence artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "base_sha",
+    "run_id",
+    "lease_id",
+    "authorization_id",
+    "attestation_sha256",
+    "target_path",
+    "content",
+    "evidence_sources",
+    "provenance_urls",
+    "current_live_verification",
+    "changed_files",
+    "tests_run",
+    "blocker"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "gso.codex-controller-artifact.v1" },
+    "status": { "type": "string", "enum": ["READY", "BLOCKED"] },
+    "base_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "run_id": { "type": "string", "minLength": 8, "maxLength": 128 },
+    "lease_id": { "type": "string", "minLength": 8, "maxLength": 128 },
+    "authorization_id": { "type": "string", "minLength": 16, "maxLength": 128 },
+    "attestation_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "target_path": { "type": "string", "const": "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md" },
+    "content": { "type": "string", "maxLength": 65536 },
+    "evidence_sources": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1, "maxLength": 256 },
+          "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+        }
+      }
+    },
+    "provenance_urls": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": { "type": "string", "pattern": "^https://github\\.com/" }
+    },
+    "current_live_verification": { "type": "boolean", "const": false },
+    "changed_files": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 1,
+      "items": { "type": "string", "const": "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md" }
+    },
+    "tests_run": { "type": "array", "maxItems": 0, "items": { "type": "string" } },
+    "blocker": { "type": "string", "maxLength": 2048 }
+  }
+}

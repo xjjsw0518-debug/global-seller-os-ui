@@ -36,6 +36,20 @@ test('RUNNING requires a paired Codex run and lease marker', () => {
   assert.equal(state.running_is_evidence_backed, true);
 });
 
+test('latest explicit controller state preserves terminal BLOCKED after historical RUNNING', () => {
+  const state = evaluateIssueState(
+    { state: 'open', body: '## Status\n\n`READY`' },
+    [
+      { created_at: '2026-10-10T17:54:02Z', body: 'GSO_STATE=RUNNING\nRUN_ID=run-2\nLEASE_ID=lease-2' },
+      { created_at: '2026-10-10T17:54:17Z', body: 'GSO_STATE=BLOCKED\nRUN_ID=run-2\nLEASE_ID=lease-2' },
+    ],
+  );
+  assert.equal(state.effective_state, 'BLOCKED');
+  assert.equal(state.running_is_evidence_backed, false);
+  assert.equal(state.latest_controller_state_evidence.state, 'BLOCKED');
+  assert.equal(state.latest_controller_state_evidence.run_id, 'run-2');
+});
+
 test('incomplete Issue checklist blocks admission', () => {
   const admission = evaluateAdmission('## Status\n`READY`\n\nScope: read-only acceptance.');
   assert.equal(admission.complete, false);

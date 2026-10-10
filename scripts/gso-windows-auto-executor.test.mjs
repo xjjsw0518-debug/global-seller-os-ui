@@ -167,15 +167,26 @@ test('PASS requires merged PR and successful main Gate, not a PR Gate', () => {
 });
 
 test('Codex invocation is bounded, ephemeral, sandboxed, offline, and non-main', () => {
-  const invocation = buildCodexInvocation({ codexPath: 'codex.cmd', worktreePath: 'C:\\task', outputPath: 'C:\\state\\last.txt' });
+  const invocation = buildCodexInvocation({
+    codexPath: 'codex.cmd', worktreePath: 'C:\\task', outputPath: 'C:\\state\\last.json',
+    outputSchemaPath: 'C:\\repo\\control\\local-bridge\\issue-21.model-output.schema.json',
+  });
   assert.equal(invocation.timeout_ms, 30 * 60 * 1000);
   assert.equal(invocation.max_model_runs, 1);
   assert.equal(invocation.max_automatic_retries, 0);
   assert.equal(invocation.direct_main_push, false);
   assert.ok(invocation.args.includes('--ephemeral'));
-  assert.ok(invocation.args.includes('workspace-write'));
-  assert.ok(invocation.args.includes('sandbox_workspace_write.network_access=false'));
+  assert.ok(invocation.args.includes('read-only'));
+  assert.ok(invocation.args.includes('--output-schema'));
+  assert.equal(invocation.model_filesystem_write_allowed, false);
+  assert.equal(invocation.output_mode, 'MODEL_JSON_CONTROLLER_APPLY');
   assert.ok(invocation.args.includes('web_search="disabled"'));
+});
+
+test('real execute rejects simulation-only authorization envelopes', () => {
+  const result = validateAuthorizationEnvelope(authorization({ simulation_only: true }), authorizationContext);
+  assert.equal(result.valid, false);
+  assert.ok(result.errors.includes('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE'));
 });
 
 test('Codex child environment contains no controller or OpenAI credentials', () => {
@@ -484,16 +495,23 @@ test('reviewed executor must be exact clean origin/main content', () => {
     git(repoRoot, 'config', 'user.email', 'test@example.invalid');
     git(repoRoot, 'config', 'user.name', 'Test');
     const executorPath = join(repoRoot, 'scripts', 'gso-windows-auto-executor.mjs');
+    const localBridgePath = join(repoRoot, 'scripts', 'gso-windows-local-bridge-dry-run.mjs');
+    const structuredOutputPath = join(repoRoot, 'scripts', 'gso-structured-model-output.mjs');
     const manifestPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.execute.manifest.json');
     const promptPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.prompt.md');
     const checklistPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.checklist.md');
-    for (const path of [executorPath, manifestPath, promptPath, checklistPath]) mkdirSync(dirname(path), { recursive: true });
+    const schemaPath = join(repoRoot, 'control', 'local-bridge', 'issue-21.model-output.schema.json');
+    for (const path of [executorPath, localBridgePath, structuredOutputPath, manifestPath, promptPath, checklistPath, schemaPath]) mkdirSync(dirname(path), { recursive: true });
     writeFileSync(executorPath, 'reviewed executor\n');
+    writeFileSync(localBridgePath, 'reviewed local bridge\n');
+    writeFileSync(structuredOutputPath, 'reviewed structured output controller\n');
     writeFileSync(promptPath, 'prompt\n');
     writeFileSync(checklistPath, 'checklist\n');
+    writeFileSync(schemaPath, '{}\n');
     const manifest = {
       mode: 'EXECUTE_ONE_AUTHORIZED_ISSUE', prompt_path: 'control/local-bridge/issue-21.prompt.md',
       issue_body_path: 'control/local-bridge/issue-21.checklist.md', reviewed_executor_sha256: sha256(readFileSync(executorPath)),
+      model_output_schema_path: 'control/local-bridge/issue-21.model-output.schema.json',
     };
     writeFileSync(manifestPath, `${JSON.stringify(manifest)}\n`);
     git(repoRoot, 'add', '.'); git(repoRoot, 'commit', '-m', 'reviewed');

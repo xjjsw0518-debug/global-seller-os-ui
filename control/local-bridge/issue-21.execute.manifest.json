@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "bridge_revision": "step-c.2-issue31-attestation",
+  "bridge_revision": "step-c.4-controller-content-hash-readback",
   "mode": "EXECUTE_ONE_AUTHORIZED_ISSUE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -13,10 +13,13 @@
   "planned_branch_prefix": "codex/wrc-p2-u01-attempt",
   "planned_worktree_relative_path_prefix": "worktrees/issue-21-wrc-p2-u01-attempt",
   "prompt_path": "control/local-bridge/issue-21.prompt.md",
-  "prompt_sha256": "250a26b36dd553ece6738a566a96f09a23f2f33eaa485b85dc210ce54e3f51a8",
+  "prompt_sha256": "c270d566fcff291d9aa96c6ae69a8726430a73e5b6a9539ed2c6302653553367",
+  "model_output_mode": "MODEL_JSON_CONTROLLER_APPLY",
+  "model_output_schema_path": "control/local-bridge/issue-21.model-output.schema.json",
+  "model_output_schema_sha256": "412020d39a397aad6f71c7d087d835b8f89cfe0eb00db50dea7c38284a1583be",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "69bf34d041b60aa7ef30c454bdae93f57d0d2c0b7ec5d24a6bcc651160c0de60",
+  "reviewed_executor_sha256": "338dd154078364e313ff54d1b90edeb0079f3a5391ffab12a905ae15c1d8f655",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],
@@ -31,6 +34,8 @@
   },
   "issue_execution_policy": {
     "enabled": true,
+    "model_filesystem_write_allowed": false,
+    "controller_applies_validated_model_output": true,
     "allowed_files": [
       "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md"
     ],

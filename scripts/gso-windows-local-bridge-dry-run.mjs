@@ -78,17 +78,32 @@ export function extractIssueBodyStatus(body = '') {
 export function evaluateIssueState(issue, comments = []) {
   const bodyStatus = extractIssueBodyStatus(issue.body || '');
   const runningClaims = comments.filter((comment) => /\bRUNNING\b/i.test(comment.body || ''));
-  const executionEvidence = comments.filter((comment) => {
+  const executionEvidence = comments.map((comment, index) => {
     const body = comment.body || '';
-    return /\bRUN_ID=[A-Za-z0-9._:-]+\b/.test(body) && /\bLEASE_ID=[A-Za-z0-9._:-]+\b/.test(body);
-  });
+    const runId = body.match(/\bRUN_ID=([A-Za-z0-9._:-]+)\b/)?.[1];
+    const leaseId = body.match(/\bLEASE_ID=([A-Za-z0-9._:-]+)\b/)?.[1];
+    if (!runId || !leaseId) return null;
+    const explicitState = body.match(/^GSO_STATE=(CLAIMED|RUNNING|PR_CREATED|TESTING|FINAL_GATE_PENDING|PR_REVIEW_REQUIRED|PASS|FAILED|BLOCKED|FIX_REQUIRED)$/im)?.[1]?.toUpperCase();
+    const state = explicitState || (/\bRUNNING\b/i.test(body) ? 'RUNNING' : null);
+    if (!state) return null;
+    return {
+      state,
+      run_id: runId,
+      lease_id: leaseId,
+      created_at: comment.created_at || null,
+      order: Number.isFinite(Date.parse(comment.created_at || '')) ? Date.parse(comment.created_at) : index,
+      index,
+    };
+  }).filter(Boolean).sort((left, right) => left.order - right.order || left.index - right.index);
+  const latestEvidence = executionEvidence.at(-1) || null;
   return {
     issue_open: issue.state === 'open',
     body_status: bodyStatus,
     running_claim_count: runningClaims.length,
     codex_run_lease_evidence_count: executionEvidence.length,
-    effective_state: executionEvidence.length > 0 ? 'RUNNING' : bodyStatus,
-    running_is_evidence_backed: executionEvidence.length > 0,
+    effective_state: latestEvidence?.state || bodyStatus,
+    running_is_evidence_backed: latestEvidence?.state === 'RUNNING',
+    latest_controller_state_evidence: latestEvidence,
   };
 }
 
@@ -520,9 +535,9 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
         title: issue.title,
         updated_at: issue.updated_at,
         ...issueState,
-        conclusion: issueState.running_is_evidence_backed
-          ? 'RUNNING_WITH_CODEX_RUN_AND_LEASE_EVIDENCE'
-          : 'READY_FORMAL_RUNNING_COMMENT_HAS_NO_CODEX_RUN_OR_LEASE_EVIDENCE',
+        conclusion: issueState.latest_controller_state_evidence
+          ? `LATEST_CONTROLLER_STATE_${issueState.effective_state}_WITH_RUN_AND_LEASE_EVIDENCE`
+          : `BODY_STATE_${issueState.body_status}_NO_CONTROLLER_STATE_EVIDENCE`,
       },
       admission,
       reviewed_issue_checklist: {

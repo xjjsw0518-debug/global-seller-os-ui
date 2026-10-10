@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "bridge_revision": "step-c.2-issue31-attestation",
+  "bridge_revision": "step-c.4-controller-content-hash-readback",
   "mode": "DRY_RUN_NO_MODEL_NO_GITHUB_WRITE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -13,7 +13,11 @@
   "planned_branch_prefix": "codex/wrc-p2-u01-attempt",
   "planned_worktree_relative_path_prefix": "worktrees/issue-21-wrc-p2-u01-attempt",
   "prompt_path": "control/local-bridge/issue-21.prompt.md",
-  "prompt_sha256": "250a26b36dd553ece6738a566a96f09a23f2f33eaa485b85dc210ce54e3f51a8",
+  "prompt_sha256": "c270d566fcff291d9aa96c6ae69a8726430a73e5b6a9539ed2c6302653553367",
+  "model_output_mode": "MODEL_JSON_CONTROLLER_APPLY",
+  "model_output_schema_path": "control/local-bridge/issue-21.model-output.schema.json",
+  "model_output_schema_sha256": "412020d39a397aad6f71c7d087d835b8f89cfe0eb00db50dea7c38284a1583be",
+  "reviewed_executor_sha256": "338dd154078364e313ff54d1b90edeb0079f3a5391ffab12a905ae15c1d8f655",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
   "new_attempt_recovery_policy": {
@@ -28,11 +32,11 @@
   "bridge_sources": [
     {
       "path": "scripts/gso-windows-local-bridge-dry-run.mjs",
-      "sha256": "20a860577f06d0228b88d98fcdb6680910589afeadfe3308a38d6d311cb2d9d5"
+      "sha256": "758aa21532e9b2f6a79000b0f084602ee36a195f036494d5264f3272f475b696"
     },
     {
       "path": "scripts/gso-windows-local-bridge-dry-run.test.mjs",
-      "sha256": "c58ddf9d6d33dbe54acb52bbf0166acc77b9d959da214200e773be908a45b395"
+      "sha256": "f6cd0c0503952f9301942bcd2187ede8f4bc13aa3686e97b915b4694e7e4cf52"
     }
   ],
   "bridge_change_policy": {
