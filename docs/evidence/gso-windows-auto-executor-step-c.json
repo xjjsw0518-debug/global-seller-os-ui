@@ -1,0 +1,87 @@
+{
+  "schema_version": 2,
+  "generated_at": "2026-10-10T15:52:44.903Z",
+  "final_state": "GSO_AUTO_EXECUTOR_DRY_RUN_READY",
+  "scope": {
+    "pull_request": 30,
+    "base_main_sha": "a38c1904ce457ae21fbf8c91739ad95c223894cd",
+    "model_call_performed": false,
+    "github_write_performed_by_dry_run": false
+  },
+  "review_repairs": {
+    "reviewed_executor_exact_origin_main_required": true,
+    "dirty_or_untracked_policy_rejected": true,
+    "authorization_id_atomic_single_use": true,
+    "authorization_binds_issue_manifest_prompt_executor_base_and_expiry": true,
+    "dry_run_execute_manifests_separated": true,
+    "state_comments_require_trusted_author_and_local_lineage": true,
+    "pr_gate_does_not_set_pass": true,
+    "pass_requires_merge_and_main_gate": true,
+    "external_state_directory_required": true,
+    "executor_tests_separate_from_gso_gate": true
+  },
+  "dry_run": {
+    "issue_number": 21,
+    "issue_effective_state": "READY",
+    "issue_running_evidence_backed": false,
+    "ready_queue_issue_numbers": [21, 22, 23],
+    "selected_issue": 21,
+    "development_entry_checklist": "ALLOWED",
+    "prepared_run_id": "gso-21-1791647554743-5fa1a1e1",
+    "prepared_lease_id": "3bf0255e2ad3c3471862707358b72c49",
+    "prompt_sha256": "caaadf1f7d8d98dde030ad6a5ed228460dd0d8414ce4768a74a470cf9ea49ed8",
+    "prompt_hash_matches": true,
+    "worktree_isolation": "PASS",
+    "credential_isolation": {
+      "status": "PASS",
+      "github_credential_visible": false,
+      "direct_network_reachable": false,
+      "secret_values_recorded": false
+    },
+    "github_reads_verified": true,
+    "blockers": []
+  },
+  "simulations": {
+    "success": "PR_REVIEW_REQUIRED_NOT_PASS",
+    "duplicate_issue": "DUPLICATE_PREVENTED",
+    "network_failure": "CLAIMED_RECOVERY_REQUIRED_ZERO_RETRY",
+    "codex_failure": "FAILED_ZERO_RETRY",
+    "timeout": "FAILED_ZERO_RETRY",
+    "forbidden_change": "BLOCKED_BEFORE_PR",
+    "preliminary_gate_failure": "FIX_REQUIRED_NO_AUTO_MERGE",
+    "final_gate_failure": "FIX_REQUIRED_NO_AUTO_MERGE"
+  },
+  "tests": {
+    "command": "node --test scripts/gso-windows-local-bridge-dry-run.test.mjs scripts/gso-windows-auto-executor.test.mjs",
+    "executor_and_bridge_passed": 31,
+    "failed": 0,
+    "invoked_by_existing_gso_gate": false
+  },
+  "source_integrity": {
+    "scripts/gso-windows-auto-executor.mjs": "49852fe687c1d9827b17db56d4516653b199d01223745910e30621ca621b1404",
+    "scripts/gso-windows-auto-executor.test.mjs": "32377c7e558c85305ecb0cf5e5f20149187dd04618422f759f9ea1daa4382610",
+    "control/local-bridge/issue-21.execute.manifest.json": "d66c72cf3af4cfdf1a6e86954de75a9bd2a9a3f4d381bbad7d7355c3f1164155"
+  },
+  "allowed_codex_files": [
+    "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md"
+  ],
+  "controller_post_gate_allowed_files": [
+    "public/dev-status.json"
+  ],
+  "limits": {
+    "max_concurrency": 1,
+    "max_model_runs": 1,
+    "max_automatic_retries": 0,
+    "codex_timeout_minutes": 30,
+    "direct_main_push_allowed": false,
+    "automatic_merge_allowed": false,
+    "openai_api_key_allowed": false,
+    "separate_real_run_confirmation_required": true
+  },
+  "queue_baseline": {
+    "issue_21": { "state": "open", "status": "READY", "body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c" },
+    "issue_22": { "state": "open", "status": "READY", "body_sha256": "1fceb3316ce587bd2117ced50482334a63340c69296b6f41d2510f6dcdbfa7d4" },
+    "issue_23": { "state": "open", "status": "READY", "body_sha256": "557f668d7cdf6a5439a8bd0e9d3c343be6027d055971cb9d052307529394b86d" }
+  },
+  "next_action": "After PR #30 is merged and main Gate passes, request separate user confirmation immediately before creating the one-time Issue #21 authorization."
+}

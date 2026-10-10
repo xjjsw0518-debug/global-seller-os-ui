@@ -1,0 +1,65 @@
+{
+  "schema_version": 3,
+  "bridge_revision": "step-c.1",
+  "mode": "EXECUTE_ONE_AUTHORIZED_ISSUE",
+  "repository": "xjjsw0518-debug/global-seller-os-ui",
+  "issue_number": 21,
+  "task_id": "WRC-P2-U01",
+  "issue_marker": "gso-auto-loop:WRC-P2-U01",
+  "required_source_state": "READY",
+  "base_ref": "origin/main",
+  "planned_branch": "codex/wrc-p2-u01-single-issue",
+  "planned_worktree_relative_path": "worktrees/issue-21-wrc-p2-u01",
+  "prompt_path": "control/local-bridge/issue-21.prompt.md",
+  "prompt_sha256": "caaadf1f7d8d98dde030ad6a5ed228460dd0d8414ce4768a74a470cf9ea49ed8",
+  "issue_body_path": "control/local-bridge/issue-21.checklist.md",
+  "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
+  "reviewed_executor_sha256": "49852fe687c1d9827b17db56d4516653b199d01223745910e30621ca621b1404",
+  "trusted_controller_logins": [
+    "xjjsw0518-debug"
+  ],
+  "issue_execution_policy": {
+    "enabled": true,
+    "allowed_files": [
+      "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md"
+    ],
+    "forbidden_files": [
+      "src/App.jsx",
+      "src/workerResourceReadAdapter.js",
+      "src/workerResourceReadAdapter.test.js",
+      "src/WorkerOverviewMapPanels.jsx",
+      "src/workerOverviewMap.css",
+      "src/workerWorldOutlineMap.css",
+      "src/WorkerWorldOutlineMap.jsx",
+      "worker/index.js",
+      "tests/e2e/smoke.spec.mjs",
+      "tests/e2e/accessibility.spec.mjs",
+      ".github/workflows/gso-gate.yml",
+      "backstop.config.cjs",
+      "backstop_data/**",
+      "package.json",
+      "package-lock.json"
+    ],
+    "controller_post_gate_allowed_files": [
+      "public/dev-status.json"
+    ]
+  },
+  "github_writeback_policy": {
+    "controller_only": true,
+    "credential_inherited_by_codex": false,
+    "repository_installation_scope": "xjjsw0518-debug/global-seller-os-ui",
+    "project_writeback": "DEFERRED_NON_BLOCKING"
+  },
+  "step_b_limits": {
+    "max_concurrency": 1,
+    "max_model_runs": 1,
+    "max_automatic_retries": 0,
+    "timeout_minutes": 30,
+    "credential_source": "WINDOWS_CODEX_CLI_EXISTING_CHATGPT_LOGIN",
+    "api_key_allowed": false,
+    "server_codex_allowed": false,
+    "runner_role": "NON_AI_GSO_GATE_ONLY",
+    "direct_main_push_allowed": false,
+    "real_model_run_requires_separate_confirmation": true
+  }
+}
