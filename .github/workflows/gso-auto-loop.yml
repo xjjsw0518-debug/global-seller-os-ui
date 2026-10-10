@@ -6,14 +6,19 @@ on:
     - cron: '*/5 * * * *'
 
 permissions:
-  contents: read
-  issues: read
+  contents: write
+  issues: write
   pull-requests: read
-  actions: read
+  actions: write
+
+concurrency:
+  group: gso-auto-loop-controller
+  cancel-in-progress: false
 
 jobs:
   controller:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
