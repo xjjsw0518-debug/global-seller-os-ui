@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-10T14:07:45.131Z",
+  "final_state": "WINDOWS_GSO_BRIDGE_DRY_RUN_READY",
+  "run_id": "gso-dry-20261010140742-04285448",
+  "lease_id": "45dcfb380bdbb1c6be10aa9d4d68fd76",
+  "local_codex_cli": {
+    "executable_found": true,
+    "executable_path": "<WINDOWS_CODEX_EXECUTABLE>",
+    "version": "codex-cli 0.161.0",
+    "authenticated": true,
+    "auth_type": "CHATGPT",
+    "raw_auth_output_recorded": false
+  },
+  "auth_status": {
+    "authenticated": true,
+    "type": "CHATGPT",
+    "secret_value_recorded": false
+  },
+  "issue_21_source_state": {
+    "repository": "xjjsw0518-debug/global-seller-os-ui",
+    "issue_number": 21,
+    "title": "[WRC-P2-U01] Worker homepage overview/map-data real-read acceptance",
+    "updated_at": "2026-10-10T12:25:10Z",
+    "issue_open": true,
+    "body_status": "READY",
+    "running_claim_count": 1,
+    "codex_run_lease_evidence_count": 0,
+    "effective_state": "READY",
+    "running_is_evidence_backed": false,
+    "conclusion": "READY_FORMAL_RUNNING_COMMENT_HAS_NO_CODEX_RUN_OR_LEASE_EVIDENCE"
+  },
+  "admission": {
+    "complete": false,
+    "missing_fields": [
+      "OUT_OF_SCOPE",
+      "ACCEPTANCE_CRITERIA",
+      "ALLOWED_FILES",
+      "FORBIDDEN_FILES",
+      "REQUIRED_GATES",
+      "EXPECTED_EVIDENCE",
+      "AUTHORIZATION",
+      "RISK_LEVEL",
+      "ENTRY_DECISION",
+      "NEXT_SAFE_UNIT"
+    ],
+    "decision": "BLOCKED_INCOMPLETE_CHECKLIST"
+  },
+  "bridge_dry_run": {
+    "ready": true,
+    "model_call_performed": false,
+    "github_write_performed": false,
+    "business_code_changed": false,
+    "prompt_path": "control/local-bridge/issue-21.prompt.md",
+    "prompt_sha256": "dab1b91bd057f09681d42149ff179373a19705abaffcbd3183a6b6052e660ace",
+    "prompt_hash_matches_manifest": true,
+    "manifest_sha256": "a5865076b791c106e7faae70b24f1083e75ef0b69268622d40fb8acfe9239c45",
+    "changed_file_policy": {
+      "ok": true,
+      "changed_paths": [
+        "control/local-bridge/issue-21.manifest.json",
+        "control/local-bridge/issue-21.prompt.md",
+        "docs/GSO_WINDOWS_LOCAL_BRIDGE_DRY_RUN.md",
+        "docs/evidence/gso-windows-local-bridge-dry-run-issue-21.json",
+        "scripts/gso-windows-local-bridge-dry-run.mjs",
+        "scripts/gso-windows-local-bridge-dry-run.test.mjs"
+      ],
+      "forbidden_matches": [],
+      "not_allowed": []
+    }
+  },
+  "worktree_isolation": {
+    "ok": true,
+    "created": false,
+    "detached_probe": true,
+    "clean": true,
+    "same_base_head": true,
+    "distinct_top_level": true,
+    "planned_branch": "codex/wrc-p2-u01-single-issue",
+    "planned_relative_path": "worktrees/issue-21-wrc-p2-u01",
+    "probe_path": "<LOCAL_BRIDGE_STATE>/worktrees/issue-21-probe",
+    "base_sha": "a3aa4eec28a9317c3a424445136a10f62ac3dd5d"
+  },
+  "lease_idempotency": {
+    "atomic_single_instance_lock": true,
+    "deterministic_lease_id": true,
+    "lease_acquired": true,
+    "idempotent_replay": false,
+    "status": "ACTIVE"
+  },
+  "gh_writeback_readiness": {
+    "ready": false,
+    "gh_cli_installed": false,
+    "gh_token_present": false,
+    "reason": "DRY_RUN_HAS_NO_REVIEWED_CREDENTIALLED_GITHUB_WRITE_PATH",
+    "write_attempted": false
+  },
+  "runner_test_only": {
+    "gso_gate_runner_role": "NON_AI_TESTS_ONLY",
+    "local_bridge_codex_role": "WINDOWS_ONLY",
+    "server_codex_invoked": false,
+    "note": "Existing manual runner Codex bootstrap workflows were not invoked or modified."
+  },
+  "blockers": [],
+  "step_b": {
+    "execution_performed": false,
+    "limits": {
+      "max_concurrency": 1,
+      "max_model_runs": 1,
+      "max_automatic_retries": 0,
+      "timeout_minutes": 30,
+      "credential_source": "WINDOWS_CODEX_CLI_EXISTING_CHATGPT_LOGIN",
+      "api_key_allowed": false,
+      "server_codex_allowed": false,
+      "runner_role": "NON_AI_GSO_GATE_ONLY",
+      "direct_main_push_allowed": false
+    },
+    "blockers": [
+      "ISSUE_DEVELOPMENT_ENTRY_CHECKLIST_INCOMPLETE",
+      "ISSUE_ALLOWED_FILES_EMPTY",
+      "GITHUB_WRITEBACK_NOT_READY",
+      "STEP_B_HUMAN_REVIEW_REQUIRED"
+    ]
+  },
+  "next_safe_unit": "Review this dry-run evidence; complete Issue #21 admission and a supported GitHub writeback path before one bounded Codex model run.",
+  "redaction": {
+    "local_paths": true,
+    "secret_values": true,
+    "raw_auth_output": true
+  }
+}
