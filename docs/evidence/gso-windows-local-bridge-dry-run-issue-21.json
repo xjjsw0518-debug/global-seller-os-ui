@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
-  "generated_at": "2026-10-10T14:07:45.131Z",
+  "generated_at": "2026-10-10T14:12:22.600Z",
   "final_state": "WINDOWS_GSO_BRIDGE_DRY_RUN_READY",
-  "run_id": "gso-dry-20261010140742-04285448",
-  "lease_id": "45dcfb380bdbb1c6be10aa9d4d68fd76",
+  "run_id": "gso-dry-20261010141219-3d11c14a",
+  "lease_id": "a7f5ad49ab4873535601b704b604416a",
   "local_codex_cli": {
     "executable_found": true,
     "executable_path": "<WINDOWS_CODEX_EXECUTABLE>",
@@ -58,8 +58,6 @@
     "changed_file_policy": {
       "ok": true,
       "changed_paths": [
-        "control/local-bridge/issue-21.manifest.json",
-        "control/local-bridge/issue-21.prompt.md",
         "docs/GSO_WINDOWS_LOCAL_BRIDGE_DRY_RUN.md",
         "docs/evidence/gso-windows-local-bridge-dry-run-issue-21.json",
         "scripts/gso-windows-local-bridge-dry-run.mjs",
@@ -84,9 +82,10 @@
   "lease_idempotency": {
     "atomic_single_instance_lock": true,
     "deterministic_lease_id": true,
-    "lease_acquired": true,
-    "idempotent_replay": false,
-    "status": "ACTIVE"
+    "input_base_sha": "a3aa4eec28a9317c3a424445136a10f62ac3dd5d",
+    "lease_acquired": false,
+    "idempotent_replay": true,
+    "status": "COMPLETED"
   },
   "gh_writeback_readiness": {
     "ready": false,

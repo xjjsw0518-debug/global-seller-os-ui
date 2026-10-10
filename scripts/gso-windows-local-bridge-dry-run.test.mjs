@@ -10,6 +10,7 @@ import {
   checkChangedPaths,
   evaluateAdmission,
   evaluateIssueState,
+  parseGitStatusPaths,
   releaseSingletonLock,
 } from './gso-windows-local-bridge-dry-run.mjs';
 
@@ -50,6 +51,13 @@ test('allowed and forbidden path policy is fail closed', () => {
   assert.equal(denied.ok, false);
   assert.deepEqual(denied.forbidden_matches, ['src/App.jsx']);
   assert.deepEqual(denied.not_allowed, ['docs/unreviewed.md', 'src/App.jsx']);
+});
+
+test('git porcelain parser preserves paths for tracked and untracked files', () => {
+  assert.deepEqual(
+    parseGitStatusPaths(' M docs/GSO_WINDOWS_LOCAL_BRIDGE_DRY_RUN.md\n?? scripts/new-file.mjs\n'),
+    ['docs/GSO_WINDOWS_LOCAL_BRIDGE_DRY_RUN.md', 'scripts/new-file.mjs'],
+  );
 });
 
 test('single-instance lock is atomic and releases cleanly', () => {

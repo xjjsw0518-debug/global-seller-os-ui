@@ -13,7 +13,7 @@ It does not write GitHub, invoke Codex inference, edit business code, call serve
 ## Lock and idempotency
 
 - One local bridge process acquires an atomic lock directory before it reads or prepares work.
-- One deterministic lease ID is derived from repository, Issue, Issue revision, prompt manifest hash, and prompt hash.
+- One deterministic lease ID is derived from repository, Issue, Issue revision, base Git SHA, prompt manifest hash, and prompt hash.
 - A second process cannot acquire an active lease.
 - A completed lease is an idempotent replay and never authorizes a second model call.
 - The bridge never auto-steals a stale or unknown lease. Recovery requires review.

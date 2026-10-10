@@ -167,13 +167,18 @@ function git(repoRoot, args, timeout = 30_000) {
   return result.stdout.trim();
 }
 
-function changedPaths(repoRoot) {
-  const status = git(repoRoot, ['status', '--porcelain=v1', '--untracked-files=all']);
+export function parseGitStatusPaths(status) {
   if (!status) return [];
-  return status.split(/\r?\n/).map((line) => {
+  return status.split(/\r?\n/).filter(Boolean).map((line) => {
     const value = line.slice(3).trim();
     return value.includes(' -> ') ? value.split(' -> ').at(-1) : value;
   });
+}
+
+function changedPaths(repoRoot) {
+  const result = runCommand('git', ['-C', repoRoot, 'status', '--porcelain=v1', '--untracked-files=all']);
+  if (!result.ok) throw new Error(`GIT_STATUS_FAILED:${result.status ?? result.error_code ?? 'UNKNOWN'}`);
+  return parseGitStatusPaths(result.stdout.replace(/\r?\n$/, ''));
 }
 
 function ensureChildPath(parent, child) {
@@ -326,10 +331,12 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
     const { issue, comments } = await readIssue(manifest.repository, manifest.issue_number);
     const issueState = evaluateIssueState(issue, comments);
     const admission = evaluateAdmission(issue.body || '');
+    const baseSha = git(repoRoot, ['rev-parse', manifest.base_ref]);
     const leaseId = sha256([
       manifest.repository,
       manifest.issue_number,
       issue.updated_at,
+      baseSha,
       manifestHash,
       promptHash,
     ].join('\n')).slice(0, 32);
@@ -397,6 +404,7 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       lease_idempotency: {
         atomic_single_instance_lock: true,
         deterministic_lease_id: true,
+        input_base_sha: baseSha,
         lease_acquired: lease.acquired,
         idempotent_replay: lease.idempotent_replay,
         status: lease.status,
