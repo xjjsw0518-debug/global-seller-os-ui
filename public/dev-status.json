@@ -1,19 +1,19 @@
 {
   "overall_status": "READY",
-  "current_step": "WRC-P2-U00F — Define standalone resource-list API contract (deferred decision)",
+  "current_step": "Worker Phase 2 next batch READY — U01/U02/U03",
   "last_updated": "2026-10-10T11:41:12.300Z",
   "auto_refresh_seconds": 30,
   "auto_loop": {
     "status": "ON",
-    "batch": "wrc-p2-resource-contract",
+    "batch": "wrc-p2-next-batch",
     "current_running_issue": null,
     "ready_queue": [
-      "WRC-P2-U00F"
+      "WRC-P2-U01", "WRC-P2-U02", "WRC-P2-U03"
     ],
     "last_controller_check": "2026-10-10T11:41:12.300Z",
-    "last_recovery_action": "Detected WRC-P2-U00E completion and published the WRC-P2-U00F next action.",
+    "last_recovery_action": "Closed U00F and published Worker Phase 2 next batch U01/U02/U03.",
     "user_approval_required": false,
-    "resume_instruction": "Continue from WRC-P2-U00E into WRC-P2-U00F as a contract-decision unit only. Record standalone resource-list API as DEFERRED for the current phase and continue to reuse overview/map-data. Define future pagination, filtering, sorting, query, response, error, and authorization semantics. Do not modify business UI/code, add a backend route, change the frontend read path, call a business-write API, or change BackstopJS baselines or Gate thresholds.",
+    "resume_instruction": "Select one READY Issue from U01/U02/U03 at a time; keep resource-list route deferred and do not modify business UI, baselines, thresholds, infrastructure, or secrets.",
     "platform_auto_start_supported": false
   },
   "latest_actions_run": {
