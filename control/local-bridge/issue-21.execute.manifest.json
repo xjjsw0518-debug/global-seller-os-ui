@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "bridge_revision": "step-c.4-controller-content-hash-readback",
+  "bridge_revision": "step-c.5-canonical-git-blob-sha256",
   "mode": "EXECUTE_ONE_AUTHORIZED_ISSUE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -19,7 +19,7 @@
   "model_output_schema_sha256": "412020d39a397aad6f71c7d087d835b8f89cfe0eb00db50dea7c38284a1583be",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "338dd154078364e313ff54d1b90edeb0079f3a5391ffab12a905ae15c1d8f655",
+  "reviewed_executor_sha256": "2198ad69648408c62d6cc3e2c4287806ac100f4dcb3fa5c6457fd5caa64f95ee",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],
