@@ -1,0 +1,9 @@
+{
+  "schema": "gso.single-task-supervisor.v1",
+  "repository": "xjjsw0518-debug/global-seller-os-ui",
+  "issue_number": 21,
+  "manifest_path": "control/local-bridge/issue-21.execute.manifest.json",
+  "poll_seconds": 20,
+  "max_authorized_launches": 1,
+  "child_timeout_minutes": 180
+}
