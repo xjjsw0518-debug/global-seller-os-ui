@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "bridge_revision": "step-c.2-issue31-attestation",
+  "bridge_revision": "step-c.3-issue33-structured-output",
   "mode": "DRY_RUN_NO_MODEL_NO_GITHUB_WRITE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -13,7 +13,7 @@
   "planned_branch_prefix": "codex/wrc-p2-u01-attempt",
   "planned_worktree_relative_path_prefix": "worktrees/issue-21-wrc-p2-u01-attempt",
   "prompt_path": "control/local-bridge/issue-21.prompt.md",
-  "prompt_sha256": "250a26b36dd553ece6738a566a96f09a23f2f33eaa485b85dc210ce54e3f51a8",
+  "prompt_sha256": "4264894f2ec725443e8a9de2fe1dba2db4f4bc9be11f0f5b3a1edef45bc59da5",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
   "new_attempt_recovery_policy": {
