@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-10T15:21:01.116Z",
+  "final_state": "GSO_AUTO_EXECUTOR_DRY_RUN_READY",
+  "pr_29": {
+    "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/pull/29",
+    "reviewed_head_sha": "22e423aa8a3af0c9b6ef41b415788a22b50256ce",
+    "merged": true,
+    "merge_commit_sha": "a38c1904ce457ae21fbf8c91739ad95c223894cd"
+  },
+  "main_gate": {
+    "run_id": 38061863441,
+    "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38061863441",
+    "head_sha": "a38c1904ce457ae21fbf8c91739ad95c223894cd",
+    "status": "completed",
+    "conclusion": "success",
+    "job_id": 114241585918,
+    "runner": "ser603198648259",
+    "mandatory_artifacts": [
+      "backstop-visual-38061863441",
+      "playwright-smoke-38061863441",
+      "knip-unused-38061863441",
+      "axe-accessibility-38061863441",
+      "dependency-cruiser-38061863441"
+    ],
+    "all_present_and_unexpired": true
+  },
+  "dry_run": {
+    "repository": "xjjsw0518-debug/global-seller-os-ui",
+    "issue_number": 21,
+    "main_sha": "a38c1904ce457ae21fbf8c91739ad95c223894cd",
+    "prepared_run_id": "gso-21-1791645651110-0cd9d5b9",
+    "prepared_lease_id": "4a7159bd99402b260553b0ddcc89d41d",
+    "model_call_performed": false,
+    "github_write_performed": false,
+    "issue_effective_state": "READY",
+    "issue_running_evidence_backed": false,
+    "ready_queue_issue_numbers": [21, 22, 23],
+    "selected_issue": 21,
+    "development_entry_checklist": "ALLOWED",
+    "prompt_sha256": "caaadf1f7d8d98dde030ad6a5ed228460dd0d8414ce4768a74a470cf9ea49ed8",
+    "prompt_hash_matches": true,
+    "worktree_isolation": {
+      "passed": true,
+      "distinct_top_level": true,
+      "same_base_sha": true,
+      "clean": true
+    },
+    "credential_isolation": {
+      "passed": true,
+      "restricted_token_sandbox_executed": true,
+      "github_credential_visible": false,
+      "direct_network_reachable": false,
+      "raw_output_recorded": false
+    },
+    "github_writeback": {
+      "controller_read_verified": true,
+      "operations_allowlisted": true,
+      "read_after_write_implemented": true,
+      "write_attempted": false,
+      "project_writeback": "DEFERRED_NON_BLOCKING"
+    },
+    "runner_role": "NON_AI_GSO_GATE_ONLY",
+    "server_codex_invoked": false,
+    "blockers": []
+  },
+  "limits": {
+    "max_concurrency": 1,
+    "max_model_runs": 1,
+    "max_automatic_retries": 0,
+    "codex_timeout_minutes": 30,
+    "direct_main_push_allowed": false,
+    "automatic_merge_allowed": false,
+    "openai_api_key_allowed": false,
+    "separate_real_run_confirmation_required": true
+  },
+  "simulation_results": {
+    "success": "PASS",
+    "duplicate_issue": "DUPLICATE_PREVENTED",
+    "network_failure": "CLAIMED_RECOVERY_REQUIRED_ZERO_RETRY",
+    "codex_failure": "FAILED_ZERO_RETRY",
+    "timeout": "FAILED_ZERO_RETRY",
+    "forbidden_change": "BLOCKED_BEFORE_PR",
+    "gate_failure": "FIX_REQUIRED_NO_AUTO_MERGE"
+  },
+  "tests": {
+    "command": "node --test scripts/gso-windows-local-bridge-dry-run.test.mjs scripts/gso-windows-auto-executor.test.mjs",
+    "passed": 28,
+    "failed": 0
+  },
+  "source_integrity": {
+    "scripts/gso-windows-auto-executor.mjs": "ad6673f902fa25aeb6005eb1c0e81acc6831d40100fcbcfbd10b25970f025e0b",
+    "scripts/gso-windows-auto-executor.test.mjs": "7fc4db808abf13d8cb2e040535934f045737bfb6a98f3fe731b419c2cf35f13a"
+  },
+  "allowed_codex_files": [
+    "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md"
+  ],
+  "controller_post_gate_allowed_files": [
+    "public/dev-status.json"
+  ],
+  "next_action": "Request separate confirmation immediately before the single authorized Issue #21 Codex model run."
+}
