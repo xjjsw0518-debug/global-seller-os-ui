@@ -535,9 +535,9 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
         title: issue.title,
         updated_at: issue.updated_at,
         ...issueState,
-        conclusion: issueState.running_is_evidence_backed
-          ? 'RUNNING_WITH_CODEX_RUN_AND_LEASE_EVIDENCE'
-          : 'READY_FORMAL_RUNNING_COMMENT_HAS_NO_CODEX_RUN_OR_LEASE_EVIDENCE',
+        conclusion: issueState.latest_controller_state_evidence
+          ? `LATEST_CONTROLLER_STATE_${issueState.effective_state}_WITH_RUN_AND_LEASE_EVIDENCE`
+          : `BODY_STATE_${issueState.body_status}_NO_CONTROLLER_STATE_EVIDENCE`,
       },
       admission,
       reviewed_issue_checklist: {

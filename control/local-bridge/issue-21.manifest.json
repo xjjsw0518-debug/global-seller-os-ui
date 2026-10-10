@@ -28,7 +28,7 @@
   "bridge_sources": [
     {
       "path": "scripts/gso-windows-local-bridge-dry-run.mjs",
-      "sha256": "2f585ca3b7df3500e32f536a3241677066f74259cae745e87cf1965ed0559d59"
+      "sha256": "758aa21532e9b2f6a79000b0f084602ee36a195f036494d5264f3272f475b696"
     },
     {
       "path": "scripts/gso-windows-local-bridge-dry-run.test.mjs",
