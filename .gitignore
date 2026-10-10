@@ -3,6 +3,9 @@ dist/
 outputs/
 playwright-report/
 test-results/
+backstop_data/bitmaps_test/
+backstop_data/html_report/
+backstop_data/ci_report/
 *.log
 .env
 .env.local
