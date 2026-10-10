@@ -18,6 +18,7 @@ const REQUIRED_ISSUE_FIELDS = [
   ['acceptance_criteria', /(?:^|\n)(?:#{1,6}\s*)?acceptance criteria\s*:/i],
   ['allowed_files', /(?:^|\n)(?:#{1,6}\s*)?allowed files\s*:/i],
   ['forbidden_files', /(?:^|\n)(?:#{1,6}\s*)?forbidden files\s*:/i],
+  ['frozen_ui_impact', /(?:^|\n)(?:#{1,6}\s*)?frozen ui impact\s*:/i],
   ['required_gates', /(?:^|\n)(?:#{1,6}\s*)?required gates\s*:/i],
   ['expected_evidence', /(?:^|\n)(?:#{1,6}\s*)?expected evidence\s*:/i],
   ['authorization', /(?:^|\n)(?:#{1,6}\s*)?(?:user )?authorization(?: required)?\s*:/i],
@@ -28,6 +29,10 @@ const REQUIRED_ISSUE_FIELDS = [
 
 function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function normalizeReviewText(value) {
+  return value.replace(/\r\n/g, '\n').replace(/\s+$/, '');
 }
 
 function normalizePath(value) {
@@ -108,12 +113,14 @@ function runCommand(command, args, options = {}) {
     windowsHide: true,
     shell: true,
     env: { ...process.env, NO_COLOR: '1', ...(options.env || {}) },
+    input: options.input,
   }) : spawnSync(command, args, {
     cwd: options.cwd,
     encoding: 'utf8',
     timeout: options.timeout ?? 20_000,
     windowsHide: true,
     env: { ...process.env, NO_COLOR: '1', ...(options.env || {}) },
+    input: options.input,
   });
   return {
     ok: !result.error && result.status === 0,
@@ -156,6 +163,120 @@ export function probeLocalCodex(run = runCommand) {
     authenticated: login.ok,
     auth_type: detectAuthType(authText, login.ok),
     raw_auth_output_recorded: false,
+  };
+}
+
+const CHILD_SECRET_ENV_PATTERN = /^(?:GH_TOKEN|GITHUB_TOKEN|OPENAI_API_KEY|GIT_ASKPASS|SSH_ASKPASS|GSO_GITHUB_|GITHUB_APP_|CODEX_API_KEY)/i;
+
+export function buildCodexChildEnv(source = process.env) {
+  return Object.fromEntries(Object.entries(source).filter(([name]) => !CHILD_SECRET_ENV_PATTERN.test(name)));
+}
+
+function readGitHubCredential(run = runCommand) {
+  const result = run('git', ['credential', 'fill'], {
+    input: 'protocol=https\nhost=github.com\n\n',
+    timeout: 20_000,
+  });
+  if (!result.ok) return { available: false, password: null };
+  const values = Object.fromEntries(result.stdout.split(/\r?\n/).map((line) => {
+    const split = line.indexOf('=');
+    return split > 0 ? [line.slice(0, split), line.slice(split + 1)] : null;
+  }).filter(Boolean));
+  return {
+    available: Boolean(values.password),
+    password: values.password || null,
+  };
+}
+
+export function evaluateGitHubWritebackCapabilities({ authenticated, scopes = [], repoPermissions = {} }) {
+  const normalizedScopes = new Set(scopes.map((scope) => scope.trim().toLowerCase()).filter(Boolean));
+  const repoScope = normalizedScopes.has('repo') || normalizedScopes.has('public_repo');
+  const projectWrite = normalizedScopes.has('project');
+  const repositoryWrite = authenticated && repoScope && repoPermissions.push === true;
+  return {
+    repository_issue_pr_write: repositoryWrite,
+    repository_branch_write: repositoryWrite,
+    actions_and_artifacts_read: authenticated && repoScope,
+    personal_project_write: authenticated && projectWrite,
+    complete: repositoryWrite && projectWrite,
+    broad_personal_credential: normalizedScopes.has('repo') || normalizedScopes.has('workflow'),
+  };
+}
+
+async function probeGitHubWriteback(credential, repository) {
+  const base = {
+    ready: false,
+    provider: 'WINDOWS_GIT_CREDENTIAL_MANAGER',
+    credential_available: credential.available,
+    api_authenticated: false,
+    oauth_scopes: [],
+    secret_value_recorded: false,
+    secret_persisted_by_bridge: false,
+    credential_inherited_by_codex: false,
+    controller_endpoint_allowlist_validated: true,
+    write_runtime_enabled: false,
+    write_attempted: false,
+  };
+  if (!credential.available || !credential.password) {
+    return { ...base, reason: 'WINDOWS_GIT_CREDENTIAL_NOT_AVAILABLE' };
+  }
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${credential.password}`,
+    'User-Agent': 'gso-windows-local-bridge-dry-run',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  try {
+    const [userResponse, repositoryResponse] = await Promise.all([
+      fetch('https://api.github.com/user', { headers }),
+      fetch(`https://api.github.com/repos/${repository}`, { headers }),
+    ]);
+    if (!userResponse.ok || !repositoryResponse.ok) {
+      return { ...base, reason: `GITHUB_AUTHENTICATED_READ_FAILED:${userResponse.status}:${repositoryResponse.status}` };
+    }
+    const scopeHeader = userResponse.headers.get('x-oauth-scopes') || '';
+    const scopes = scopeHeader.split(',').map((scope) => scope.trim()).filter(Boolean).sort();
+    const repositoryJson = await repositoryResponse.json();
+    const capabilities = evaluateGitHubWritebackCapabilities({
+      authenticated: true,
+      scopes,
+      repoPermissions: repositoryJson.permissions || {},
+    });
+    return {
+      ...base,
+      api_authenticated: true,
+      oauth_scopes: scopes,
+      repository_admin: repositoryJson.permissions?.admin === true,
+      capabilities,
+      ready: capabilities.complete,
+      reason: capabilities.complete
+        ? 'CONTROLLER_ONLY_WRITEBACK_CAPABILITIES_COMPLETE'
+        : 'PERSONAL_PROJECT_WRITE_PERMISSION_MISSING',
+      recommended_provider: capabilities.complete ? null : 'LEAST_PRIVILEGE_GITHUB_APP_OR_APP_USER_ACCESS_TOKEN',
+    };
+  } catch (error) {
+    return { ...base, reason: `GITHUB_AUTH_PROBE_FAILED:${error.name || 'ERROR'}` };
+  }
+}
+
+function buildWritebackPlan(manifest, runId, leaseId) {
+  const issueBase = `/repos/${manifest.repository}/issues/${manifest.issue_number}`;
+  return {
+    dry_run_only: true,
+    claim_requires_real_codex_run_id: true,
+    idempotency_key: sha256(`${manifest.repository}\n${manifest.issue_number}\n${leaseId}`),
+    controller_operations: [
+      { operation: 'READ_READY_ISSUE', method: 'GET', endpoint: issueBase },
+      { operation: 'CLAIM_WITH_RUN_AND_LEASE', method: 'POST', endpoint: `${issueBase}/comments`, precondition: 'REAL_CODEX_RUN_ID_AND_ACTIVE_LEASE' },
+      { operation: 'UPDATE_ISSUE_EVIDENCE', method: 'POST', endpoint: `${issueBase}/comments`, precondition: 'MATCHING_RUN_AND_LEASE' },
+      { operation: 'CREATE_PULL_REQUEST', method: 'POST', endpoint: `/repos/${manifest.repository}/pulls`, precondition: 'ALLOWED_PATHS_AND_NON_MAIN_BRANCH' },
+      { operation: 'READ_GATE_AND_ARTIFACTS', method: 'GET', endpoint: `/repos/${manifest.repository}/actions/runs`, precondition: 'EXACT_PR_HEAD_SHA' },
+      { operation: 'UPDATE_PROJECT_STATUS', method: 'GRAPHQL', endpoint: 'ProjectV2 item status', precondition: 'MATCHING_RUN_AND_LEASE' },
+      { operation: 'UPDATE_DEV_STATUS_AFTER_GATE', method: 'GIT', endpoint: 'public/dev-status.json', precondition: 'EXACT_HEAD_FULL_GATE_PASS' },
+    ],
+    prepared_run_id: runId,
+    prepared_lease_id: leaseId,
+    write_attempted: false,
   };
 }
 
@@ -254,30 +375,33 @@ function completeTaskLease(lease, report) {
   });
 }
 
-async function fetchJson(url) {
+async function fetchJson(url, token = null) {
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    'User-Agent': 'gso-windows-local-bridge-dry-run',
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  if (token) headers.Authorization = `Bearer ${token}`;
   const response = await fetch(url, {
-    headers: {
-      Accept: 'application/vnd.github+json',
-      'User-Agent': 'gso-windows-local-bridge-dry-run',
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
+    headers,
   });
   if (!response.ok) throw new Error(`GITHUB_READ_FAILED:${response.status}`);
   return response.json();
 }
 
-async function readIssue(repository, issueNumber) {
+async function readIssue(repository, issueNumber, token = null) {
   const base = `https://api.github.com/repos/${repository}`;
   const [issue, comments] = await Promise.all([
-    fetchJson(`${base}/issues/${issueNumber}`),
-    fetchJson(`${base}/issues/${issueNumber}/comments?per_page=100`),
+    fetchJson(`${base}/issues/${issueNumber}`, token),
+    fetchJson(`${base}/issues/${issueNumber}/comments?per_page=100`, token),
   ]);
   return { issue, comments };
 }
 
 function verifyWorktreeIsolation(repoRoot, stateDir, manifest) {
-  const probePath = ensureChildPath(stateDir, join(stateDir, 'worktrees', `issue-${manifest.issue_number}-probe`));
   const baseHead = git(repoRoot, ['rev-parse', manifest.base_ref]);
+  const probeName = `i${manifest.issue_number}-${baseHead.slice(0, 12)}`;
+  const probePath = ensureChildPath(stateDir, join(stateDir, 'w', probeName));
   let created = false;
   if (!existsSync(probePath)) {
     mkdirSync(dirname(probePath), { recursive: true });
@@ -298,6 +422,7 @@ function verifyWorktreeIsolation(repoRoot, stateDir, manifest) {
     planned_branch: manifest.planned_branch,
     planned_relative_path: manifest.planned_worktree_relative_path,
     probe_path: probePath,
+    probe_name: probeName,
     base_sha: baseHead,
   };
 }
@@ -322,15 +447,27 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
   const promptPath = resolve(repoRoot, manifest.prompt_path);
   const promptBytes = readFileSync(promptPath);
   const promptHash = sha256(promptBytes);
+  const issueBodyPath = resolve(repoRoot, manifest.issue_body_path);
+  const expectedIssueBody = normalizeReviewText(readFileSync(issueBodyPath, 'utf8'));
+  const issueBodyHash = sha256(expectedIssueBody);
+  const bridgeSourceIntegrity = manifest.bridge_sources.map((entry) => {
+    const actual = sha256(readFileSync(resolve(repoRoot, entry.path)));
+    return { path: entry.path, expected_sha256: entry.sha256, actual_sha256: actual, matches: entry.sha256 === actual };
+  });
   const manifestHash = sha256(manifestBytes);
   const runId = `gso-dry-${new Date().toISOString().replace(/[-:.TZ]/g, '').slice(0, 14)}-${randomUUID().slice(0, 8)}`;
   const singleton = acquireSingletonLock(stateDir, runId);
   if (!singleton.acquired) throw new Error(singleton.code);
 
   try {
-    const { issue, comments } = await readIssue(manifest.repository, manifest.issue_number);
+    const githubCredential = readGitHubCredential();
+    const githubWriteback = await probeGitHubWriteback(githubCredential, manifest.repository);
+    const { issue, comments } = await readIssue(manifest.repository, manifest.issue_number, githubCredential.password);
+    githubCredential.password = null;
     const issueState = evaluateIssueState(issue, comments);
     const admission = evaluateAdmission(issue.body || '');
+    const actualIssueBodyHash = sha256(normalizeReviewText(issue.body || ''));
+    const issueBodyMatches = issueBodyHash === actualIssueBodyHash;
     const baseSha = git(repoRoot, ['rev-parse', manifest.base_ref]);
     const leaseId = sha256([
       manifest.repository,
@@ -339,22 +476,19 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       baseSha,
       manifestHash,
       promptHash,
+      issueBodyHash,
     ].join('\n')).slice(0, 32);
-    const lease = acquireTaskLease(stateDir, leaseId, runId);
     const pathPolicy = checkChangedPaths(changedPaths(repoRoot), manifest.bridge_change_policy);
     const worktree = verifyWorktreeIsolation(repoRoot, stateDir, manifest);
     const codex = probeLocalCodex();
-    const ghCommand = process.platform === 'win32' ? runCommand('where.exe', ['gh']) : runCommand('which', ['gh']);
-    const githubWriteback = {
-      ready: false,
-      gh_cli_installed: ghCommand.ok,
-      gh_token_present: Boolean(process.env.GH_TOKEN || process.env.GITHUB_TOKEN),
-      reason: 'DRY_RUN_HAS_NO_REVIEWED_CREDENTIALLED_GITHUB_WRITE_PATH',
-      write_attempted: false,
-    };
+    // A dry-run lease is acquired only after non-model preflight succeeds, so a
+    // checkout/path failure cannot strand an ACTIVE lease before any model run.
+    const lease = acquireTaskLease(stateDir, leaseId, runId);
 
     const blockers = [];
     if (manifest.prompt_sha256 !== promptHash) blockers.push('PROMPT_HASH_MISMATCH');
+    if (manifest.issue_body_sha256 !== issueBodyHash) blockers.push('ISSUE_BODY_HASH_MISMATCH');
+    if (bridgeSourceIntegrity.some((entry) => !entry.matches)) blockers.push('BRIDGE_SOURCE_HASH_MISMATCH');
     if (!codex.executable_found) blockers.push('LOCAL_CODEX_CLI_NOT_FOUND');
     if (!codex.authenticated) blockers.push('LOCAL_CODEX_NOT_AUTHENTICATED');
     if (!pathPolicy.ok) blockers.push('BRIDGE_CHANGED_FILE_POLICY_FAILED');
@@ -364,16 +498,18 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
     const stepABridgeReady = blockers.length === 0;
     const stepBBlockers = [
       ...(admission.complete ? [] : ['ISSUE_DEVELOPMENT_ENTRY_CHECKLIST_INCOMPLETE']),
+      ...(issueBodyMatches ? [] : ['ISSUE_BODY_DOES_NOT_MATCH_REVIEWED_CHECKLIST']),
       ...(issueState.effective_state === manifest.required_source_state ? [] : ['ISSUE_SOURCE_NOT_READY']),
       ...(manifest.issue_execution_policy.allowed_files.length > 0 ? [] : ['ISSUE_ALLOWED_FILES_EMPTY']),
       ...(githubWriteback.ready ? [] : ['GITHUB_WRITEBACK_NOT_READY']),
-      'STEP_B_HUMAN_REVIEW_REQUIRED',
     ];
+    const stepBReady = stepABridgeReady && stepBBlockers.length === 0;
+    const writebackPlan = buildWritebackPlan(manifest, runId, leaseId);
 
     const report = {
-      schema_version: 1,
+      schema_version: 2,
       generated_at: new Date().toISOString(),
-      final_state: stepABridgeReady ? 'WINDOWS_GSO_BRIDGE_DRY_RUN_READY' : 'BLOCKED',
+      final_state: stepBReady ? 'WINDOWS_GSO_BRIDGE_STEP_B_READY' : 'WINDOWS_GSO_BRIDGE_STEP_B_BLOCKED',
       run_id: runId,
       lease_id: leaseId,
       local_codex_cli: codex,
@@ -389,6 +525,16 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
           : 'READY_FORMAL_RUNNING_COMMENT_HAS_NO_CODEX_RUN_OR_LEASE_EVIDENCE',
       },
       admission,
+      reviewed_issue_checklist: {
+        path: manifest.issue_body_path,
+        expected_sha256: issueBodyHash,
+        manifest_hash_matches: manifest.issue_body_sha256 === issueBodyHash,
+        github_body_sha256: actualIssueBodyHash,
+        github_body_matches: issueBodyMatches,
+        codex_allowed_files: manifest.issue_execution_policy.allowed_files,
+        controller_post_gate_allowed_files: manifest.issue_execution_policy.controller_post_gate_allowed_files,
+        forbidden_files: manifest.issue_execution_policy.forbidden_files,
+      },
       bridge_dry_run: {
         ready: stepABridgeReady,
         model_call_performed: false,
@@ -398,6 +544,7 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
         prompt_sha256: promptHash,
         prompt_hash_matches_manifest: manifest.prompt_sha256 === promptHash,
         manifest_sha256: manifestHash,
+        bridge_source_integrity: bridgeSourceIntegrity,
         changed_file_policy: pathPolicy,
       },
       worktree_isolation: worktree,
@@ -409,7 +556,12 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
         idempotent_replay: lease.idempotent_replay,
         status: lease.status,
       },
-      gh_writeback_readiness: githubWriteback,
+      gh_writeback_readiness: {
+        ...githubWriteback,
+        required_permissions: manifest.github_writeback_policy.required_permissions,
+        operations: manifest.github_writeback_policy.allowed_operations,
+        plan: writebackPlan,
+      },
       runner_test_only: {
         gso_gate_runner_role: 'NON_AI_TESTS_ONLY',
         local_bridge_codex_role: 'WINDOWS_ONLY',
@@ -418,12 +570,19 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       },
       blockers,
       step_b: {
+        ready: stepBReady,
         execution_performed: false,
+        model_call_performed: false,
+        separate_real_run_confirmation_required: true,
         limits: manifest.step_b_limits,
         blockers: stepBBlockers,
       },
-      next_safe_unit: stepABridgeReady
-        ? 'Review this dry-run evidence; complete Issue #21 admission and a supported GitHub writeback path before one bounded Codex model run.'
+      next_safe_unit: stepBReady
+        ? 'Request separate user confirmation immediately before one bounded Codex model run for Issue #21.'
+        : stepABridgeReady
+          ? issueBodyMatches
+            ? 'Provision controller-only personal Project writeback permission, then rerun the no-model dry run.'
+            : 'Synchronize the reviewed Issue #21 checklist, then rerun the no-model dry run.'
         : 'Repair the Step A blocker list and rerun the no-model dry run.',
     };
     completeTaskLease(lease, report);
@@ -439,7 +598,7 @@ export function redactLocalPaths(report) {
     redacted.local_codex_cli.executable_path = '<WINDOWS_CODEX_EXECUTABLE>';
   }
   if (redacted.worktree_isolation.probe_path) {
-    redacted.worktree_isolation.probe_path = '<LOCAL_BRIDGE_STATE>/worktrees/issue-21-probe';
+    redacted.worktree_isolation.probe_path = `<LOCAL_BRIDGE_STATE>/worktrees/${redacted.worktree_isolation.probe_name}`;
   }
   redacted.redaction = {
     local_paths: true,
@@ -461,7 +620,7 @@ async function main() {
     atomicWriteJson(resolve(args['redacted-output']), redactLocalPaths(report));
   }
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
-  if (report.final_state === 'BLOCKED') process.exitCode = 1;
+  if (report.final_state.endsWith('_BLOCKED')) process.exitCode = 1;
 }
 
 const isMain = process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href;

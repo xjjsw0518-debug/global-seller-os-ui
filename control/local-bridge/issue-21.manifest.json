@@ -1,5 +1,6 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
+  "bridge_revision": "step-b.1",
   "mode": "DRY_RUN_NO_MODEL_NO_GITHUB_WRITE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -10,7 +11,19 @@
   "planned_branch": "codex/wrc-p2-u01-single-issue",
   "planned_worktree_relative_path": "worktrees/issue-21-wrc-p2-u01",
   "prompt_path": "control/local-bridge/issue-21.prompt.md",
-  "prompt_sha256": "dab1b91bd057f09681d42149ff179373a19705abaffcbd3183a6b6052e660ace",
+  "prompt_sha256": "caaadf1f7d8d98dde030ad6a5ed228460dd0d8414ce4768a74a470cf9ea49ed8",
+  "issue_body_path": "control/local-bridge/issue-21.checklist.md",
+  "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
+  "bridge_sources": [
+    {
+      "path": "scripts/gso-windows-local-bridge-dry-run.mjs",
+      "sha256": "20a860577f06d0228b88d98fcdb6680910589afeadfe3308a38d6d311cb2d9d5"
+    },
+    {
+      "path": "scripts/gso-windows-local-bridge-dry-run.test.mjs",
+      "sha256": "c58ddf9d6d33dbe54acb52bbf0166acc77b9d959da214200e773be908a45b395"
+    }
+  ],
   "bridge_change_policy": {
     "allowed": [
       "control/local-bridge/**",
@@ -32,16 +45,58 @@
     ]
   },
   "issue_execution_policy": {
-    "enabled": false,
-    "allowed_files": [],
-    "forbidden_files": [
-      "**"
+    "enabled": true,
+    "allowed_files": [
+      "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md"
     ],
-    "blocked_until": [
-      "ISSUE_DEVELOPMENT_ENTRY_CHECKLIST_COMPLETE",
-      "ISSUE_ALLOWED_FILES_NON_EMPTY",
-      "SUPPORTED_GITHUB_WRITEBACK_AUTH_AVAILABLE",
-      "HUMAN_REVIEW_OF_STEP_B_PLAN"
+    "forbidden_files": [
+      "src/App.jsx",
+      "src/workerResourceReadAdapter.js",
+      "src/workerResourceReadAdapter.test.js",
+      "src/WorkerOverviewMapPanels.jsx",
+      "src/workerOverviewMap.css",
+      "src/workerWorldOutlineMap.css",
+      "src/WorkerWorldOutlineMap.jsx",
+      "worker/index.js",
+      "tests/e2e/smoke.spec.mjs",
+      "tests/e2e/accessibility.spec.mjs",
+      ".github/workflows/gso-gate.yml",
+      "backstop.config.cjs",
+      "backstop_data/**",
+      "package.json",
+      "package-lock.json"
+    ],
+    "controller_post_gate_allowed_files": [
+      "public/dev-status.json"
+    ]
+  },
+  "github_writeback_policy": {
+    "controller_only": true,
+    "credential_inherited_by_codex": false,
+    "repository_installation_scope": "xjjsw0518-debug/global-seller-os-ui",
+    "project_number": 1,
+    "required_permissions": {
+      "repository": {
+        "metadata": "read",
+        "contents": "write",
+        "issues": "write",
+        "pull_requests": "write",
+        "actions": "read",
+        "checks": "read"
+      },
+      "user": {
+        "projects": "write"
+      }
+    },
+    "allowed_operations": [
+      "READ_READY_ISSUE",
+      "CLAIM_WITH_RUN_AND_LEASE",
+      "UPDATE_ISSUE_EVIDENCE",
+      "CREATE_ISSUE_BRANCH",
+      "CREATE_PULL_REQUEST",
+      "READ_GATE_AND_ARTIFACTS",
+      "UPDATE_PROJECT_STATUS",
+      "UPDATE_DEV_STATUS_AFTER_GATE"
     ]
   },
   "step_b_limits": {
@@ -53,6 +108,7 @@
     "api_key_allowed": false,
     "server_codex_allowed": false,
     "runner_role": "NON_AI_GSO_GATE_ONLY",
-    "direct_main_push_allowed": false
+    "direct_main_push_allowed": false,
+    "real_model_run_requires_separate_confirmation": true
   }
 }

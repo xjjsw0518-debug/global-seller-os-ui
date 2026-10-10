@@ -7,8 +7,10 @@ import test from 'node:test';
 import {
   acquireSingletonLock,
   acquireTaskLease,
+  buildCodexChildEnv,
   checkChangedPaths,
   evaluateAdmission,
+  evaluateGitHubWritebackCapabilities,
   evaluateIssueState,
   parseGitStatusPaths,
   releaseSingletonLock,
@@ -39,6 +41,25 @@ test('incomplete Issue checklist blocks admission', () => {
   assert.equal(admission.complete, false);
   assert.ok(admission.missing_fields.includes('ALLOWED_FILES'));
   assert.ok(admission.missing_fields.includes('ACCEPTANCE_CRITERIA'));
+});
+
+test('complete Issue checklist requires the frozen UI impact declaration', () => {
+  const body = [
+    '## Scope:',
+    '## Out of Scope:',
+    '## Acceptance Criteria:',
+    '## Allowed Files:',
+    '## Forbidden Files:',
+    '## Frozen UI Impact:',
+    '## Required Gates:',
+    '## Expected Evidence:',
+    '## Authorization Required:',
+    '## Risk Level:',
+    '## Entry Decision:',
+    '## Next Safe Unit:',
+  ].join('\n');
+  assert.equal(evaluateAdmission(body).complete, true);
+  assert.equal(evaluateAdmission(body.replace('## Frozen UI Impact:', '')).missing_fields.includes('FROZEN_UI_IMPACT'), true);
 });
 
 test('allowed and forbidden path policy is fail closed', () => {
@@ -88,5 +109,35 @@ test('task lease refuses a duplicate active lease', () => {
   } finally {
     rmSync(stateDir, { recursive: true, force: true });
   }
+});
+
+test('Codex child environment never inherits GitHub or OpenAI credentials', () => {
+  const child = buildCodexChildEnv({
+    PATH: 'safe',
+    GH_TOKEN: 'secret',
+    GITHUB_TOKEN: 'secret',
+    OPENAI_API_KEY: 'secret',
+    GITHUB_APP_PRIVATE_KEY: 'secret',
+    GSO_GITHUB_BROKER_TOKEN: 'secret',
+  });
+  assert.deepEqual(child, { PATH: 'safe' });
+});
+
+test('GitHub writeback readiness requires personal Project write access', () => {
+  const repositoryOnly = evaluateGitHubWritebackCapabilities({
+    authenticated: true,
+    scopes: ['repo', 'workflow'],
+    repoPermissions: { push: true },
+  });
+  assert.equal(repositoryOnly.repository_issue_pr_write, true);
+  assert.equal(repositoryOnly.personal_project_write, false);
+  assert.equal(repositoryOnly.complete, false);
+
+  const complete = evaluateGitHubWritebackCapabilities({
+    authenticated: true,
+    scopes: ['repo', 'project'],
+    repoPermissions: { push: true },
+  });
+  assert.equal(complete.complete, true);
 });
 // End of dry-run contract tests.
