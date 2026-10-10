@@ -6,12 +6,16 @@ const standardPath = path.join(root, "docs", "GSO_GATE_EVIDENCE_STANDARD.md");
 const templatePath = path.join(root, "docs", "templates", "gate-evidence-comment.md");
 const failureStandardPath = path.join(root, "docs", "GSO_FAILURE_HANDLING_STANDARD.md");
 const failureTemplatePath = path.join(root, "docs", "templates", "failure-handling-comment.md");
+const developmentStandardPath = path.join(root, "docs", "GSO_DEVELOPMENT_ENTRY_STANDARD.md");
+const developmentTemplatePath = path.join(root, "docs", "templates", "development-entry-checklist.md");
 
-const [standard, template, failureStandard, failureTemplate] = await Promise.all([
+const [standard, template, failureStandard, failureTemplate, developmentStandard, developmentTemplate] = await Promise.all([
   fs.readFile(standardPath, "utf8"),
   fs.readFile(templatePath, "utf8"),
   fs.readFile(failureStandardPath, "utf8"),
   fs.readFile(failureTemplatePath, "utf8"),
+  fs.readFile(developmentStandardPath, "utf8"),
+  fs.readFile(developmentTemplatePath, "utf8"),
 ]);
 
 const requiredStandardTerms = [
@@ -90,6 +94,42 @@ const requiredFailureTemplateTerms = [
   "CODE / ENVIRONMENT / PERMISSION / USER_APPROVAL / UNKNOWN",
 ];
 
+const requiredDevelopmentStandardTerms = [
+  "## 2. Entry decision",
+  "## 3. Required Issue fields",
+  "## 4. Scope and Out of Scope",
+  "## 5. Allowed and forbidden files",
+  "## 6. UI freeze and authorization",
+  "## 7. Mandatory Gates",
+  "## 8. PR merge admission",
+  "## 9. Evidence requirements",
+  "## 10. Issue comments",
+  "## 11. Project Board states",
+  "## 12. User authorization",
+  "## 13. BLOCKED conditions and recovery",
+  "## 14. Center-specific recovery standards",
+  "Worker resources center",
+  "AI intelligent model center",
+  "Product center",
+];
+
+const requiredDevelopmentTemplateTerms = [
+  "## Issue ID",
+  "## Center / Module",
+  "## Task Name",
+  "## Scope",
+  "## Out of Scope",
+  "## Allowed Files",
+  "## Forbidden Files",
+  "## Frozen UI Impact",
+  "## Required Gates",
+  "## Expected Evidence",
+  "## User Authorization Required: YES / NO",
+  "## Risk Level: LOW / MEDIUM / HIGH",
+  "## Entry Decision: ALLOWED / BLOCKED",
+  "## Next Safe Unit",
+];
+
 const missing = [
   ...requiredStandardTerms
     .filter((term) => !standard.includes(term))
@@ -103,6 +143,12 @@ const missing = [
   ...requiredFailureTemplateTerms
     .filter((term) => !failureTemplate.includes(term))
     .map((term) => `${path.relative(root, failureTemplatePath)}: ${term}`),
+  ...requiredDevelopmentStandardTerms
+    .filter((term) => !developmentStandard.includes(term))
+    .map((term) => `${path.relative(root, developmentStandardPath)}: ${term}`),
+  ...requiredDevelopmentTemplateTerms
+    .filter((term) => !developmentTemplate.includes(term))
+    .map((term) => `${path.relative(root, developmentTemplatePath)}: ${term}`),
 ];
 
 if (missing.length > 0) {
@@ -111,4 +157,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("GSO gate evidence and failure-handling contracts: PASS");
+console.log("GSO gate evidence, failure-handling, and development-entry contracts: PASS");
