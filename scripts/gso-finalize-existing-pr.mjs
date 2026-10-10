@@ -116,6 +116,16 @@ function ensureRegularFile(path, code) {
   if (!stat.isFile() || stat.isSymbolicLink()) throw new Error(`${code}_NOT_REGULAR_FILE`);
 }
 
+function ensureNoSymlinkComponents(root, target, code) {
+  const rel = relative(resolve(root), resolve(target));
+  if (!rel || rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel)) throw new Error(`${code}_PATH_INVALID`);
+  let current = resolve(root);
+  for (const segment of rel.split(sep)) {
+    current = join(current, segment);
+    if (lstatSync(current).isSymbolicLink()) throw new Error(`${code}_SYMLINK_FORBIDDEN`);
+  }
+}
+
 function readJson(path, code) {
   try {
     return JSON.parse(readFileSync(path, 'utf8'));
@@ -193,6 +203,8 @@ function verifyHistoricalEvidence(stateDir, contract) {
   const receiptPath = safeChild(consumedRoot, join(consumedRoot, contract.historical.authorization_id, 'receipt.json'));
   ensureRegularFile(journalPath, 'HISTORICAL_JOURNAL');
   ensureRegularFile(receiptPath, 'HISTORICAL_RECEIPT');
+  ensureNoSymlinkComponents(stateDir, journalPath, 'HISTORICAL_JOURNAL');
+  ensureNoSymlinkComponents(stateDir, receiptPath, 'HISTORICAL_RECEIPT');
   const journalBytes = readFileSync(journalPath);
   const receiptBytes = readFileSync(receiptPath);
   if (sha256(journalBytes) !== contract.historical.journal_sha256) throw new Error('HISTORICAL_JOURNAL_HASH_MISMATCH');
@@ -292,6 +304,7 @@ function verifyOriginalWorktree(stateDir, contract) {
     ensureRegularGitBlob(worktreePath, 'HEAD', artifact.path, 'RECOVERY_ARTIFACT');
     const absolute = safeChild(worktreePath, join(worktreePath, artifact.path));
     ensureRegularFile(absolute, 'RECOVERY_ARTIFACT');
+    ensureNoSymlinkComponents(worktreePath, absolute, 'RECOVERY_ARTIFACT');
     if (sha256(gitBytes(worktreePath, ['show', `HEAD:${artifact.path}`])) !== artifact.sha256) {
       throw new Error(`RECOVERY_WORKTREE_ARTIFACT_HASH_MISMATCH:${artifact.path}`);
     }
@@ -299,6 +312,7 @@ function verifyOriginalWorktree(stateDir, contract) {
   ensureRegularGitBlob(worktreePath, 'HEAD', contract.controller_status.path, 'RECOVERY_STATUS_FILE');
   const statusPath = safeChild(worktreePath, join(worktreePath, contract.controller_status.path));
   ensureRegularFile(statusPath, 'RECOVERY_STATUS_FILE');
+  ensureNoSymlinkComponents(worktreePath, statusPath, 'RECOVERY_STATUS_FILE');
   const originalStatus = JSON.parse(gitBytes(worktreePath, ['show', `HEAD:${contract.controller_status.path}`]).toString('utf8'));
   const currentBytes = readFileSync(statusPath);
   const currentStatus = JSON.parse(currentBytes.toString('utf8'));
