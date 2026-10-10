@@ -70,6 +70,9 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || !inputs.update_visual_baseline
         run: npm run test:visual
 
+      - name: axe-core accessibility gate
+        run: npm run test:accessibility
+
       - name: Upload Playwright evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -109,5 +112,14 @@ jobs:
         with:
           name: knip-unused-${{ github.run_id }}
           path: knip-report/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload axe-core accessibility evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: axe-accessibility-${{ github.run_id }}
+          path: axe-report/
           if-no-files-found: warn
           retention-days: 7
