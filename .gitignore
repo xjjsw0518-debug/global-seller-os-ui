@@ -8,6 +8,7 @@ backstop_data/bitmaps_test/
 backstop_data/html_report/
 backstop_data/ci_report/
 *.log
+.gso-auto-executor-state/
 .env
 .env.local
 .DS_Store

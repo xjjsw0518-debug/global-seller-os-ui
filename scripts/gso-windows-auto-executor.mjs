@@ -8,8 +8,9 @@ import {
   rmSync,
   writeFileSync,
 } from 'node:fs';
+import { homedir } from 'node:os';
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
-import { pathToFileURL } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import {
   buildCodexChildEnv,
@@ -20,13 +21,18 @@ import {
 } from './gso-windows-local-bridge-dry-run.mjs';
 
 const STATE_MARKER = '<!-- gso-auto-executor-state:v1 -->';
+const EXECUTOR_PATH = fileURLToPath(import.meta.url);
+const DRY_RUN_MODE = 'DRY_RUN_NO_MODEL_NO_GITHUB_WRITE';
+const EXECUTE_MODE = 'EXECUTE_ONE_AUTHORIZED_ISSUE';
 const TERMINAL_STATES = new Set(['PASS', 'FAILED', 'BLOCKED', 'FIX_REQUIRED']);
 const TRANSITIONS = {
   READY: new Set(['CLAIMED']),
   CLAIMED: new Set(['RUNNING', 'BLOCKED']),
   RUNNING: new Set(['PR_CREATED', 'FAILED', 'BLOCKED']),
   PR_CREATED: new Set(['TESTING', 'FAILED']),
-  TESTING: new Set(['PASS', 'FAILED']),
+  TESTING: new Set(['FINAL_GATE_PENDING', 'FAILED']),
+  FINAL_GATE_PENDING: new Set(['PR_REVIEW_REQUIRED', 'FAILED']),
+  PR_REVIEW_REQUIRED: new Set(['PASS', 'BLOCKED']),
   FAILED: new Set(['BLOCKED', 'FIX_REQUIRED']),
   PASS: new Set(),
   BLOCKED: new Set(),
@@ -43,7 +49,14 @@ const ALLOWED_API_OPERATIONS = new Set([
   'CREATE_PULL_REQUEST',
   'READ_GATE_RUNS',
   'READ_GATE_ARTIFACTS',
+  'READ_AUTHENTICATED_USER',
 ]);
+
+export function assertManifestMode(manifest, expected) {
+  if (manifest?.mode !== expected) {
+    throw new Error(expected === EXECUTE_MODE ? 'EXECUTE_REQUIRES_EXECUTE_MANIFEST' : 'DRY_RUN_REQUIRES_DRY_RUN_MANIFEST');
+  }
+}
 
 export function sha256(value) {
   return createHash('sha256').update(value).digest('hex');
@@ -57,6 +70,21 @@ function safeChild(parent, child) {
     throw new Error('UNSAFE_CHILD_PATH');
   }
   return childPath;
+}
+
+export function defaultStateDir(repoRoot, env = process.env) {
+  const localRoot = env.LOCALAPPDATA || join(homedir(), 'AppData', 'Local');
+  return resolve(localRoot, 'GlobalSellerOS', 'codex-bridge', sha256(resolve(repoRoot)).slice(0, 16));
+}
+
+export function assertStateDirOutsideRepository(repoRoot, stateDir) {
+  const repo = resolve(repoRoot);
+  const state = resolve(stateDir);
+  const rel = relative(repo, state);
+  if (!rel || (!rel.startsWith(`..${sep}`) && rel !== '..' && !isAbsolute(rel))) {
+    throw new Error('EXECUTOR_STATE_DIRECTORY_MUST_BE_OUTSIDE_REPOSITORY');
+  }
+  return state;
 }
 
 export function atomicWriteJson(path, value) {
@@ -103,9 +131,9 @@ function changedPaths(repoRoot) {
   });
 }
 
-export function createRunIdentity({ repository, issueNumber, baseSha, manifestHash, issueRevision }) {
+export function createRunIdentity({ repository, issueNumber, baseSha, manifestHash, issueRevision, authorizationId = 'DRY_RUN' }) {
   const runId = `gso-${issueNumber}-${Date.now()}-${randomUUID().slice(0, 8)}`;
-  const leaseId = sha256([repository, issueNumber, baseSha, manifestHash, issueRevision].join('\n')).slice(0, 32);
+  const leaseId = sha256([repository, issueNumber, baseSha, manifestHash, issueRevision, authorizationId].join('\n')).slice(0, 32);
   return { runId, leaseId };
 }
 
@@ -172,8 +200,13 @@ export function transitionJournal(journalPath, nextState, evidence = {}) {
   if (nextState === 'RUNNING' && (!evidence.run_id || !evidence.lease_id || !evidence.codex_thread_id)) {
     throw new Error('RUNNING_REQUIRES_RUN_LEASE_AND_CODEX_THREAD_EVIDENCE');
   }
-  if (nextState === 'PASS' && (!evidence.gate_run_id || evidence.gate_conclusion !== 'success')) {
-    throw new Error('PASS_REQUIRES_SUCCESSFUL_GATE_EVIDENCE');
+  if (nextState === 'PASS' && (
+    !evidence.pr_merged
+    || !evidence.merge_commit_sha
+    || !evidence.main_gate_run_id
+    || evidence.main_gate_conclusion !== 'success'
+  )) {
+    throw new Error('PASS_REQUIRES_MERGED_PR_AND_SUCCESSFUL_MAIN_GATE_EVIDENCE');
   }
   const updated = {
     ...journal,
@@ -183,6 +216,10 @@ export function transitionJournal(journalPath, nextState, evidence = {}) {
   };
   atomicWriteJson(journalPath, updated);
   return updated;
+}
+
+export function finalizeMergedRun(journalPath, evidence) {
+  return transitionJournal(journalPath, 'PASS', evidence);
 }
 
 export function recordModelRun(journalPath) {
@@ -270,9 +307,11 @@ export function scanForSecrets({ repoRoot, paths, exactSecrets = [] }) {
   return { passed: findings.length === 0, findings, secret_values_recorded: false };
 }
 
-export function formatStateComment({ state, runId, leaseId, evidence = {} }) {
+export function formatStateComment({ repository, issueNumber, state, runId, leaseId, evidence = {} }) {
   const payload = {
     schema_version: 1,
+    repository,
+    issue_number: issueNumber,
     state,
     run_id: runId,
     lease_id: leaseId,
@@ -289,13 +328,37 @@ export function parseStateComment(body = '') {
   try { return JSON.parse(match[1]); } catch { return null; }
 }
 
-export function evaluateExecutorIssueState(issue, comments = []) {
+function journalMatchesState(stateDir, parsed) {
+  if (!stateDir || !parsed?.lease_id || !parsed?.run_id) return false;
+  try {
+    const journalPath = safeChild(stateDir, join(stateDir, 'leases', parsed.lease_id, 'journal.json'));
+    const journal = JSON.parse(readFileSync(journalPath, 'utf8'));
+    return journal.lease_id === parsed.lease_id
+      && journal.run_id === parsed.run_id
+      && journal.history?.some((entry) => entry.state === parsed.state);
+  } catch {
+    return false;
+  }
+}
+
+export function evaluateExecutorIssueState(issue, comments = [], options = {}) {
   const base = evaluateIssueState(issue, comments);
   const controllerStates = comments
-    .map((comment) => ({ parsed: parseStateComment(comment.body || ''), created_at: comment.created_at || '' }))
-    .filter((entry) => entry.parsed)
+    .map((comment) => ({
+      parsed: parseStateComment(comment.body || ''),
+      created_at: comment.created_at || '',
+      author: comment.user?.login || '',
+    }))
+    .filter((entry) => entry.parsed);
+  const trusted = controllerStates.filter((entry) => (
+    entry.author === options.trustedLogin
+    && entry.parsed.repository === options.repository
+    && entry.parsed.issue_number === options.issueNumber
+    && journalMatchesState(options.stateDir, entry.parsed)
+  ))
     .sort((left, right) => left.created_at.localeCompare(right.created_at));
-  const latest = controllerStates.at(-1)?.parsed;
+  const latest = trusted.at(-1)?.parsed;
+  const rejectedCount = controllerStates.length - trusted.length;
   return latest
     ? {
         ...base,
@@ -303,8 +366,15 @@ export function evaluateExecutorIssueState(issue, comments = []) {
         effective_run_id: latest.run_id,
         effective_lease_id: latest.lease_id,
         controller_state_evidence: true,
+        rejected_controller_state_comments: rejectedCount,
       }
-    : { ...base, controller_state_evidence: false };
+    : {
+        ...base,
+        effective_state: rejectedCount > 0 ? 'BLOCKED' : base.effective_state,
+        controller_state_evidence: false,
+        controller_state_evidence_error: rejectedCount > 0 ? 'UNTRUSTED_OR_UNVERIFIED_STATE_COMMENT' : null,
+        rejected_controller_state_comments: rejectedCount,
+      };
 }
 
 function readGitHubCredential() {
@@ -331,7 +401,9 @@ export class GitHubControllerBroker {
   async request(operation, method, path, body = undefined) {
     if (!ALLOWED_API_OPERATIONS.has(operation)) throw new Error(`GITHUB_OPERATION_NOT_ALLOWED:${operation}`);
     const expectedPrefix = `/repos/${this.repository}/`;
-    if (!path.startsWith(expectedPrefix)) throw new Error('GITHUB_ENDPOINT_OUTSIDE_REPOSITORY');
+    if (operation === 'READ_AUTHENTICATED_USER') {
+      if (method !== 'GET' || path !== '/user') throw new Error('GITHUB_ENDPOINT_OUTSIDE_REPOSITORY');
+    } else if (!path.startsWith(expectedPrefix)) throw new Error('GITHUB_ENDPOINT_OUTSIDE_REPOSITORY');
     const token = this.tokenProvider();
     try {
       const response = await fetch(`https://api.github.com${path}`, {
@@ -365,12 +437,22 @@ export class GitHubControllerBroker {
     return this.request('READ_COMMENTS', 'GET', `/repos/${this.repository}/issues/${issueNumber}/comments?per_page=100`);
   }
 
+  readAuthenticatedUser() {
+    return this.request('READ_AUTHENTICATED_USER', 'GET', '/user');
+  }
+
   async writeState(issueNumber, payload) {
-    const body = formatStateComment(payload);
-    const priorComments = await this.readComments(issueNumber);
+    const body = formatStateComment({ ...payload, repository: this.repository, issueNumber });
+    const [priorComments, authenticatedUser] = await Promise.all([
+      this.readComments(issueNumber),
+      this.readAuthenticatedUser(),
+    ]);
     const prior = priorComments.find((comment) => {
       const parsed = parseStateComment(comment.body || '');
-      return parsed?.state === payload.state
+      return comment.user?.login === authenticatedUser.login
+        && parsed?.repository === this.repository
+        && parsed?.issue_number === issueNumber
+        && parsed?.state === payload.state
         && parsed?.run_id === payload.runId
         && parsed?.lease_id === payload.leaseId;
     });
@@ -426,12 +508,44 @@ function prepareProbeWorktree({ repoRoot, stateDir, issueNumber, baseSha }) {
 export function validateAuthorizationEnvelope(envelope, context) {
   const errors = [];
   if (!envelope) errors.push('AUTHORIZATION_ENVELOPE_MISSING');
+  if (!/^[A-Za-z0-9][A-Za-z0-9._-]{15,127}$/.test(envelope?.authorization_id || '')) errors.push('AUTHORIZATION_ID_INVALID');
   if (envelope?.issue_number !== context.issueNumber) errors.push('AUTHORIZATION_ISSUE_MISMATCH');
   if (envelope?.manifest_sha256 !== context.manifestHash) errors.push('AUTHORIZATION_MANIFEST_MISMATCH');
+  if (envelope?.prompt_sha256 !== context.promptHash) errors.push('AUTHORIZATION_PROMPT_MISMATCH');
+  if (envelope?.executor_sha256 !== context.executorHash) errors.push('AUTHORIZATION_EXECUTOR_MISMATCH');
+  if (envelope?.approved_base_sha !== context.baseSha) errors.push('AUTHORIZATION_BASE_MISMATCH');
   if (envelope?.max_model_runs !== 1) errors.push('AUTHORIZATION_MODEL_LIMIT_INVALID');
   if (envelope?.max_automatic_retries !== 0) errors.push('AUTHORIZATION_RETRY_LIMIT_INVALID');
   if (!envelope?.expires_at || Date.parse(envelope.expires_at) <= Date.now()) errors.push('AUTHORIZATION_EXPIRED');
   return { valid: errors.length === 0, errors };
+}
+
+export function consumeAuthorization(stateDir, envelope, context) {
+  const authorization = validateAuthorizationEnvelope(envelope, context);
+  if (!authorization.valid) throw new Error(`REAL_RUN_NOT_AUTHORIZED:${authorization.errors.join(',')}`);
+  const consumedRoot = safeChild(stateDir, join(stateDir, 'authorizations', 'consumed'));
+  mkdirSync(consumedRoot, { recursive: true });
+  const receiptDir = safeChild(consumedRoot, join(consumedRoot, envelope.authorization_id));
+  try {
+    mkdirSync(receiptDir);
+  } catch (error) {
+    if (error.code === 'EEXIST') throw new Error('AUTHORIZATION_ALREADY_CONSUMED');
+    throw error;
+  }
+  const receipt = {
+    schema_version: 1,
+    authorization_id: envelope.authorization_id,
+    envelope_sha256: sha256(JSON.stringify(envelope)),
+    issue_number: context.issueNumber,
+    manifest_sha256: context.manifestHash,
+    prompt_sha256: context.promptHash,
+    executor_sha256: context.executorHash,
+    approved_base_sha: context.baseSha,
+    consumed_at: new Date().toISOString(),
+    model_call_started: false,
+  };
+  atomicWriteJson(join(receiptDir, 'receipt.json'), receipt);
+  return { receiptDir, receipt };
 }
 
 export function simulateExecution({ stateDir, identity, outcome = 'success', changed = [], policy }) {
@@ -463,8 +577,14 @@ export function simulateExecution({ stateDir, identity, outcome = 'success', cha
     transitionJournal(lease.journalPath, 'FIX_REQUIRED', { reason: 'GSO_GATE_FAILED' });
     return { outcome, state: 'FIX_REQUIRED', auto_merge: false, journalPath: lease.journalPath };
   }
-  transitionJournal(lease.journalPath, 'PASS', { gate_run_id: 888, gate_conclusion: 'success', mandatory_artifacts: 5 });
-  return { outcome, state: 'PASS', model_runs: 1, automatic_retries: 0, journalPath: lease.journalPath };
+  transitionJournal(lease.journalPath, 'FINAL_GATE_PENDING', { preliminary_gate_run_id: 888, gate_conclusion: 'success', mandatory_artifacts: 5 });
+  if (outcome === 'final-gate-failure') {
+    transitionJournal(lease.journalPath, 'FAILED', { gate_run_id: 889, gate_conclusion: 'failure', auto_merge: false });
+    transitionJournal(lease.journalPath, 'FIX_REQUIRED', { reason: 'FINAL_STATUS_HEAD_GATE_FAILED' });
+    return { outcome, state: 'FIX_REQUIRED', auto_merge: false, journalPath: lease.journalPath };
+  }
+  transitionJournal(lease.journalPath, 'PR_REVIEW_REQUIRED', { final_gate_run_id: 889, gate_conclusion: 'success', mandatory_artifacts: 5, pr_merged: false });
+  return { outcome, state: 'PR_REVIEW_REQUIRED', model_runs: 1, automatic_retries: 0, auto_merge: false, journalPath: lease.journalPath };
 }
 
 function runCodexProcess({ invocation, prompt, env, onThreadStarted }) {
@@ -531,9 +651,37 @@ function normalizeReviewText(value) {
   return value.replace(/\r\n/g, '\n').replace(/\s+$/, '');
 }
 
-function assertReviewedMainRevision(repoRoot) {
-  const result = run('git', ['-C', repoRoot, 'merge-base', '--is-ancestor', 'HEAD', 'origin/main']);
-  if (!result.ok) throw new Error('EXECUTOR_REVISION_NOT_REVIEWED_ON_MAIN');
+export function verifyReviewedExecutionSources({ repoRoot, manifestPath, manifest, fetchMain = true, runningExecutorPath = EXECUTOR_PATH }) {
+  if (fetchMain) git(repoRoot, ['fetch', '--quiet', 'origin', 'main'], { timeout: 120_000 });
+  const head = git(repoRoot, ['rev-parse', 'HEAD']);
+  const reviewedMain = git(repoRoot, ['rev-parse', 'origin/main']);
+  if (head !== reviewedMain) throw new Error('EXECUTOR_MUST_RUN_FROM_EXACT_REVIEWED_MAIN');
+  const status = git(repoRoot, ['status', '--porcelain=v1', '--untracked-files=all']);
+  if (status) throw new Error('EXECUTOR_REPOSITORY_NOT_CLEAN');
+  const expectedExecutor = resolve(repoRoot, 'scripts', 'gso-windows-auto-executor.mjs');
+  if (resolve(runningExecutorPath).toLowerCase() !== expectedExecutor.toLowerCase()) {
+    throw new Error('RUNNING_EXECUTOR_PATH_MISMATCH');
+  }
+  const paths = [
+    'scripts/gso-windows-auto-executor.mjs',
+    relative(repoRoot, manifestPath).replaceAll('\\', '/'),
+    manifest.prompt_path,
+    manifest.issue_body_path,
+  ];
+  for (const path of paths) {
+    if (!path || path.startsWith('../') || isAbsolute(path)) throw new Error('REVIEWED_SOURCE_PATH_INVALID');
+    const tracked = run('git', ['-C', repoRoot, 'ls-files', '--error-unmatch', '--', path]);
+    if (!tracked.ok) throw new Error(`REVIEWED_SOURCE_NOT_TRACKED:${path}`);
+    const reviewedBlob = run('git', ['-C', repoRoot, 'rev-parse', `origin/main:${path}`]);
+    const localBlob = run('git', ['-C', repoRoot, 'hash-object', '--path', path, path]);
+    if (!reviewedBlob.ok) throw new Error(`REVIEWED_SOURCE_MISSING_ON_MAIN:${path}`);
+    if (!localBlob.ok || localBlob.stdout.trim() !== reviewedBlob.stdout.trim()) throw new Error(`REVIEWED_SOURCE_CONTENT_MISMATCH:${path}`);
+  }
+  const reviewedExecutor = run('git', ['-C', repoRoot, 'show', 'origin/main:scripts/gso-windows-auto-executor.mjs']);
+  if (!reviewedExecutor.ok) throw new Error('REVIEWED_EXECUTOR_MISSING_ON_MAIN');
+  const executorHash = sha256(reviewedExecutor.stdout);
+  if (manifest.reviewed_executor_sha256 !== executorHash) throw new Error('EXECUTOR_HASH_NOT_APPROVED_BY_MANIFEST');
+  return { passed: true, head_sha: head, reviewed_main_sha: reviewedMain, executor_sha256: executorHash, paths };
 }
 
 function gateArtifactStatus(artifacts) {
@@ -547,21 +695,19 @@ export function applyExecutorDevStatus(current, { now, issueNumber, pr, headSha,
   const item = {
     id: 'WRC-P2-U01',
     name: 'Worker homepage overview/map-data real-read acceptance',
-    status: 'PASS',
+    status: 'FINAL_GATE_PENDING',
     owner: 'GSO Windows Codex Bridge',
     evidence: `Issue #${issueNumber}; PR #${pr.number}; preliminary exact-head GSO Gate ${gate.run_id}`,
     next_step: 'Review and merge the PR only after its final status-update head passes the full GSO Gate.',
   };
-  const completed = [...(current.completed || [])].filter((entry) => entry.id !== item.id);
-  completed.push(item);
   return {
     ...current,
-    overall_status: 'PASS',
+    overall_status: current.overall_status,
     current_step: `WRC-P2-U01 PR #${pr.number} passed its development Gate; final status-head Gate pending`,
     last_updated: now,
     auto_loop: {
       ...(current.auto_loop || {}),
-      status: 'ON',
+      status: current.auto_loop?.status,
       current_running_issue: null,
       ready_queue: (current.auto_loop?.ready_queue || []).filter((entry) => entry !== 'WRC-P2-U01'),
       last_controller_check: now,
@@ -574,8 +720,8 @@ export function applyExecutorDevStatus(current, { now, issueNumber, pr, headSha,
       status: 'SUCCESS',
       head_sha: headSha,
     },
-    completed,
-    in_progress: (current.in_progress || []).filter((entry) => entry.id !== item.id),
+    completed: (current.completed || []).filter((entry) => entry.id !== item.id),
+    in_progress: [...(current.in_progress || []).filter((entry) => entry.id !== item.id), item],
     todo: (current.todo || []).filter((entry) => entry.id !== item.id),
     next_safe_unit: 'Review the bounded WRC-P2-U01 PR and its final exact-head Gate; do not auto-merge.',
     next_action: {
@@ -616,48 +762,69 @@ async function waitForExactHeadGate(broker, headSha, timeoutMs = 60 * 60 * 1000)
 }
 
 export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath, authorizationEnvelope }) {
-  assertReviewedMainRevision(repoRoot);
+  assertStateDirOutsideRepository(repoRoot, stateDir);
   const manifestBytes = readFileSync(manifestPath);
   const manifest = JSON.parse(manifestBytes.toString('utf8'));
+  assertManifestMode(manifest, EXECUTE_MODE);
+  const integrity = verifyReviewedExecutionSources({ repoRoot, manifestPath, manifest });
   const manifestHash = sha256(manifestBytes);
+  const prompt = readFileSync(resolve(repoRoot, manifest.prompt_path), 'utf8');
+  const promptHash = sha256(prompt);
+  const baseSha = git(repoRoot, ['rev-parse', manifest.base_ref]);
   const authorization = validateAuthorizationEnvelope(authorizationEnvelope, {
     issueNumber: manifest.issue_number,
     manifestHash,
+    promptHash,
+    executorHash: integrity.executor_sha256,
+    baseSha,
   });
   if (!authorization.valid) throw new Error(`REAL_RUN_NOT_AUTHORIZED:${authorization.errors.join(',')}`);
   const codex = probeLocalCodex();
   if (!codex.executable_found || !codex.authenticated || !codex.executable_path) throw new Error('LOCAL_CODEX_NOT_READY');
   const broker = new GitHubControllerBroker(manifest.repository);
-  const [openIssues, issue, comments] = await Promise.all([
+  const [openIssues, issue, comments, authenticatedUser] = await Promise.all([
     broker.listOpenIssues(),
     broker.readIssue(manifest.issue_number),
     broker.readComments(manifest.issue_number),
+    broker.readAuthenticatedUser(),
   ]);
+  if (!manifest.trusted_controller_logins?.includes(authenticatedUser.login)) throw new Error('UNTRUSTED_CONTROLLER_IDENTITY');
   const queuedIssue = openIssues.find((candidate) => !candidate.pull_request && candidate.number === manifest.issue_number);
   if (!queuedIssue || evaluateIssueState(queuedIssue, []).body_status !== manifest.required_source_state) {
     throw new Error('ISSUE_NOT_PRESENT_IN_READY_QUEUE');
   }
-  const issueState = evaluateExecutorIssueState(issue, comments);
+  const issueState = evaluateExecutorIssueState(issue, comments, {
+    repository: manifest.repository,
+    issueNumber: manifest.issue_number,
+    trustedLogin: authenticatedUser.login,
+    stateDir,
+  });
   const admission = evaluateAdmission(issue.body || '');
   if (!admission.complete) throw new Error('DEVELOPMENT_ENTRY_CHECKLIST_INCOMPLETE');
   if (issueState.effective_state !== manifest.required_source_state) throw new Error(`ISSUE_NOT_READY:${issueState.effective_state}`);
   const actualIssueHash = sha256(normalizeReviewText(issue.body || ''));
   if (actualIssueHash !== manifest.issue_body_sha256) throw new Error('ISSUE_BODY_HASH_MISMATCH');
-  const prompt = readFileSync(resolve(repoRoot, manifest.prompt_path), 'utf8');
-  if (sha256(prompt) !== manifest.prompt_sha256) throw new Error('PROMPT_HASH_MISMATCH');
-  const baseSha = git(repoRoot, ['rev-parse', manifest.base_ref]);
+  if (promptHash !== manifest.prompt_sha256) throw new Error('PROMPT_HASH_MISMATCH');
   const identity = createRunIdentity({
     repository: manifest.repository,
     issueNumber: manifest.issue_number,
     baseSha,
     manifestHash,
     issueRevision: actualIssueHash,
+    authorizationId: authorizationEnvelope.authorization_id,
   });
   const lock = acquireExecutorLock(stateDir, identity.runId);
   if (!lock.acquired) throw new Error(lock.reason);
   try {
     const lease = acquireExecutionLease(stateDir, identity.leaseId, identity.runId);
     if (!lease.acquired) throw new Error(lease.recovery_required ? 'INCOMPLETE_LEASE_REQUIRES_RECOVERY' : 'DUPLICATE_ISSUE_EXECUTION_PREVENTED');
+    const authorizationConsumption = consumeAuthorization(stateDir, authorizationEnvelope, {
+      issueNumber: manifest.issue_number,
+      manifestHash,
+      promptHash,
+      executorHash: integrity.executor_sha256,
+      baseSha,
+    });
     const isolation = probeCodexSandboxCredentialIsolation({ codexPath: codex.executable_path, repoRoot });
     if (!isolation.passed) throw new Error('CREDENTIAL_ISOLATION_FAILED');
     const taskWorktree = createTaskWorktree({ repoRoot, stateDir, manifest, baseSha });
@@ -667,6 +834,11 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
     });
     transitionJournal(lease.journalPath, 'CLAIMED', claimEvidence);
     recordModelRun(lease.journalPath);
+    atomicWriteJson(join(authorizationConsumption.receiptDir, 'receipt.json'), {
+      ...authorizationConsumption.receipt,
+      model_call_started: true,
+      model_call_started_at: new Date().toISOString(),
+    });
     const modelOutputPath = safeChild(stateDir, join(lease.leaseDir, 'codex-last-message.txt'));
     const invocation = buildCodexInvocation({ codexPath: codex.executable_path, worktreePath: taskWorktree.path, outputPath: modelOutputPath });
     let runningWriteback = null;
@@ -758,6 +930,16 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
       });
       return { final_state: 'FIX_REQUIRED', ...identity, pr, gate: preliminaryGate, auto_merge: false };
     }
+    transitionJournal(lease.journalPath, 'FINAL_GATE_PENDING', {
+      preliminary_gate_run_id: preliminaryGate.run_id,
+      gate_conclusion: preliminaryGate.conclusion,
+      mandatory_artifacts: 5,
+      pr_merged: false,
+    });
+    await broker.writeState(manifest.issue_number, {
+      state: 'FINAL_GATE_PENDING', runId: identity.runId, leaseId: identity.leaseId,
+      evidence: { pr_number: pr.number, preliminary_gate: preliminaryGate, pr_merged: false, project_pass: false },
+    });
     const devStatusPath = manifest.issue_execution_policy.controller_post_gate_allowed_files?.[0];
     if (devStatusPath !== 'public/dev-status.json') throw new Error('DEV_STATUS_CONTROLLER_PATH_NOT_ADMITTED');
     const devStatusAbsolute = resolve(taskWorktree.path, devStatusPath);
@@ -784,10 +966,16 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
       });
       return { final_state: 'FIX_REQUIRED', ...identity, pr, preliminary_gate: preliminaryGate, final_gate: finalGate, auto_merge: false };
     }
-    transitionJournal(lease.journalPath, 'PASS', { gate_run_id: finalGate.run_id, gate_conclusion: finalGate.conclusion, mandatory_artifacts: 5, head_sha: finalHeadSha });
+    transitionJournal(lease.journalPath, 'PR_REVIEW_REQUIRED', {
+      final_gate_run_id: finalGate.run_id,
+      gate_conclusion: finalGate.conclusion,
+      mandatory_artifacts: 5,
+      head_sha: finalHeadSha,
+      pr_merged: false,
+    });
     await broker.writeState(manifest.issue_number, {
-      state: 'PASS', runId: identity.runId, leaseId: identity.leaseId,
-      evidence: { pr_number: pr.number, pr_url: pr.html_url, head_sha: finalHeadSha, preliminary_gate: preliminaryGate, gate: finalGate, project_writeback: 'DEFERRED_NON_BLOCKING', dev_status_updated_by_controller: true, auto_merge: false },
+      state: 'PR_REVIEW_REQUIRED', runId: identity.runId, leaseId: identity.leaseId,
+      evidence: { pr_number: pr.number, pr_url: pr.html_url, head_sha: finalHeadSha, preliminary_gate: preliminaryGate, gate: finalGate, project_writeback: 'DEFERRED_NON_BLOCKING', dev_status_updated_by_controller: true, pr_merged: false, project_pass: false, auto_merge: false },
     });
     const remainingIssues = await broker.listOpenIssues();
     const nextReady = remainingIssues
@@ -795,7 +983,7 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
       .filter((candidate) => evaluateIssueState(candidate, []).body_status === manifest.required_source_state)
       .sort((left, right) => left.number - right.number)[0] || null;
     return {
-      final_state: 'PASS', ...identity, pr, preliminary_gate: preliminaryGate, gate: finalGate,
+      final_state: 'PR_REVIEW_REQUIRED', ...identity, pr, preliminary_gate: preliminaryGate, gate: finalGate,
       next_ready_issue: nextReady ? { number: nextReady.number, title: nextReady.title } : null,
       next_issue_execution_authorized: false,
       model_runs: 1, retries: 0, auto_merge: false,
@@ -806,8 +994,10 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
 }
 
 export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
+  assertStateDirOutsideRepository(repoRoot, stateDir);
   const manifestBytes = readFileSync(manifestPath);
   const manifest = JSON.parse(manifestBytes.toString('utf8'));
+  assertManifestMode(manifest, DRY_RUN_MODE);
   const manifestHash = sha256(manifestBytes);
   const promptBytes = readFileSync(resolve(repoRoot, manifest.prompt_path));
   const promptHash = sha256(promptBytes);
@@ -816,16 +1006,22 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
   if (!lock.acquired) throw new Error(lock.reason);
   try {
     const broker = new GitHubControllerBroker(manifest.repository);
-    const [openIssues, issue, comments] = await Promise.all([
+    const [openIssues, issue, comments, authenticatedUser] = await Promise.all([
       broker.listOpenIssues(),
       broker.readIssue(manifest.issue_number),
       broker.readComments(manifest.issue_number),
+      broker.readAuthenticatedUser(),
     ]);
     const readyQueue = openIssues
       .filter((candidate) => !candidate.pull_request && evaluateIssueState(candidate, []).body_status === manifest.required_source_state)
       .map((candidate) => ({ number: candidate.number, title: candidate.title }))
       .sort((left, right) => left.number - right.number);
-    const issueState = evaluateExecutorIssueState(issue, comments);
+    const issueState = evaluateExecutorIssueState(issue, comments, {
+      repository: manifest.repository,
+      issueNumber: manifest.issue_number,
+      trustedLogin: authenticatedUser.login,
+      stateDir,
+    });
     const admission = evaluateAdmission(issue.body || '');
     const baseSha = git(repoRoot, ['rev-parse', manifest.base_ref]);
     const identity = createRunIdentity({
@@ -856,7 +1052,7 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
     const simulationRoot = safeChild(stateDir, join(stateDir, `simulation-${randomUUID()}`));
     mkdirSync(simulationRoot, { recursive: true });
     const simulations = {};
-    for (const outcome of ['success', 'network-failure', 'codex-failure', 'gate-failure', 'forbidden-change', 'timeout']) {
+    for (const outcome of ['success', 'network-failure', 'codex-failure', 'gate-failure', 'final-gate-failure', 'forbidden-change', 'timeout']) {
       const simulationIdentity = { runId: `sim-${outcome}-${randomUUID()}`, leaseId: sha256(`${identity.leaseId}:${outcome}:${randomUUID()}`).slice(0, 32) };
       simulations[outcome] = simulateExecution({
         stateDir: simulationRoot,
@@ -952,24 +1148,23 @@ function parseArgs(argv) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const repoRoot = resolve(args['repo-root'] || process.cwd());
-  const stateDir = resolve(args['state-dir'] || join(repoRoot, '.gso-auto-executor-state'));
-  const manifestPath = resolve(args.manifest || join(repoRoot, 'control', 'local-bridge', 'issue-21.manifest.json'));
+  const stateDir = resolve(args['state-dir'] || defaultStateDir(repoRoot));
+  assertStateDirOutsideRepository(repoRoot, stateDir);
+  const defaultManifest = args.mode === 'execute' ? 'issue-21.execute.manifest.json' : 'issue-21.manifest.json';
+  const manifestPath = resolve(args.manifest || join(repoRoot, 'control', 'local-bridge', defaultManifest));
   const output = resolve(args.output || join(stateDir, 'latest-step-c-report.json'));
   if (args.mode === 'execute') {
-    const manifestBytes = readFileSync(manifestPath);
-    const manifest = JSON.parse(manifestBytes.toString('utf8'));
-    const envelope = args['authorization-file'] && existsSync(resolve(args['authorization-file']))
-      ? JSON.parse(readFileSync(resolve(args['authorization-file']), 'utf8'))
+    const pendingAuthorizationRoot = safeChild(stateDir, join(stateDir, 'authorizations', 'pending'));
+    const authorizationPath = args['authorization-file'] ? resolve(args['authorization-file']) : '';
+    if (!authorizationPath || !existsSync(authorizationPath)) throw new Error('AUTHORIZATION_ENVELOPE_MISSING');
+    safeChild(pendingAuthorizationRoot, authorizationPath);
+    const envelope = authorizationPath
+      ? JSON.parse(readFileSync(authorizationPath, 'utf8'))
       : null;
-    const authorization = validateAuthorizationEnvelope(envelope, {
-      issueNumber: manifest.issue_number,
-      manifestHash: sha256(manifestBytes),
-    });
-    if (!authorization.valid) throw new Error(`REAL_RUN_NOT_AUTHORIZED:${authorization.errors.join(',')}`);
     const result = await executeAuthorizedIssue({ repoRoot, stateDir, manifestPath, authorizationEnvelope: envelope });
     atomicWriteJson(output, result);
     process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
-    if (result.final_state !== 'PASS') process.exitCode = 1;
+    if (result.final_state !== 'PR_REVIEW_REQUIRED') process.exitCode = 1;
     return;
   }
   if (args.mode !== 'dry-run') throw new Error(`UNSUPPORTED_MODE:${args.mode}`);

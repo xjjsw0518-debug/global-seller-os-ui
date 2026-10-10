@@ -1,90 +1,82 @@
 # Windows Codex auto-executor — Step C
 
-## Result
+## Scope and current result
 
-The Windows bridge now has a runnable, fail-closed executor for one authorized READY Issue. The Step C validation used only GitHub reads, local locks/worktrees, the Codex sandbox credential probe, and simulated child/Gate outcomes. It did not call a model and did not write to GitHub.
+The Windows bridge has one bounded execution path for Issue #21. GitHub remains the queue and evidence source, the Windows controller owns Git/GitHub operations, Codex uses the existing local ChatGPT login only inside an isolated worktree, and the self-hosted runner remains non-AI.
 
-Baseline evidence:
+The validation for this revision made GitHub reads and local filesystem/Git checks only. It did not run `codex exec`, write Issue state, create a task PR, or consume model quota.
 
-- PR #29 merge commit: `a38c1904ce457ae21fbf8c91739ad95c223894cd`
-- post-merge main GSO Gate: `38061863441` (`SUCCESS`)
-- Gate job: `114241585918`, runner `ser603198648259`
-- all five mandatory artifact groups present and unexpired
-- Issue #21 effective source state: `READY`
-- READY queue observed: `#21`, `#22`, `#23`; the authorization manifest selects only `#21`
-- Codex CLI: `0.161.0`, authenticated with `CHATGPT`
-- Step C and inherited bridge contract tests: 28 passed, 0 failed
+## Reviewed-executor boundary
 
-## Executable boundary
+Real execution uses `control/local-bridge/issue-21.execute.manifest.json`; dry-run uses `control/local-bridge/issue-21.manifest.json`. The two modes are not interchangeable.
 
-The controller owns GitHub reads/writes, worktree creation, commits, pushes, PR creation, Gate reads, Issue evidence, and the controller-only `/dev-status` update. The Codex child receives only the reviewed prompt and the isolated task worktree.
+Before any real run, the controller fetches `origin/main` and requires all of the following:
 
-The real entry is `scripts/gso-windows-auto-executor.mjs --mode execute`. It refuses to start unless all of the following are true:
+1. local `HEAD` equals current `origin/main` exactly;
+2. the repository is clean, including untracked files;
+3. the running module is the tracked `scripts/gso-windows-auto-executor.mjs` in that checkout;
+4. the executor, execute manifest, prompt, and checklist have the same Git blobs as `origin/main`;
+5. the canonical executor SHA-256 equals the hash recorded by the execute manifest.
 
-1. the executor revision is already reachable from `origin/main`;
-2. a fresh one-time authorization envelope matches Issue #21 and the exact manifest hash;
-3. the envelope permits exactly one model run and zero retries and has not expired;
-4. Issue #21 is open, present in the READY queue, still matches the reviewed body hash, and has a complete development-entry checklist;
-5. the prompt hash matches the reviewed manifest;
-6. the singleton lock, deterministic Issue lease, isolated worktree, and Windows Codex sandbox credential probe pass.
+An older checkout, a copied/replaced executor, a dirty policy file, or an untracked executable fails closed.
 
-No authorization envelope is stored in the repository. It is created only after the separately requested user confirmation for the first real run.
+## One-time authorization
 
-## State and recovery contract
+The authorization envelope lives only under the external controller state directory. It binds:
 
-The journal accepts only these transitions:
+- authorization ID;
+- Issue number;
+- execute-manifest SHA-256;
+- prompt SHA-256;
+- reviewed executor SHA-256;
+- approved `origin/main` commit;
+- expiry;
+- one model run and zero automatic retries.
 
-`READY → CLAIMED → RUNNING → PR_CREATED → TESTING → PASS`
+The controller atomically creates a durable consumption receipt before starting Codex. Reusing the ID is rejected after a process restart. A changed main commit, manifest, prompt, or executor also invalidates the authorization. The pending authorization file must be under the external `authorizations/pending` directory.
 
-Failure paths are bounded to `FAILED`, `BLOCKED`, or `FIX_REQUIRED`. `RUNNING` requires a controller `RUN_ID`, deterministic `LEASE_ID`, and an observed Codex thread ID. `PASS` requires a successful exact-head GSO Gate and all five mandatory artifact groups.
+## State contract
 
-Each state write uses a stable marker plus `RUN_ID` and `LEASE_ID`. The controller reads the resulting comment back and compares the complete body. A replay finds the existing matching state comment instead of creating a duplicate.
+The success path is:
 
-An existing non-terminal lease is never automatically re-run after a restart. It is reported as recovery-required. The model retry budget remains zero.
+`READY → CLAIMED → RUNNING → PR_CREATED → TESTING → FINAL_GATE_PENDING → PR_REVIEW_REQUIRED`
 
-## Credential isolation
+`PASS` is a separate post-merge reconciliation state. It requires a merged PR commit and a successful exact-merge-commit main Gate. A successful PR Gate alone never means the Issue or project is complete.
 
-Credential isolation is enforced independently of prompt text:
+Failure paths remain `FAILED`, `BLOCKED`, and `FIX_REQUIRED`. `RUNNING` requires a real `RUN_ID`, `LEASE_ID`, and observed Codex thread ID. A failure in either PR-head Gate prevents PASS and automatic merge.
 
-- GitHub credentials are obtained only inside the controller request stack.
-- GitHub/OpenAI credential variables are removed from the Codex child environment.
-- Codex runs with the native `workspace-write` sandbox, command network disabled, web search disabled, user configuration ignored, and an ephemeral session.
-- A non-model Windows sandbox probe executes `git credential fill` and a direct network request from the same restricted-token sandbox before a run.
-- The recorded probe result was `github_credential_visible=false` and `direct_network_reachable=false`.
-- Changed files are scanned for token patterns and for the exact controller credential before any commit or push. Secret values are never written to the audit record.
+`/dev-status` preserves the aggregate project status and the rest of the READY queue. The controller records U01 under `in_progress` as `FINAL_GATE_PENDING`; it does not add U01 to `completed` or set the whole project to PASS.
 
-The controller never passes its GitHub credential, token, API client, or writeback function into the Codex subprocess.
+State comments are accepted only when the author matches the reviewed controller login, the payload binds the repository and Issue, and the referenced run/lease/state exists in the external local journal. Forged or lineage-free marker comments block automatic reclaim.
 
-## Changed-file and Git boundaries
+## Local and credential isolation
 
-For Issue #21, the Codex child may modify only:
+State, journals, locks, authorization files, model output, logs, and task worktrees default to `%LOCALAPPDATA%/GlobalSellerOS/codex-bridge/<repo-id>`, outside the repository. A repository-local state directory is rejected; `.gso-auto-executor-state/` is also ignored as defense in depth.
+
+The Codex child receives no controller GitHub or OpenAI credential environment variables. The non-model sandbox probe additionally verifies that Git Credential Manager credentials and direct network access are unavailable inside the restricted token. The controller never passes its token, broker, or writeback function to the child.
+
+Issue #21 allows Codex to modify only:
 
 - `docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md`
 
-After the first exact-head Gate succeeds, the controller may additionally modify only:
+After the preliminary exact-head Gate, only the controller may additionally modify:
 
 - `public/dev-status.json`
 
-The controller commits to `codex/wrc-p2-u01-single-issue`, creates a PR, and never pushes `main`. It waits for a second full exact-head Gate after the controller-only status commit. A failed Gate is recorded as `FIX_REQUIRED`; automatic merge is always disabled.
+Direct pushes to `main`, automatic merge, frozen UI changes, Gate or Backstop baseline changes, database/production work, server Codex, extra API keys, retries, and a second model run are forbidden.
 
-GitHub Project writeback is `DEFERRED_NON_BLOCKING`. Issue/PR/Actions and `/dev-status` form the required main chain.
+## Verification commands
 
-## Simulated failure evidence
+Executor and inherited bridge tests are separate from the existing GSO Gate:
 
-The dry run exercised these outcomes without invoking Codex:
+```text
+node --test scripts/gso-windows-local-bridge-dry-run.test.mjs scripts/gso-windows-auto-executor.test.mjs
+```
 
-| Scenario | Expected result | Observed result |
-| --- | --- | --- |
-| allowed change + successful Gate | `PASS` | `PASS` |
-| duplicate Issue lease | no second execution | duplicate prevented |
-| GitHub network failure | preserve incomplete claim for recovery | `CLAIMED`, recovery required, 0 retries |
-| Codex failure | never mark PASS | `FAILED`, 0 retries |
-| 30-minute timeout | terminate process tree, never retry | `FAILED`, 0 retries |
-| forbidden path | stop before PR | `BLOCKED` |
-| Gate failure | no merge | `FIX_REQUIRED`, auto-merge false |
+The existing GSO Gate does **not** invoke these executor unit tests. It continues to own build, dependency, unused-code, Playwright, axe, and Backstop validation without invoking AI. Both evidence sets are required and must not be conflated.
+
+The no-model dry run uses the dry-run manifest and an external short state directory. It validates READY selection, checklist completeness, lock/lease behavior, worktree isolation, prompt hash, allowed/forbidden paths, controller read access, sandbox credential isolation, failure recovery, both Gate-failure paths, and duplicate prevention.
 
 ## First real run boundary
 
-The next run remains limited to Issue #21, concurrency 1, one model call, zero automatic retries, and a 30-minute Codex timeout. It uses the existing Windows ChatGPT login. It does not use an OpenAI API key, server Codex, frozen UI changes, database/container/production writes, Backstop baseline changes, Gate changes, or a direct main push.
-
-The remaining action is a separate confirmation immediately before creating the short-lived authorization envelope and starting the one real Codex run.
+Issue #21 remains the only selectable first run: concurrency 1, one model execution, zero retries, and a 30-minute timeout. A fresh one-time authorization may be created only after the user separately confirms the real run. Until then, the correct state remains READY; there is no real run ID or lease ID.
