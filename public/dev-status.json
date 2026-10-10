@@ -1,8 +1,9 @@
 {
   "overall_status": "RUNNING",
-  "current_step": "WRC-P2-U00E - Worker resource-list route audit / route decision",
+  "current_step": "Step 15 - GSO Auto-Loop Controller / Work Watcher / Resume Guard",
   "last_updated": "2026-10-10T11:20:00Z",
   "auto_refresh_seconds": 30,
+  "auto_loop": { "status": "ON", "batch": "step-15-batch-1", "current_running_issue": "Step 15 controller implementation", "ready_queue": ["Step 15 controller", "Step 15 watcher", "Step 15 resume guard"], "last_controller_check": "2026-10-10T12:00:00Z", "last_recovery_action": "Paused Worker U00E; switched priority to Step 15", "user_approval_required": false },
   "latest_actions_run": { "name": "GSO Gate #26", "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38042706076", "status": "SUCCESS" },
   "runner": "ser603198648259",
   "completed": [
@@ -34,5 +35,5 @@
     { "id": "worker-staging-listener", "name": "127.0.0.1:18765 无监听", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery; loopback 18765→8000", "next_step": "保持端口映射" },
     { "id": "worker-resource-list-route", "name": "resource-list 路由未注册", "status": "READY", "owner": "GSO Automation", "evidence": "HTTP 404；U00E", "next_step": "执行 Worker resource-list route audit / route decision" }
   ],
-  "next_safe_unit": "WRC-P2-U00E — Worker resource-list route audit / route decision"
+  "next_safe_unit": "Step 15 — GSO Auto-Loop Controller / Work Watcher / Resume Guard"
 }
