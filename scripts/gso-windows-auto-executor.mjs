@@ -710,6 +710,24 @@ export function deriveAttemptWorkspace({ manifest, identity, authorizationId }) 
   return { suffix, branch, relativePath };
 }
 
+export function resolvePriorAttemptWorkspace({ manifest, priorReceipt, leaseId }) {
+  if (priorReceipt?.attempt_kind === 'NEW_ATTEMPT') {
+    return deriveAttemptWorkspace({
+      manifest,
+      identity: { leaseId },
+      authorizationId: priorReceipt.authorization_id,
+    });
+  }
+  if (!manifest.planned_worktree_relative_path || !manifest.planned_branch) {
+    throw new Error('PRIOR_WORKTREE_IDENTITY_MISSING');
+  }
+  return {
+    suffix: null,
+    branch: manifest.planned_branch,
+    relativePath: manifest.planned_worktree_relative_path,
+  };
+}
+
 export function createTaskWorktree({ repoRoot, stateDir, manifest, baseSha, identity, authorizationId }) {
   const attempt = deriveAttemptWorkspace({ manifest, identity, authorizationId });
   const worktreePath = safeChild(stateDir, join(stateDir, attempt.relativePath));
@@ -1826,16 +1844,24 @@ export async function buildNewAttemptDryRunReport({ repoRoot, stateDir, manifest
     authorizationId: mockAuthorizationId,
   });
   const simulationRoot = safeChild(stateDir, join(stateDir, 'rs', identity.leaseId.slice(0, 12)));
-  const priorWorktreePath = safeChild(stateDir, join(stateDir, manifest.planned_worktree_relative_path));
+  const priorAttemptWorkspace = resolvePriorAttemptWorkspace({
+    manifest,
+    priorReceipt,
+    leaseId: issueState.effective_lease_id,
+  });
+  const priorWorktreePath = safeChild(stateDir, join(stateDir, priorAttemptWorkspace.relativePath));
   if (!existsSync(priorWorktreePath)) throw new Error('NEW_ATTEMPT_SIMULATION_PRIOR_WORKTREE_MISSING');
   const priorWorktree = {
     path: '<LOCAL_EXECUTOR_STATE>/worktrees/prior-attempt',
     head: git(priorWorktreePath, ['rev-parse', 'HEAD']),
     branch: git(priorWorktreePath, ['branch', '--show-current']),
+    expected_branch: priorAttemptWorkspace.branch,
     clean: changedPaths(priorWorktreePath).length === 0,
     preserved: true,
   };
-  if (!priorWorktree.clean || priorWorktree.head !== priorReceipt.approved_base_sha) {
+  if (!priorWorktree.clean
+    || priorWorktree.head !== priorReceipt.approved_base_sha
+    || priorWorktree.branch !== priorAttemptWorkspace.branch) {
     throw new Error('NEW_ATTEMPT_SIMULATION_PRIOR_WORKTREE_EVIDENCE_MISMATCH');
   }
   const priorReportPath = safeChild(simulationRoot, join(simulationRoot, 'new-attempt-ready.json'));

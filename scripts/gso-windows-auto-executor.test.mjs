@@ -13,6 +13,7 @@ import {
   createTaskWorktree, defaultStateDir, deriveAttemptWorkspace, evaluateAttemptAdmission,
   evaluateExecutorIssueState, evaluateNewAttemptRecovery, finalizeMergedRun,
   formatStateComment, parseStateComment, recordModelRun, releaseExecutorLock,
+  resolvePriorAttemptWorkspace,
   redactAuditText, runCodexProcess, scanForSecrets, sha256, simulateExecution, transitionJournal,
   validateAuthorizationEnvelope, verifyControllerAdmissionAttestation,
   verifyReviewedExecutionSources,
@@ -418,6 +419,34 @@ test('attempt workspace identity is stable for one authorization and distinct ac
   assert.notEqual(first.branch, second.branch);
   assert.notEqual(first.relativePath, second.relativePath);
   assert.notEqual(first.branch, 'main');
+});
+
+test('prior NEW_ATTEMPT worktree is derived from its consumed authorization instead of the legacy fixed path', () => {
+  const manifest = {
+    planned_branch: 'codex/wrc-p2-u01-single-issue',
+    planned_worktree_relative_path: 'worktrees/issue-21-wrc-p2-u01',
+    planned_branch_prefix: 'codex/wrc-p2-u01-attempt',
+    planned_worktree_relative_path_prefix: 'worktrees/issue-21-wrc-p2-u01-attempt',
+  };
+  const prior = resolvePriorAttemptWorkspace({
+    manifest,
+    priorReceipt: {
+      attempt_kind: 'NEW_ATTEMPT',
+      authorization_id: 'gh-comment-6100321725-20261011',
+    },
+    leaseId: 'ef1e890864010e857f9b663e2d8d52e7',
+  });
+  assert.equal(prior.suffix, 'a715b45fbb42');
+  assert.equal(prior.branch, 'codex/wrc-p2-u01-attempt-a715b45fbb42');
+  assert.equal(prior.relativePath, 'worktrees/issue-21-wrc-p2-u01-attempt-a715b45fbb42');
+
+  const initial = resolvePriorAttemptWorkspace({
+    manifest,
+    priorReceipt: { attempt_kind: 'INITIAL', authorization_id: 'initial-authorization-0001' },
+    leaseId: 'initial-lease-0001',
+  });
+  assert.equal(initial.branch, manifest.planned_branch);
+  assert.equal(initial.relativePath, manifest.planned_worktree_relative_path);
 });
 
 test('old-base worktree is preserved while a fresh authorization gets a distinct new-base worktree', () => {
