@@ -1,0 +1,20 @@
+{
+  "schema_version": "gso.codex-controller-artifact.v1",
+  "status": "READY",
+  "base_sha": "0000000000000000000000000000000000000000",
+  "run_id": "stub-run-id",
+  "lease_id": "stub-lease-id",
+  "authorization_id": "stub-authorization-id",
+  "attestation_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "target_path": "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md",
+  "content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "content": "STUB_REPLACED_BY_TEST",
+  "evidence_sources": [],
+  "provenance_urls": [],
+  "current_live_verification": false,
+  "changed_files": [
+    "docs/evidence/WRC_P2_U01_WORKER_HOME_REAL_READ_ACCEPTANCE.md"
+  ],
+  "tests_run": [],
+  "blocker": ""
+}

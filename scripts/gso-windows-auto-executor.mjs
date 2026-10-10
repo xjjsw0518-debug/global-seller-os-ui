@@ -21,6 +21,10 @@ import {
   evaluateIssueState,
   probeLocalCodex,
 } from './gso-windows-local-bridge-dry-run.mjs';
+import {
+  applyStructuredModelOutput,
+  STRUCTURED_MODEL_OUTPUT_MODE,
+} from './gso-structured-model-output.mjs';
 
 const STATE_MARKER = '<!-- gso-auto-executor-state:v1 -->';
 const EXECUTOR_PATH = fileURLToPath(import.meta.url);
@@ -252,19 +256,20 @@ export function buildRestrictedCodexEnv(source = process.env) {
   };
 }
 
-export function buildCodexInvocation({ codexPath, worktreePath, outputPath }) {
+export function buildCodexInvocation({ codexPath, worktreePath, outputPath, outputSchemaPath }) {
+  if (!outputSchemaPath) throw new Error('MODEL_OUTPUT_SCHEMA_PATH_REQUIRED');
   return {
     command: codexPath,
     args: [
       'exec',
       '--ephemeral',
       '--ignore-user-config',
-      '--sandbox', 'workspace-write',
+      '--sandbox', 'read-only',
       '--config', 'approval_policy="never"',
-      '--config', 'sandbox_workspace_write.network_access=false',
       '--config', 'web_search="disabled"',
       '--cd', worktreePath,
       '--json',
+      '--output-schema', outputSchemaPath,
       '--output-last-message', outputPath,
       '-',
     ],
@@ -272,6 +277,9 @@ export function buildCodexInvocation({ codexPath, worktreePath, outputPath }) {
     max_model_runs: 1,
     max_automatic_retries: 0,
     direct_main_push: false,
+    sandbox_mode: 'read-only',
+    model_filesystem_write_allowed: false,
+    output_mode: STRUCTURED_MODEL_OUTPUT_MODE,
   };
 }
 
@@ -908,6 +916,7 @@ export function validateAuthorizationEnvelope(envelope, context) {
   if (envelope?.approved_base_sha !== context.baseSha) errors.push('AUTHORIZATION_BASE_MISMATCH');
   if (envelope?.max_model_runs !== 1) errors.push('AUTHORIZATION_MODEL_LIMIT_INVALID');
   if (envelope?.max_automatic_retries !== 0) errors.push('AUTHORIZATION_RETRY_LIMIT_INVALID');
+  if (envelope?.simulation_only === true) errors.push('SIMULATION_AUTHORIZATION_FORBIDDEN_FOR_EXECUTE');
   if (!envelope?.expires_at || Date.parse(envelope.expires_at) <= Date.now()) errors.push('AUTHORIZATION_EXPIRED');
   if (envelope?.attempt_kind && !['INITIAL', 'NEW_ATTEMPT'].includes(envelope.attempt_kind)) errors.push('AUTHORIZATION_ATTEMPT_KIND_INVALID');
   return { valid: errors.length === 0, errors };
@@ -1005,9 +1014,11 @@ function runCodexProcess({ invocation, prompt, env, onThreadStarted, auditPath, 
     let timedOut = false;
     appendAuditRecord(auditPath, {
       type: 'codex_process_started',
-      sandbox: 'workspace-write',
+      sandbox: invocation.sandbox_mode,
       network_enabled: false,
       timeout_ms: invocation.timeout_ms,
+      output_mode: invocation.output_mode,
+      model_filesystem_write_allowed: invocation.model_filesystem_write_allowed,
       prompt_recorded: false,
     }, exactSecrets);
     const timer = setTimeout(() => {
@@ -1082,9 +1093,11 @@ export function verifyReviewedExecutionSources({ repoRoot, manifestPath, manifes
   }
   const paths = [
     'scripts/gso-windows-auto-executor.mjs',
+    'scripts/gso-structured-model-output.mjs',
     relative(repoRoot, manifestPath).replaceAll('\\', '/'),
     manifest.prompt_path,
     manifest.issue_body_path,
+    manifest.model_output_schema_path,
   ];
   for (const path of paths) {
     if (!path || path.startsWith('../') || isAbsolute(path)) throw new Error('REVIEWED_SOURCE_PATH_INVALID');
@@ -1188,6 +1201,10 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
   const manifestHash = sha256(manifestBytes);
   const prompt = readFileSync(resolve(repoRoot, manifest.prompt_path), 'utf8');
   const promptHash = sha256(prompt);
+  const modelOutputSchemaPath = resolve(repoRoot, manifest.model_output_schema_path || '');
+  if (!manifest.model_output_schema_path || !existsSync(modelOutputSchemaPath)) throw new Error('MODEL_OUTPUT_SCHEMA_MISSING');
+  const modelOutputSchemaHash = sha256(readFileSync(modelOutputSchemaPath));
+  if (modelOutputSchemaHash !== manifest.model_output_schema_sha256) throw new Error('MODEL_OUTPUT_SCHEMA_HASH_MISMATCH');
   const baseSha = git(repoRoot, ['rev-parse', manifest.base_ref]);
   const authorizationContext = {
     issueNumber: manifest.issue_number,
@@ -1312,9 +1329,14 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
       model_call_started: true,
       model_call_started_at: new Date().toISOString(),
     });
-    const modelOutputPath = safeChild(stateDir, join(lease.leaseDir, 'codex-last-message.txt'));
+    const modelOutputPath = safeChild(stateDir, join(lease.leaseDir, 'codex-structured-output.json'));
     const codexAuditPath = safeChild(stateDir, join(lease.leaseDir, 'codex-events.sanitized.jsonl'));
-    const invocation = buildCodexInvocation({ codexPath: codex.executable_path, worktreePath: taskWorktree.path, outputPath: modelOutputPath });
+    const invocation = buildCodexInvocation({
+      codexPath: codex.executable_path,
+      worktreePath: taskWorktree.path,
+      outputPath: modelOutputPath,
+      outputSchemaPath: modelOutputSchemaPath,
+    });
     const codexPrompt = buildCodexPromptWithAttestation(prompt, attestation);
     let runningWriteback = null;
     const codexResult = await runCodexProcess({
@@ -1339,6 +1361,12 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
       policy_denial_class: classifyPolicyDenial(`${codexResult.stdout}\n${codexResult.stderr}`),
       raw_output_persisted: false,
       controller_attestation_sha256: attestationVerification.packet_sha256,
+      model_output_contract: {
+        mode: STRUCTURED_MODEL_OUTPUT_MODE,
+        schema_sha256: modelOutputSchemaHash,
+        model_filesystem_write_allowed: false,
+        controller_apply_completed: false,
+      },
     });
     if (!codexResult.threadId || !runningWriteback) {
       const current = JSON.parse(readFileSync(lease.journalPath, 'utf8'));
@@ -1359,6 +1387,40 @@ export async function executeAuthorizedIssue({ repoRoot, stateDir, manifestPath,
         evidence: { reason, model_runs: 1, retries: 0 },
       });
       return { final_state: 'FAILED', ...identity, reason };
+    }
+    let controllerApply;
+    try {
+      const rawModelOutput = readFileSync(modelOutputPath, 'utf8');
+      controllerApply = applyStructuredModelOutput({
+        repoRoot: taskWorktree.path,
+        rawOutput: rawModelOutput,
+        manifest,
+        attestation,
+      });
+      atomicWriteJson(join(lease.leaseDir, 'codex-audit-summary.json'), {
+        schema_version: 1,
+        sanitized_events_path: 'codex-events.sanitized.jsonl',
+        last_message: lastMessageAudit,
+        policy_denial_class: classifyPolicyDenial(`${codexResult.stdout}\n${codexResult.stderr}`),
+        raw_output_persisted: false,
+        controller_attestation_sha256: attestationVerification.packet_sha256,
+        model_output_contract: {
+          mode: STRUCTURED_MODEL_OUTPUT_MODE,
+          schema_sha256: modelOutputSchemaHash,
+          model_filesystem_write_allowed: false,
+          controller_apply_completed: true,
+          target_path: controllerApply.target_path,
+          content_sha256: controllerApply.content_sha256,
+        },
+      });
+    } catch (error) {
+      const reason = 'MODEL_OUTPUT_VALIDATION_OR_CONTROLLER_APPLY_FAILED';
+      transitionJournal(lease.journalPath, 'BLOCKED', { reason, detail: error.message });
+      await broker.writeState(manifest.issue_number, {
+        state: 'BLOCKED', runId: identity.runId, leaseId: identity.leaseId,
+        evidence: { reason, validation_error: error.message, model_runs: 1, retries: 0, model_wrote_files: false },
+      });
+      return { final_state: 'BLOCKED', ...identity, reason, detail: error.message };
     }
     const paths = changedPaths(taskWorktree.path);
     const pathCheck = checkChangedPaths(paths, {
