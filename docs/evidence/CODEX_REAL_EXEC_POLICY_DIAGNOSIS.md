@@ -1,9 +1,13 @@
 # Codex real-exec policy diagnosis and safe output fallback
 
-Issue: `#33`  
-Affected execution: Issue `#21`, second real attempt  
-RUN_ID: `gso-21-1791654820670-73a624e9`  
-LEASE_ID: `ef1e890864010e857f9b663e2d8d52e7`  
+Issue: `#33`
+
+Affected execution: Issue `#21`, second real attempt
+
+RUN_ID: `gso-21-1791654820670-73a624e9`
+
+LEASE_ID: `ef1e890864010e857f9b663e2d8d52e7`
+
 Codex thread: `01a126f3-4d98-7ff2-9f1e-0509b1fac5e1`
 
 ## Finding
