@@ -36,6 +36,11 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Dependency boundary gate
+        run: |
+          mkdir -p dependency-cruiser-report
+          npm run test:dependencies 2>&1 | tee dependency-cruiser-report/report.txt
+
       - name: Install Playwright Chromium
         # The self-hosted runner account is intentionally non-root. System
         # dependencies are managed on the host; the workflow only downloads
@@ -74,5 +79,14 @@ jobs:
             backstop_data/bitmaps_test/
             backstop_data/html_report/
             backstop_data/ci_report/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload dependency boundary evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependency-cruiser-${{ github.run_id }}
+          path: dependency-cruiser-report/
           if-no-files-found: warn
           retention-days: 7
