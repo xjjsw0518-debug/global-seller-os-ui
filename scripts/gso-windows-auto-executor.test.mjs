@@ -8,11 +8,14 @@ import test from 'node:test';
 import {
   applyExecutorDevStatus, acquireExecutionLease, acquireExecutorLock,
   assertManifestMode, assertStateDirOutsideRepository, buildCodexInvocation,
-  buildRestrictedCodexEnv, consumeAuthorization, createRunIdentity,
-  defaultStateDir, evaluateExecutorIssueState, finalizeMergedRun,
+  buildCodexPromptWithAttestation, buildControllerAdmissionAttestation,
+  buildRestrictedCodexEnv, classifyPolicyDenial, consumeAuthorization, createRunIdentity,
+  createTaskWorktree, defaultStateDir, deriveAttemptWorkspace, evaluateAttemptAdmission,
+  evaluateExecutorIssueState, evaluateNewAttemptRecovery, finalizeMergedRun,
   formatStateComment, parseStateComment, recordModelRun, releaseExecutorLock,
-  scanForSecrets, sha256, simulateExecution, transitionJournal,
-  validateAuthorizationEnvelope, verifyReviewedExecutionSources,
+  redactAuditText, runCodexProcess, scanForSecrets, sha256, simulateExecution, transitionJournal,
+  validateAuthorizationEnvelope, verifyControllerAdmissionAttestation,
+  verifyReviewedExecutionSources,
 } from './gso-windows-auto-executor.mjs';
 
 const policy = {
@@ -39,6 +42,73 @@ const authorizationContext = {
   issueNumber: 21, manifestHash: 'manifest-hash', promptHash: 'prompt-hash',
   executorHash: 'executor-hash', baseSha: 'base-sha',
 };
+
+function seedBlockedAttempt(stateDir) {
+  const manifest = {
+    repository: 'example/repo', issue_number: 21, required_source_state: 'READY',
+    new_attempt_recovery_policy: {
+      enabled: true, recoverable_terminal_states: ['BLOCKED'], requires_new_authorization_id: true,
+      requires_reviewed_version_change: true, preserve_prior_journal: true, preserve_prior_worktree: true,
+    },
+  };
+  const issueBodyHash = 'issue-body-hash';
+  const priorContext = {
+    issueNumber: 21, manifestHash: 'prior-manifest', promptHash: 'prior-prompt',
+    executorHash: 'prior-executor', baseSha: 'prior-base',
+  };
+  const priorAuthorization = authorization({
+    authorization_id: 'prior-authorization-0001',
+    manifest_sha256: priorContext.manifestHash,
+    prompt_sha256: priorContext.promptHash,
+    executor_sha256: priorContext.executorHash,
+    approved_base_sha: priorContext.baseSha,
+  });
+  const priorIdentity = createRunIdentity({
+    repository: manifest.repository,
+    issueNumber: manifest.issue_number,
+    baseSha: priorContext.baseSha,
+    manifestHash: priorContext.manifestHash,
+    issueRevision: issueBodyHash,
+    authorizationId: priorAuthorization.authorization_id,
+  });
+  const lease = acquireExecutionLease(stateDir, priorIdentity.leaseId, priorIdentity.runId);
+  transitionJournal(lease.journalPath, 'CLAIMED', {});
+  recordModelRun(lease.journalPath);
+  transitionJournal(lease.journalPath, 'RUNNING', {
+    run_id: priorIdentity.runId, lease_id: priorIdentity.leaseId, codex_thread_id: 'prior-thread',
+  });
+  transitionJournal(lease.journalPath, 'BLOCKED', { reason: 'PRIOR_ATTEMPT_BLOCKED' });
+  const consumption = consumeAuthorization(stateDir, priorAuthorization, {
+    ...priorContext, runId: priorIdentity.runId, leaseId: priorIdentity.leaseId,
+  });
+  writeFileSync(join(consumption.receiptDir, 'receipt.json'), `${JSON.stringify({
+    ...consumption.receipt, model_call_started: true, model_call_started_at: new Date().toISOString(),
+  }, null, 2)}\n`);
+  const issueState = {
+    body_status: 'READY', effective_state: 'BLOCKED', controller_state_evidence: true,
+    effective_run_id: priorIdentity.runId, effective_lease_id: priorIdentity.leaseId,
+  };
+  const currentContext = {
+    issueNumber: 21, manifestHash: 'current-manifest', promptHash: 'current-prompt',
+    executorHash: 'current-executor', baseSha: 'current-base',
+  };
+  const freshAuthorization = authorization({
+    authorization_id: 'fresh-authorization-0002',
+    manifest_sha256: currentContext.manifestHash,
+    prompt_sha256: currentContext.promptHash,
+    executor_sha256: currentContext.executorHash,
+    approved_base_sha: currentContext.baseSha,
+    attempt_kind: 'NEW_ATTEMPT',
+    recovery_from: {
+      state: 'BLOCKED', run_id: priorIdentity.runId, lease_id: priorIdentity.leaseId,
+      authorization_id: priorAuthorization.authorization_id,
+    },
+  });
+  return {
+    manifest, issueBodyHash, priorContext, priorAuthorization, priorIdentity,
+    issueState, currentContext, freshAuthorization,
+  };
+}
 
 test('single instance lock permits only one executor', () => {
   const stateDir = tempState();
@@ -224,6 +294,169 @@ test('authorization is atomically consumed once and remains blocked after restar
   } finally { rmSync(stateDir, { recursive: true, force: true }); }
 });
 
+test('trusted historical BLOCKED lineage admits only a fresh version-bound NEW_ATTEMPT', () => {
+  const stateDir = tempState();
+  try {
+    const fixture = seedBlockedAttempt(stateDir);
+    const result = evaluateNewAttemptRecovery({
+      stateDir,
+      manifest: fixture.manifest,
+      issueState: fixture.issueState,
+      issueBodyHash: fixture.issueBodyHash,
+      authorizationEnvelope: fixture.freshAuthorization,
+      authorizationContext: fixture.currentContext,
+    });
+    assert.equal(result.allowed, true);
+    assert.equal(result.state, 'NEW_ATTEMPT_READY');
+    assert.equal(result.prior_lineage.run_id, fixture.priorIdentity.runId);
+    assert.equal(result.prior_lineage.lease_id, fixture.priorIdentity.leaseId);
+    assert.equal(result.prior_lineage.preserved, true);
+    assert.equal(JSON.parse(readFileSync(join(stateDir, 'leases', fixture.priorIdentity.leaseId, 'journal.json'), 'utf8')).state, 'BLOCKED');
+  } finally { rmSync(stateDir, { recursive: true, force: true }); }
+});
+
+test('NEW_ATTEMPT rejects no authorization, old authorization replay, wrong manifest, and forged lineage', () => {
+  const stateDir = tempState();
+  try {
+    const fixture = seedBlockedAttempt(stateDir);
+    const evaluate = (envelope) => evaluateAttemptAdmission({
+      stateDir,
+      manifest: fixture.manifest,
+      issueState: fixture.issueState,
+      issueBodyHash: fixture.issueBodyHash,
+      authorizationEnvelope: envelope,
+      authorizationContext: fixture.currentContext,
+    });
+    assert.equal(evaluate(null).allowed, false);
+    const replay = {
+      ...fixture.freshAuthorization,
+      authorization_id: fixture.priorAuthorization.authorization_id,
+    };
+    const replayResult = evaluate(replay);
+    assert.equal(replayResult.allowed, false);
+    assert.ok(replayResult.errors.includes('NEW_AUTHORIZATION_MUST_DIFFER_FROM_PRIOR'));
+    assert.ok(replayResult.errors.includes('NEW_AUTHORIZATION_ALREADY_CONSUMED'));
+    const wrongManifest = {
+      ...fixture.freshAuthorization,
+      manifest_sha256: 'wrong-manifest',
+    };
+    assert.ok(evaluate(wrongManifest).errors.includes('AUTHORIZATION_MANIFEST_MISMATCH'));
+    const forged = {
+      ...fixture.freshAuthorization,
+      recovery_from: { ...fixture.freshAuthorization.recovery_from, lease_id: 'forged-lease' },
+    };
+    assert.equal(evaluate(forged).allowed, false);
+  } finally { rmSync(stateDir, { recursive: true, force: true }); }
+});
+
+test('interrupted NEW_ATTEMPT lease is deterministic and blocks a duplicate model opportunity', () => {
+  const stateDir = tempState();
+  try {
+    const fixture = seedBlockedAttempt(stateDir);
+    const identityOne = createRunIdentity({
+      repository: fixture.manifest.repository, issueNumber: 21,
+      baseSha: fixture.currentContext.baseSha, manifestHash: fixture.currentContext.manifestHash,
+      issueRevision: fixture.issueBodyHash, authorizationId: fixture.freshAuthorization.authorization_id,
+    });
+    const identityTwo = createRunIdentity({
+      repository: fixture.manifest.repository, issueNumber: 21,
+      baseSha: fixture.currentContext.baseSha, manifestHash: fixture.currentContext.manifestHash,
+      issueRevision: fixture.issueBodyHash, authorizationId: fixture.freshAuthorization.authorization_id,
+    });
+    assert.equal(identityOne.leaseId, identityTwo.leaseId);
+    const first = acquireExecutionLease(stateDir, identityOne.leaseId, identityOne.runId);
+    const afterRestart = acquireExecutionLease(stateDir, identityTwo.leaseId, identityTwo.runId);
+    assert.equal(first.acquired, true);
+    assert.equal(afterRestart.acquired, false);
+    assert.equal(afterRestart.duplicate_prevented, true);
+    assert.equal(afterRestart.recovery_required, true);
+  } finally { rmSync(stateDir, { recursive: true, force: true }); }
+});
+
+test('attempt workspace identity is stable for one authorization and distinct across authorizations', () => {
+  const manifest = {
+    planned_branch_prefix: 'codex/wrc-p2-u01-attempt',
+    planned_worktree_relative_path_prefix: 'worktrees/issue-21-attempt',
+  };
+  const first = deriveAttemptWorkspace({ manifest, identity: { leaseId: 'a'.repeat(32) }, authorizationId: 'authorization-attempt-one' });
+  const repeated = deriveAttemptWorkspace({ manifest, identity: { leaseId: 'a'.repeat(32) }, authorizationId: 'authorization-attempt-one' });
+  const second = deriveAttemptWorkspace({ manifest, identity: { leaseId: 'b'.repeat(32) }, authorizationId: 'authorization-attempt-two' });
+  assert.deepEqual(first, repeated);
+  assert.notEqual(first.branch, second.branch);
+  assert.notEqual(first.relativePath, second.relativePath);
+  assert.notEqual(first.branch, 'main');
+});
+
+test('old-base worktree is preserved while a fresh authorization gets a distinct new-base worktree', () => {
+  const repoRoot = tempState();
+  const stateDir = tempState();
+  const manifest = {
+    planned_branch_prefix: 'codex/wrc-p2-u01-attempt',
+    planned_worktree_relative_path_prefix: 'worktrees/issue-21-attempt',
+  };
+  let oldWorktree;
+  let newWorktree;
+  try {
+    git(repoRoot, 'init', '-b', 'main');
+    git(repoRoot, 'config', 'user.email', 'test@example.invalid');
+    git(repoRoot, 'config', 'user.name', 'Test');
+    writeFileSync(join(repoRoot, 'file.txt'), 'old base\n');
+    git(repoRoot, 'add', '.'); git(repoRoot, 'commit', '-m', 'old base');
+    const oldBase = git(repoRoot, 'rev-parse', 'HEAD');
+    const oldIdentity = { runId: 'old-run', leaseId: '1'.repeat(32) };
+    oldWorktree = createTaskWorktree({
+      repoRoot, stateDir, manifest, baseSha: oldBase, identity: oldIdentity,
+      authorizationId: 'old-authorization-0001',
+    });
+    writeFileSync(join(repoRoot, 'file.txt'), 'new base\n');
+    git(repoRoot, 'add', '.'); git(repoRoot, 'commit', '-m', 'new base');
+    const newBase = git(repoRoot, 'rev-parse', 'HEAD');
+    const newIdentity = { runId: 'new-run', leaseId: '2'.repeat(32) };
+    newWorktree = createTaskWorktree({
+      repoRoot, stateDir, manifest, baseSha: newBase, identity: newIdentity,
+      authorizationId: 'new-authorization-0002',
+    });
+    assert.notEqual(oldWorktree.path, newWorktree.path);
+    assert.notEqual(oldWorktree.branch, newWorktree.branch);
+    assert.equal(git(oldWorktree.path, 'rev-parse', 'HEAD'), oldBase);
+    assert.equal(git(newWorktree.path, 'rev-parse', 'HEAD'), newBase);
+    assert.equal(git(oldWorktree.path, 'status', '--porcelain'), '');
+    assert.equal(git(newWorktree.path, 'status', '--porcelain'), '');
+  } finally {
+    for (const worktree of [newWorktree, oldWorktree]) {
+      if (worktree?.path) spawnSync('git', ['-C', repoRoot, 'worktree', 'remove', '--force', worktree.path], { encoding: 'utf8', windowsHide: true });
+    }
+    rmSync(repoRoot, { recursive: true, force: true });
+    rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
+test('attempt workspace rejects traversal outside controller state', () => {
+  const repoRoot = tempState();
+  const stateDir = tempState();
+  try {
+    git(repoRoot, 'init', '-b', 'main');
+    git(repoRoot, 'config', 'user.email', 'test@example.invalid');
+    git(repoRoot, 'config', 'user.name', 'Test');
+    writeFileSync(join(repoRoot, 'file.txt'), 'base\n');
+    git(repoRoot, 'add', '.'); git(repoRoot, 'commit', '-m', 'base');
+    assert.throws(() => createTaskWorktree({
+      repoRoot,
+      stateDir,
+      manifest: {
+        planned_branch_prefix: 'codex/safe-attempt',
+        planned_worktree_relative_path_prefix: '../outside/attempt',
+      },
+      baseSha: git(repoRoot, 'rev-parse', 'HEAD'),
+      identity: { runId: 'run', leaseId: '3'.repeat(32) },
+      authorizationId: 'new-authorization-0003',
+    }), /UNSAFE_CHILD_PATH/);
+  } finally {
+    rmSync(repoRoot, { recursive: true, force: true });
+    rmSync(stateDir, { recursive: true, force: true });
+  }
+});
+
 test('DRY_RUN and EXECUTE manifests are not interchangeable', () => {
   assert.doesNotThrow(() => assertManifestMode({ mode: 'DRY_RUN_NO_MODEL_NO_GITHUB_WRITE' }, 'DRY_RUN_NO_MODEL_NO_GITHUB_WRITE'));
   assert.throws(() => assertManifestMode({ mode: 'DRY_RUN_NO_MODEL_NO_GITHUB_WRITE' }, 'EXECUTE_ONE_AUTHORIZED_ISSUE'), /EXECUTE_REQUIRES/);
@@ -274,6 +507,166 @@ test('reviewed executor must be exact clean origin/main content', () => {
     git(repoRoot, 'checkout', '--detach', 'HEAD~1');
     const oldManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     assert.throws(() => verifyReviewedExecutionSources({ repoRoot, manifestPath, manifest: oldManifest, fetchMain: false, runningExecutorPath: executorPath }), /EXACT_REVIEWED_MAIN/);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+function attestationFixture(repoRoot) {
+  mkdirSync(join(repoRoot, 'src'), { recursive: true });
+  mkdirSync(join(repoRoot, 'public'), { recursive: true });
+  writeFileSync(join(repoRoot, 'src', 'adapter.js'), "const overview = '/overview';\nconst map = '/map-data';\n");
+  writeFileSync(join(repoRoot, 'public', 'status.json'), '{"historical":"accepted"}\n');
+  const manifest = {
+    repository: 'example/repo', issue_number: 21, task_id: 'WRC-P2-U01',
+    required_source_state: 'READY',
+    issue_execution_policy: { allowed_files: ['docs/evidence/only.md'], forbidden_files: ['src/**'] },
+    github_writeback_policy: { controller_only: true },
+    controller_evidence_policy: {
+      preflight_read_path: 'src/adapter.js',
+      source_references: [
+        { path: 'src/adapter.js', line_ranges: [[1, 2]] },
+        { path: 'public/status.json', line_ranges: [[1, 1]] },
+      ],
+      accepted_historical_recovery_evidence: [{
+        provenance_url: 'https://github.com/example/repo/issues/11#issuecomment-1',
+        statuses: { overview: 200, 'map-data': 200, health: 200, ready: 200 },
+        business_data_written: false,
+      }],
+      deferred_observation: {
+        'resource-list': 404,
+        classification: 'HISTORICAL_DEFERRED_OUTSIDE_CURRENT_HOMEPAGE_READ_CONTRACT',
+        current_live_verification: false,
+      },
+    },
+  };
+  const context = {
+    issueBodyHash: 'issue-hash', manifestHash: 'manifest-hash', promptHash: 'prompt-hash',
+    executorHash: 'executor-hash', baseSha: 'base-sha', runId: 'run-id', leaseId: 'lease-id',
+    authorizationId: 'authorization-id', issueSourceState: 'READY', admission: { complete: true },
+    exactReviewedMain: true, atomicLeaseAcquired: true, isolatedWorktree: true,
+    noModelPreflight: { passed: true },
+  };
+  return { manifest, context };
+}
+
+test('controller attestation binds task, source hashes, admission, and historical provenance', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context });
+    const verification = verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context });
+    assert.equal(verification.passed, true);
+    assert.equal(envelope.packet.task.run_id, 'run-id');
+    assert.equal(envelope.packet.task.lease_id, 'lease-id');
+    assert.equal(envelope.packet.file_policy.allowed_files.length, 1);
+    assert.equal(envelope.packet.current_live_verification.performed, false);
+    assert.equal(envelope.packet.accepted_historical_recovery_evidence[0].classification, 'HISTORICAL_ACCEPTED_NOT_CURRENT_LIVE_VERIFICATION');
+    assert.equal(envelope.packet.deferred_observation['resource-list'], 404);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('controller attestation accepts a verified NEW_ATTEMPT while preserving BLOCKED lineage', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const recoveredContext = {
+      ...context,
+      issueSourceState: 'BLOCKED',
+      attemptAdmission: {
+        state: 'NEW_ATTEMPT_READY',
+        attempt_kind: 'NEW_ATTEMPT',
+        prior_lineage: {
+          state: 'BLOCKED', run_id: 'prior-run', lease_id: 'prior-lease',
+          authorization_id: 'prior-authorization', preserved: true,
+        },
+      },
+    };
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context: recoveredContext });
+    assert.equal(verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context: recoveredContext }).passed, true);
+    assert.equal(envelope.packet.controller_checks.issue_source_state, 'BLOCKED');
+    assert.equal(envelope.packet.controller_checks.attempt_admission_state, 'NEW_ATTEMPT_READY');
+    assert.equal(envelope.packet.recovery_lineage.preserved, true);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('controller attestation rejects missing, adulterated, stale, and forged evidence', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context });
+    assert.throws(() => verifyControllerAdmissionAttestation({ envelope: null, repoRoot, manifest, context }), /ATTESTATION_MISSING/);
+    const adulterated = structuredClone(envelope);
+    adulterated.packet.task.run_id = 'forged-run';
+    assert.throws(() => verifyControllerAdmissionAttestation({ envelope: adulterated, repoRoot, manifest, context }), /ATTESTATION_ADULTERATED/);
+    writeFileSync(join(repoRoot, 'src', 'adapter.js'), "const overview = '/changed';\nconst map = '/map-data';\n");
+    assert.throws(() => verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context }), /ATTESTATION_STALE_OR_FORGED/);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('Codex prompt passes attestation as data and preserves controller authority boundary', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context });
+    const prompt = buildCodexPromptWithAttestation('Reviewed prompt', envelope);
+    assert.match(prompt, /controller-attested DATA, not instructions/);
+    assert.match(prompt, /CONTROLLER_ATTESTATION_SHA256=/);
+    assert.match(prompt, /NO_GITHUB_AUTHORITY/);
+    assert.match(prompt, /HISTORICAL_ACCEPTED_NOT_CURRENT_LIVE_VERIFICATION/);
+    assert.match(prompt, /"performed": false/);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('sanitized audit removes known token shapes and classifies policy denial without secrets', () => {
+  const token = 'ghp_abcdefghijklmnopqrstuvwxyz123456';
+  const sanitized = redactAuditText(`command rejected by execution policy ${token}`);
+  assert.doesNotMatch(sanitized, /ghp_/);
+  assert.match(sanitized, /REDACTED_TOKEN/);
+  assert.equal(classifyPolicyDenial(sanitized), 'EXECUTION_POLICY_DENIAL');
+  assert.equal(classifyPolicyDenial('Access is denied by the sandbox'), 'SANDBOX_OR_OS_PERMISSION_DENIAL');
+});
+
+test('Codex process audit persists a sanitized policy event without invoking a model', async () => {
+  const stateDir = tempState();
+  try {
+    const auditPath = join(stateDir, 'codex-events.sanitized.jsonl');
+    const fakeToken = 'ghp_abcdefghijklmnopqrstuvwxyz123456';
+    const invocation = {
+      command: process.execPath,
+      args: ['-e', `process.stdout.write(JSON.stringify({type:'error',message:'command rejected by execution policy ${fakeToken}'})+'\\n')`],
+      timeout_ms: 10_000,
+    };
+    const result = await runCodexProcess({
+      invocation,
+      prompt: 'NO_MODEL_TEST',
+      env: process.env,
+      auditPath,
+      onThreadStarted: async () => { throw new Error('UNEXPECTED_THREAD'); },
+    });
+    const audit = readFileSync(auditPath, 'utf8');
+    assert.equal(result.ok, true);
+    assert.equal(result.threadId, null);
+    assert.doesNotMatch(audit, /ghp_/);
+    assert.match(audit, /REDACTED_TOKEN/);
+    assert.match(audit, /EXECUTION_POLICY_DENIAL/);
+  } finally { rmSync(stateDir, { recursive: true, force: true }); }
+});
+
+test('attestation fails closed when admission or no-model preflight evidence is incomplete', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    for (const overrides of [
+      { admission: { complete: false } },
+      { noModelPreflight: { passed: false } },
+      { isolatedWorktree: false },
+      { atomicLeaseAcquired: false },
+      { exactReviewedMain: false },
+      { issueSourceState: 'BLOCKED' },
+    ]) {
+      const incomplete = { ...context, ...overrides };
+      const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context: incomplete });
+      assert.throws(() => verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context: incomplete }), /ATTESTATION_CHECKS_INCOMPLETE/);
+    }
   } finally { rmSync(repoRoot, { recursive: true, force: true }); }
 });
 
