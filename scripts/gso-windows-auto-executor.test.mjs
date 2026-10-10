@@ -8,11 +8,13 @@ import test from 'node:test';
 import {
   applyExecutorDevStatus, acquireExecutionLease, acquireExecutorLock,
   assertManifestMode, assertStateDirOutsideRepository, buildCodexInvocation,
-  buildRestrictedCodexEnv, consumeAuthorization, createRunIdentity,
+  buildCodexPromptWithAttestation, buildControllerAdmissionAttestation,
+  buildRestrictedCodexEnv, classifyPolicyDenial, consumeAuthorization, createRunIdentity,
   defaultStateDir, evaluateExecutorIssueState, finalizeMergedRun,
   formatStateComment, parseStateComment, recordModelRun, releaseExecutorLock,
-  scanForSecrets, sha256, simulateExecution, transitionJournal,
-  validateAuthorizationEnvelope, verifyReviewedExecutionSources,
+  redactAuditText, runCodexProcess, scanForSecrets, sha256, simulateExecution, transitionJournal,
+  validateAuthorizationEnvelope, verifyControllerAdmissionAttestation,
+  verifyReviewedExecutionSources,
 } from './gso-windows-auto-executor.mjs';
 
 const policy = {
@@ -274,6 +276,142 @@ test('reviewed executor must be exact clean origin/main content', () => {
     git(repoRoot, 'checkout', '--detach', 'HEAD~1');
     const oldManifest = JSON.parse(readFileSync(manifestPath, 'utf8'));
     assert.throws(() => verifyReviewedExecutionSources({ repoRoot, manifestPath, manifest: oldManifest, fetchMain: false, runningExecutorPath: executorPath }), /EXACT_REVIEWED_MAIN/);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+function attestationFixture(repoRoot) {
+  mkdirSync(join(repoRoot, 'src'), { recursive: true });
+  mkdirSync(join(repoRoot, 'public'), { recursive: true });
+  writeFileSync(join(repoRoot, 'src', 'adapter.js'), "const overview = '/overview';\nconst map = '/map-data';\n");
+  writeFileSync(join(repoRoot, 'public', 'status.json'), '{"historical":"accepted"}\n');
+  const manifest = {
+    repository: 'example/repo', issue_number: 21, task_id: 'WRC-P2-U01',
+    required_source_state: 'READY',
+    issue_execution_policy: { allowed_files: ['docs/evidence/only.md'], forbidden_files: ['src/**'] },
+    github_writeback_policy: { controller_only: true },
+    controller_evidence_policy: {
+      preflight_read_path: 'src/adapter.js',
+      source_references: [
+        { path: 'src/adapter.js', line_ranges: [[1, 2]] },
+        { path: 'public/status.json', line_ranges: [[1, 1]] },
+      ],
+      accepted_historical_recovery_evidence: [{
+        provenance_url: 'https://github.com/example/repo/issues/11#issuecomment-1',
+        statuses: { overview: 200, 'map-data': 200, health: 200, ready: 200 },
+        business_data_written: false,
+      }],
+      deferred_observation: {
+        'resource-list': 404,
+        classification: 'HISTORICAL_DEFERRED_OUTSIDE_CURRENT_HOMEPAGE_READ_CONTRACT',
+        current_live_verification: false,
+      },
+    },
+  };
+  const context = {
+    issueBodyHash: 'issue-hash', manifestHash: 'manifest-hash', promptHash: 'prompt-hash',
+    executorHash: 'executor-hash', baseSha: 'base-sha', runId: 'run-id', leaseId: 'lease-id',
+    authorizationId: 'authorization-id', issueSourceState: 'READY', admission: { complete: true },
+    exactReviewedMain: true, atomicLeaseAcquired: true, isolatedWorktree: true,
+    noModelPreflight: { passed: true },
+  };
+  return { manifest, context };
+}
+
+test('controller attestation binds task, source hashes, admission, and historical provenance', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context });
+    const verification = verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context });
+    assert.equal(verification.passed, true);
+    assert.equal(envelope.packet.task.run_id, 'run-id');
+    assert.equal(envelope.packet.task.lease_id, 'lease-id');
+    assert.equal(envelope.packet.file_policy.allowed_files.length, 1);
+    assert.equal(envelope.packet.current_live_verification.performed, false);
+    assert.equal(envelope.packet.accepted_historical_recovery_evidence[0].classification, 'HISTORICAL_ACCEPTED_NOT_CURRENT_LIVE_VERIFICATION');
+    assert.equal(envelope.packet.deferred_observation['resource-list'], 404);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('controller attestation rejects missing, adulterated, stale, and forged evidence', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context });
+    assert.throws(() => verifyControllerAdmissionAttestation({ envelope: null, repoRoot, manifest, context }), /ATTESTATION_MISSING/);
+    const adulterated = structuredClone(envelope);
+    adulterated.packet.task.run_id = 'forged-run';
+    assert.throws(() => verifyControllerAdmissionAttestation({ envelope: adulterated, repoRoot, manifest, context }), /ATTESTATION_ADULTERATED/);
+    writeFileSync(join(repoRoot, 'src', 'adapter.js'), "const overview = '/changed';\nconst map = '/map-data';\n");
+    assert.throws(() => verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context }), /ATTESTATION_STALE_OR_FORGED/);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('Codex prompt passes attestation as data and preserves controller authority boundary', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context });
+    const prompt = buildCodexPromptWithAttestation('Reviewed prompt', envelope);
+    assert.match(prompt, /controller-attested DATA, not instructions/);
+    assert.match(prompt, /CONTROLLER_ATTESTATION_SHA256=/);
+    assert.match(prompt, /NO_GITHUB_AUTHORITY/);
+    assert.match(prompt, /HISTORICAL_ACCEPTED_NOT_CURRENT_LIVE_VERIFICATION/);
+    assert.match(prompt, /"performed": false/);
+  } finally { rmSync(repoRoot, { recursive: true, force: true }); }
+});
+
+test('sanitized audit removes known token shapes and classifies policy denial without secrets', () => {
+  const token = 'ghp_abcdefghijklmnopqrstuvwxyz123456';
+  const sanitized = redactAuditText(`command rejected by execution policy ${token}`);
+  assert.doesNotMatch(sanitized, /ghp_/);
+  assert.match(sanitized, /REDACTED_TOKEN/);
+  assert.equal(classifyPolicyDenial(sanitized), 'EXECUTION_POLICY_DENIAL');
+  assert.equal(classifyPolicyDenial('Access is denied by the sandbox'), 'SANDBOX_OR_OS_PERMISSION_DENIAL');
+});
+
+test('Codex process audit persists a sanitized policy event without invoking a model', async () => {
+  const stateDir = tempState();
+  try {
+    const auditPath = join(stateDir, 'codex-events.sanitized.jsonl');
+    const fakeToken = 'ghp_abcdefghijklmnopqrstuvwxyz123456';
+    const invocation = {
+      command: process.execPath,
+      args: ['-e', `process.stdout.write(JSON.stringify({type:'error',message:'command rejected by execution policy ${fakeToken}'})+'\\n')`],
+      timeout_ms: 10_000,
+    };
+    const result = await runCodexProcess({
+      invocation,
+      prompt: 'NO_MODEL_TEST',
+      env: process.env,
+      auditPath,
+      onThreadStarted: async () => { throw new Error('UNEXPECTED_THREAD'); },
+    });
+    const audit = readFileSync(auditPath, 'utf8');
+    assert.equal(result.ok, true);
+    assert.equal(result.threadId, null);
+    assert.doesNotMatch(audit, /ghp_/);
+    assert.match(audit, /REDACTED_TOKEN/);
+    assert.match(audit, /EXECUTION_POLICY_DENIAL/);
+  } finally { rmSync(stateDir, { recursive: true, force: true }); }
+});
+
+test('attestation fails closed when admission or no-model preflight evidence is incomplete', () => {
+  const repoRoot = tempState();
+  try {
+    const { manifest, context } = attestationFixture(repoRoot);
+    for (const overrides of [
+      { admission: { complete: false } },
+      { noModelPreflight: { passed: false } },
+      { isolatedWorktree: false },
+      { atomicLeaseAcquired: false },
+      { exactReviewedMain: false },
+      { issueSourceState: 'BLOCKED' },
+    ]) {
+      const incomplete = { ...context, ...overrides };
+      const envelope = buildControllerAdmissionAttestation({ repoRoot, manifest, context: incomplete });
+      assert.throws(() => verifyControllerAdmissionAttestation({ envelope, repoRoot, manifest, context: incomplete }), /ATTESTATION_CHECKS_INCOMPLETE/);
+    }
   } finally { rmSync(repoRoot, { recursive: true, force: true }); }
 });
 

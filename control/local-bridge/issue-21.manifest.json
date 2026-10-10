@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "bridge_revision": "step-b.1",
+  "bridge_revision": "step-c.2-issue31-attestation",
   "mode": "DRY_RUN_NO_MODEL_NO_GITHUB_WRITE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -11,7 +11,7 @@
   "planned_branch": "codex/wrc-p2-u01-single-issue",
   "planned_worktree_relative_path": "worktrees/issue-21-wrc-p2-u01",
   "prompt_path": "control/local-bridge/issue-21.prompt.md",
-  "prompt_sha256": "caaadf1f7d8d98dde030ad6a5ed228460dd0d8414ce4768a74a470cf9ea49ed8",
+  "prompt_sha256": "ced7703cfc6974320cf4181c51026bdbaa161b87ddbb057db9ac3f947bee3317",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
   "bridge_sources": [
@@ -69,6 +69,49 @@
     "controller_post_gate_allowed_files": [
       "public/dev-status.json"
     ]
+  },
+  "controller_evidence_policy": {
+    "schema": "gso.controller-admission-attestation.v1",
+    "preflight_read_path": "src/workerResourceReadAdapter.js",
+    "source_references": [
+      {
+        "path": "src/workerResourceReadAdapter.js",
+        "line_ranges": [[2, 3], [87, 88]]
+      },
+      {
+        "path": "public/dev-status.json",
+        "line_ranges": [[153, 165]]
+      }
+    ],
+    "accepted_historical_recovery_evidence": [
+      {
+        "provenance_url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/issues/11#issuecomment-6096811756",
+        "statuses": {
+          "authenticated_session": "ESTABLISHED",
+          "overview": 200,
+          "map-data": 200,
+          "health": 200,
+          "ready": 200
+        },
+        "business_data_written": false
+      },
+      {
+        "provenance_url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/issues/12#issuecomment-6096811856",
+        "statuses": {
+          "authenticated_session": "ESTABLISHED",
+          "overview": 200,
+          "map-data": 200,
+          "health": 200,
+          "ready": 200
+        },
+        "business_data_written": false
+      }
+    ],
+    "deferred_observation": {
+      "resource-list": 404,
+      "classification": "HISTORICAL_DEFERRED_OUTSIDE_CURRENT_HOMEPAGE_READ_CONTRACT",
+      "current_live_verification": false
+    }
   },
   "github_writeback_policy": {
     "controller_only": true,
