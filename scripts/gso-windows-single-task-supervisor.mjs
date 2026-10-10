@@ -168,7 +168,7 @@ export async function launchReviewedExecutor({ repoRoot, stateDir, manifestPath,
 
 export async function runOneSupervisorPoll({
   config, repoRoot, stateDir, manifestPath, manifestHash, readRemoteState,
-  launch = launchReviewedExecutor,
+  launch = launchReviewedExecutor, onDispatched = () => {},
 }) {
   const file = journalPath(stateDir, config.issue_number);
   const ledger = loadLedger(file, config.issue_number);
@@ -195,6 +195,8 @@ export async function runOneSupervisorPoll({
   const entry = { authorization_id: authorization.authorization_id, status: 'DISPATCH_CLAIMED', at: new Date().toISOString() };
   ledger.attempts.push(entry);
   atomicJson(file, ledger);
+  onDispatched({ action: 'CONTROLLER_DISPATCH_CLAIMED', issue_number: config.issue_number,
+    authorization_id: authorization.authorization_id, at: entry.at });
   let outcome;
   try {
     outcome = await launch({
@@ -259,6 +261,11 @@ async function start({ configFile, repoRoot, stateDir, mode, allowExecute }) {
         const result = await runOneSupervisorPoll({
           config, repoRoot, stateDir, manifestPath, manifestHash: digest(bytes),
           readRemoteState,
+          onDispatched: (event) => {
+            atomicJson(safeChild(stateDir, join(stateDir, 'single-task', 'issue-' + config.issue_number,
+              'heartbeat.json')), event);
+            process.stdout.write(JSON.stringify(event) + '\n');
+          },
         });
         atomicJson(safeChild(stateDir, join(stateDir, 'single-task', 'issue-' + config.issue_number,
           'heartbeat.json')), { ...result, at: new Date().toISOString() });
