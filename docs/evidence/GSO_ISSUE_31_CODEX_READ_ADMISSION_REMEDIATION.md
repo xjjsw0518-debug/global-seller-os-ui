@@ -84,3 +84,19 @@ The previous authorization remains consumed. Issue #21 remains effectively BLOCK
 - GitHub write performed by DRY_RUN: false
 
 The live DRY_RUN final state remains `GSO_AUTO_EXECUTOR_BLOCKED` solely because the prior evidence-backed Issue #21 run is BLOCKED and no new authorization exists. A usable controller attestation is deliberately not emitted for a BLOCKED source state. Trusted READY-context packet creation and validation pass in the regression tests; missing, modified, stale, forged, or incomplete packets fail closed.
+
+## PM P1 recovery closure
+
+The final PR revision adds an explicit recovery admission without changing or clearing the historical GitHub state:
+
+- a new authorization must declare `attempt_kind=NEW_ATTEMPT` and bind the exact prior terminal `BLOCKED` RUN_ID, LEASE_ID, and consumed authorization ID;
+- the prior trusted GitHub state must match the preserved local terminal journal;
+- the prior authorization receipt must show that the single model call started, and its deterministic lease must match the historical lease;
+- the new authorization must bind the current main, manifest, prompt, and executor hashes and must differ from the consumed authorization;
+- at least one reviewed version binding must have changed since the blocked attempt;
+- missing, stale, replayed, already-consumed, wrong-manifest, or forged-lineage authorization fails closed;
+- every authorization/lease derives a stable unique non-main branch and external worktree path;
+- the historical worktree, branch, journal, authorization receipt, and GitHub BLOCKED comment remain untouched;
+- an interrupted new lease is detected on restart and cannot create a second model opportunity.
+
+The ordinary DRY_RUN continues to report the historical Issue #21 state as BLOCKED. The separate no-model recovery simulation uses that actual trusted lineage and the preserved old-base worktree, but creates only an in-memory mock authorization bound to the prospective reviewed head. It must reach `NEW_ATTEMPT_READY` with a distinct new-base worktree, a verified controller attestation, sandbox preflight PASS, zero model calls, and zero GitHub mutations. The mock authorization is neither persisted as a pending authorization nor consumed.

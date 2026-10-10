@@ -10,14 +10,25 @@
   "base_ref": "origin/main",
   "planned_branch": "codex/wrc-p2-u01-single-issue",
   "planned_worktree_relative_path": "worktrees/issue-21-wrc-p2-u01",
+  "planned_branch_prefix": "codex/wrc-p2-u01-attempt",
+  "planned_worktree_relative_path_prefix": "worktrees/issue-21-wrc-p2-u01-attempt",
   "prompt_path": "control/local-bridge/issue-21.prompt.md",
-  "prompt_sha256": "ced7703cfc6974320cf4181c51026bdbaa161b87ddbb057db9ac3f947bee3317",
+  "prompt_sha256": "250a26b36dd553ece6738a566a96f09a23f2f33eaa485b85dc210ce54e3f51a8",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "1b23bfbd4e30c1e00aa85e84b591c999f267940e2d0e855718a9a03741fffa05",
+  "reviewed_executor_sha256": "a17045f745e597687b1ce1153f40fa7839deeae00ccfe40df1422c4ecca56b87",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],
+  "new_attempt_recovery_policy": {
+    "enabled": true,
+    "recoverable_terminal_states": ["BLOCKED"],
+    "requires_new_authorization_id": true,
+    "requires_reviewed_version_change": true,
+    "preserve_prior_journal": true,
+    "preserve_prior_worktree": true,
+    "clear_prior_github_state": false
+  },
   "issue_execution_policy": {
     "enabled": true,
     "allowed_files": [

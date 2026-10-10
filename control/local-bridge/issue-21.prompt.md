@@ -24,7 +24,7 @@ Hard boundaries:
 
 Required evidence document:
 
-1. Record the exact base SHA, RUN_ID, LEASE_ID, manifest hash, prompt hash, controller-attestation hash, and admitted one-file scope from the packet.
+1. Record the exact base SHA, RUN_ID, LEASE_ID, manifest hash, prompt hash, controller-attestation hash, attempt kind, and admitted one-file scope from the packet. For a `NEW_ATTEMPT`, record the preserved prior BLOCKED RUN_ID/LEASE_ID lineage without claiming that the historical state was cleared.
 2. Cite the packet's exact source file hashes and bounded source excerpts showing authenticated GET candidates for `worker-ops/overview` and `worker-ops/map-data`.
 3. Label `overview=200`, `map-data=200`, `health=200`, and `ready=200` only as **historical accepted recovery evidence**, with the packet's provenance links. Do not call them a new or current live verification.
 4. State explicitly that current live verification was not performed in this unit.
