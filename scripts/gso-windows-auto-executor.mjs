@@ -1586,6 +1586,8 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       manifestHash,
       issueRevision: sha256(normalizeReviewText(issue.body || '')),
     });
+    const canonicalExecutorBlob = run('git', ['-C', repoRoot, 'show', `${manifest.base_ref}:scripts/gso-windows-auto-executor.mjs`]);
+    if (!canonicalExecutorBlob.ok) throw new Error('DRY_RUN_EXECUTOR_GIT_BLOB_MISSING');
     const worktree = prepareProbeWorktree({ repoRoot, stateDir, issueNumber: manifest.issue_number, baseSha });
     const isolation = codex.executable_path
       ? probeCodexSandboxCredentialIsolation({ codexPath: codex.executable_path, repoRoot })
@@ -1601,7 +1603,7 @@ export async function buildDryRunReport({ repoRoot, stateDir, manifestPath }) {
       issueBodyHash: sha256(normalizeReviewText(issue.body || '')),
       manifestHash,
       promptHash,
-      executorHash: sha256(readFileSync(EXECUTOR_PATH)),
+      executorHash: sha256(canonicalExecutorBlob.stdout),
       baseSha,
       runId: identity.runId,
       leaseId: identity.leaseId,
