@@ -133,12 +133,41 @@ function git(repoRoot, args, options = {}) {
   return result.stdout.trim();
 }
 
-function changedPaths(repoRoot) {
-  const status = git(repoRoot, ['status', '--porcelain=v1', '--untracked-files=all']);
-  return status.split(/\r?\n/).filter(Boolean).map((line) => {
-    const path = line.slice(3).trim();
-    return path.includes(' -> ') ? path.split(' -> ').at(-1) : path;
-  });
+// Parse NUL-delimited porcelain without stripping the leading XY status columns.
+// A normal ' M public/dev-status.json' record starts with a space; git().trim()
+// would remove it and then slice(3) would silently drop the first path character.
+export function parseGitPorcelainChangedPaths(rawStatus) {
+  if (typeof rawStatus !== 'string') throw new Error('GIT_PORCELAIN_OUTPUT_INVALID');
+  if (!rawStatus) return [];
+  if (!rawStatus.endsWith('\0')) throw new Error('GIT_PORCELAIN_RECORD_NOT_TERMINATED');
+  const entries = rawStatus.slice(0, -1).split('\0');
+  const paths = [];
+  for (let index = 0; index < entries.length; index += 1) {
+    const entry = entries[index];
+    const xy = entry.slice(0, 2);
+    if (entry.length < 4 || entry[2] !== ' ' || !/^[ MARCUDT?!]{2}$/.test(xy)) {
+      throw new Error('GIT_PORCELAIN_RECORD_INVALID');
+    }
+    const path = entry.slice(3);
+    if (!path) throw new Error('GIT_PORCELAIN_PATH_MISSING');
+    paths.push(path);
+    // Porcelain -z appends a second NUL-delimited original path for renames/copies.
+    // Include BOTH paths so a rename cannot silently evade the changed-file allowlist.
+    if (xy.includes('R') || xy.includes('C')) {
+      const originalPath = entries[++index];
+      if (!originalPath) throw new Error('GIT_PORCELAIN_RENAME_SOURCE_MISSING');
+      paths.push(originalPath);
+    }
+  }
+  return [...new Set(paths)];
+}
+
+export function changedPaths(repoRoot) {
+  // Use run() rather than the trimmed git() helper: porcelain's leading spaces
+  // are part of its fixed-width status and must never be discarded.
+  const result = run('git', ['-C', repoRoot, 'status', '--porcelain=v1', '-z', '--untracked-files=all']);
+  if (!result.ok) throw new Error(`GIT_FAILED:status:${result.status ?? result.error ?? 'UNKNOWN'}`);
+  return parseGitPorcelainChangedPaths(result.stdout);
 }
 
 function createLeaseId({ repository, issueNumber, baseSha, manifestHash, issueRevision, authorizationId }) {
