@@ -1,0 +1,11 @@
+{
+  "description": "Known WCAG A/AA violations present when the Step 9 axe gate was introduced. The gate fails when a rule affects any selector not listed here.",
+  "fingerprints": [
+    "color-contrast::.primary",
+    "color-contrast::.table-tabs > .active",
+    "color-contrast::.preview-switcher > span",
+    "label::input[type=\"checkbox\"]",
+    "select-name::.pagination > select",
+    "select-name::.preview-switcher > select"
+  ]
+}

@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:dependencies": "depcruise src --config .dependency-cruiser.mjs --output-type err-long",
     "test:unused": "knip",
-    "test:smoke": "playwright test",
+    "test:smoke": "playwright test tests/e2e/smoke.spec.mjs",
+    "test:accessibility": "playwright test tests/e2e/accessibility.spec.mjs",
     "test:visual": "node scripts/run-backstop.mjs test",
     "test:visual:reference": "node scripts/run-backstop.mjs reference",
     "test:sites": "node --test tests/sites-worker.test.mjs"
@@ -27,6 +28,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
     "@playwright/test": "^1.64.0",
     "backstopjs": "^6.3.25",
     "dependency-cruiser": "^17.4.3",
