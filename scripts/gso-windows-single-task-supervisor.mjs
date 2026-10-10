@@ -1,6 +1,6 @@
 // Windows resident supervisor for ONE reviewed Issue and ONE reviewed executor.
 // Keeps polling after a ChatGPT Work window closes; it never issues approvals.
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
   closeSync, existsSync, lstatSync, mkdirSync, openSync, readFileSync, readdirSync,
@@ -123,16 +123,12 @@ function gitHead(repoRoot, ref) {
   return child;
 }
 function spawnSyncGit(repoRoot, args) {
-  // Import locally to keep all model launch paths explicit.
-  const { spawnSync } = requireChildProcess();
   const result = spawnSync('git', ['-C', repoRoot, ...args], {
     encoding: 'utf8', windowsHide: true, timeout: 30000,
   });
   if (result.error || result.status !== 0) fail('GIT_READ_FAILED');
   return result.stdout.trim();
 }
-function requireChildProcess() { return CHILD_PROCESS_HELPERS; }
-
 export async function launchReviewedExecutor({ repoRoot, stateDir, manifestPath, authorization, outputPath, timeoutMinutes }) {
   const source = resolve(repoRoot, 'scripts', 'gso-windows-auto-executor.mjs');
   safeChild(repoRoot, source);
@@ -178,6 +174,10 @@ export async function runOneSupervisorPoll({
   const ledger = loadLedger(file, config.issue_number);
   const remote = await readRemoteState();
   const approvedBaseSha = gitHead(repoRoot, 'origin/main');
+  if (gitHead(repoRoot, 'HEAD') !== approvedBaseSha) fail('CHECKOUT_NOT_EXACT_MAIN');
+  if (spawnSyncGit(repoRoot, ['status', '--porcelain=v1', '--untracked-files=all']) !== '') {
+    fail('CHECKOUT_DIRTY');
+  }
   const pending = remote.effectiveState === 'READY'
     ? findFreshPendingAuthorizations({ stateDir, config, manifestHash, approvedBaseSha, ledger })
     : [];
@@ -266,8 +266,11 @@ async function start({ configFile, repoRoot, stateDir, mode, allowExecute }) {
         lastAction = result.action;
         if (result.action.startsWith('STOP_')) return result;
       } catch (error) {
-        // GitHub offline or missing trust proof must NEVER dispatch a model.
-        const failure = { action: 'REMOTE_OR_LOCAL_CHECK_FAILED', reason: error.message, at: new Date().toISOString() };
+        // Only network/service errors retry without dispatch. An admission,
+        // authorization, path or source error stops rather than polling forever.
+        const transient = /(?:fetch failed|ETIMEDOUT|ECONNRESET|ENOTFOUND|GITHUB_[A-Z_]+_FAILED:5[0-9]{2})/i.test(error.message || '');
+        if (!transient) throw error;
+        const failure = { action: 'REMOTE_TEMPORARILY_UNAVAILABLE', reason: error.message, at: new Date().toISOString() };
         atomicJson(safeChild(stateDir, join(stateDir, 'single-task', 'issue-' + config.issue_number,
           'heartbeat.json')), failure);
         if (lastAction !== failure.reason) process.stderr.write(JSON.stringify(failure) + '\n');
@@ -306,6 +309,3 @@ if (isMain) main().catch((error) => {
   process.exitCode = 1;
 });
 
-// Bind spawnSync statically to avoid arbitrary process launch command paths.
-import { spawnSync } from 'node:child_process';
-const CHILD_PROCESS_HELPERS = Object.freeze({ spawnSync });
