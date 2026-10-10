@@ -1,6 +1,6 @@
 {
   "overall_status": "RUNNING",
-  "current_step": "WRC-P2-U00A - Worker staging recovery ready; browser session verification pending",
+  "current_step": "WRC-P2-U00E - Worker resource-list route audit / route decision",
   "last_updated": "2026-10-10T11:20:00Z",
   "auto_refresh_seconds": 30,
   "latest_actions_run": { "name": "GSO Gate #26", "url": "https://github.com/xjjsw0518-debug/global-seller-os-ui/actions/runs/38042706076", "status": "SUCCESS" },
@@ -22,14 +22,17 @@
     { "id": "WRC-P2-U00", "name": "WRC-P2-U00：Worker source/deployment identity + read-path failure audit", "status": "PASS", "owner": "GSO Automation", "evidence": "GitHub Issue #12；只读服务器核验", "next_step": "进入浏览器会话验证" }
   ],
   "todo": [
-    { "id": "WRC-P2-U00A", "name": "恢复 Worker staging 数据库、专用 API 容器和后端账号", "status": "PASS", "owner": "GSO Automation", "evidence": "GitHub Issue #11；数据库/容器/健康检查证据", "next_step": "浏览器登录 POST 仍需单独授权" }
+    { "id": "WRC-P2-U00A", "name": "恢复 Worker staging 数据库、专用 API 容器和后端账号", "status": "PASS", "owner": "GSO Automation", "evidence": "GitHub Issue #11；数据库/容器/健康检查证据", "next_step": "U00A-D complete" },
+    { "id": "WRC-P2-U00B", "name": "Worker 浏览器会话验证", "status": "PASS", "owner": "GSO Automation", "evidence": "LOGIN_POST SUCCESS；SESSION ESTABLISHED", "next_step": "U00B-D complete" },
+    { "id": "WRC-P2-U00C", "name": "Worker authenticated overview/map-data read-only diagnosis", "status": "PASS", "owner": "GSO Automation", "evidence": "InsufficientPrivilegeError root cause identified", "next_step": "U00C-D complete" },
+    { "id": "WRC-P2-U00D", "name": "Grant audited read-only privileges for Worker staging role", "status": "PASS", "owner": "GSO Automation", "evidence": "overview=200；map-data=200；health=200；ready=200", "next_step": "进入 U00E" }
   ],
   "issues_to_resolve": [
     { "id": "WRC-P2-U00A", "name": "WRC-P2-U00A：Worker staging 后端环境不存在", "status": "BLOCKED", "owner": "GSO Automation", "evidence": "GitHub Issue #11", "next_step": "等待恢复授权" },
     { "id": "worker-staging-database", "name": "global_seller_staging 数据库不存在", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery", "next_step": "保持 staging 数据库" },
     { "id": "worker-staging-container", "name": "gso-worker-staging-api-20261004 容器不存在", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery", "next_step": "保持专用 API 容器" },
     { "id": "worker-staging-listener", "name": "127.0.0.1:18765 无监听", "status": "PASS", "owner": "GSO Automation", "evidence": "WRC-P2-U00A recovery; loopback 18765→8000", "next_step": "保持端口映射" },
-    { "id": "worker-staging-approval", "name": "浏览器登录 POST 尚未授权", "status": "BLOCKED_USER_APPROVAL_REQUIRED", "owner": "User", "evidence": "用户明确暂不授权浏览器登录 POST", "next_step": "单独授权后执行浏览器会话验证" }
+    { "id": "worker-resource-list-route", "name": "resource-list 路由未注册", "status": "READY", "owner": "GSO Automation", "evidence": "HTTP 404；U00E", "next_step": "执行 Worker resource-list route audit / route decision" }
   ],
-  "next_safe_unit": "WRC-P2-U00B — Worker 浏览器会话验证；需要单独授权登录 POST。"
+  "next_safe_unit": "WRC-P2-U00E — Worker resource-list route audit / route decision"
 }
