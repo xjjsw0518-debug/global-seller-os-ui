@@ -27,38 +27,7 @@ const server = spawn(
 server.stdout.pipe(process.stdout);
 server.stderr.pipe(process.stderr);
 
-function waitForViteStartup() {
-  return new Promise((resolve, reject) => {
-    const timeout = setTimeout(
-      () => reject(new Error("Timed out waiting for Vite to start")),
-      30_000,
-    );
-
-    const onData = (chunk) => {
-      if (chunk.toString().includes("Local:")) {
-        clearTimeout(timeout);
-        server.stdout.off("data", onData);
-        server.stderr.off("data", onData);
-        server.off("exit", onExit);
-        resolve();
-      }
-    };
-    const onExit = (code) => {
-      clearTimeout(timeout);
-      server.stdout.off("data", onData);
-      server.stderr.off("data", onData);
-      reject(new Error(`Vite exited before becoming ready (${code})`));
-    };
-
-    server.stdout.on("data", onData);
-    server.stderr.on("data", onData);
-    server.once("exit", onExit);
-  });
-}
-
 async function waitForServer() {
-  await waitForViteStartup();
-
   for (let attempt = 0; attempt < 60; attempt += 1) {
     if (server.exitCode !== null) {
       throw new Error(`Vite exited before becoming ready (${server.exitCode})`);
@@ -66,7 +35,10 @@ async function waitForServer() {
 
     try {
       const response = await fetch(baseURL);
-      if (response.ok) return;
+      if (response.ok) {
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        if (server.exitCode === null) return;
+      }
     } catch {
       // Vite is still starting.
     }
