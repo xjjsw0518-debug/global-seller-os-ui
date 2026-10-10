@@ -1,6 +1,6 @@
 {
   "schema_version": 3,
-  "bridge_revision": "step-c.7-canonical-hash-prior-attempt-isolation",
+  "bridge_revision": "step-c.8-zero-delimited-porcelain-paths",
   "mode": "EXECUTE_ONE_AUTHORIZED_ISSUE",
   "repository": "xjjsw0518-debug/global-seller-os-ui",
   "issue_number": 21,
@@ -19,7 +19,7 @@
   "model_output_schema_sha256": "412020d39a397aad6f71c7d087d835b8f89cfe0eb00db50dea7c38284a1583be",
   "issue_body_path": "control/local-bridge/issue-21.checklist.md",
   "issue_body_sha256": "c1708cc79df483008e1c675f963fd0b96afd13f14ce6d122f9b575903df7b84c",
-  "reviewed_executor_sha256": "b9e39a4263142c9f18549a317791537f4da07c4f30c6d9928bb693a6947245e9",
+  "reviewed_executor_sha256": "7f835f0962ef43758a5ed4aa78794e5d302374b7671f5c6891db9027e6fe3d18",
   "trusted_controller_logins": [
     "xjjsw0518-debug"
   ],

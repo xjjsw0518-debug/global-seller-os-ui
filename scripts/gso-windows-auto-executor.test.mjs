@@ -13,7 +13,7 @@ import {
   createTaskWorktree, defaultStateDir, deriveAttemptWorkspace, evaluateAttemptAdmission,
   evaluateExecutorIssueState, evaluateNewAttemptRecovery, finalizeMergedRun,
   formatStateComment, parseStateComment, recordModelRun, releaseExecutorLock,
-  resolvePriorAttemptWorkspace,
+  resolvePriorAttemptWorkspace, changedPaths, parseGitPorcelainChangedPaths,
   redactAuditText, runCodexProcess, scanForSecrets, sha256, simulateExecution, transitionJournal,
   validateAuthorizationEnvelope, verifyControllerAdmissionAttestation,
   verifyReviewedExecutionSources,
@@ -110,6 +110,57 @@ function seedBlockedAttempt(stateDir) {
     issueState, currentContext, freshAuthorization,
   };
 }
+
+test('Git porcelain -z preserves leading XY status and rejects malformed records', () => {
+  assert.deepEqual(parseGitPorcelainChangedPaths(' M public/dev-status.json\0'), ['public/dev-status.json']);
+  assert.deepEqual(
+    parseGitPorcelainChangedPaths(' M public/dev-status.json\0?? content with spaces.txt\0'),
+    ['public/dev-status.json', 'content with spaces.txt'],
+  );
+  assert.deepEqual(
+    parseGitPorcelainChangedPaths('R  public/new-status.json\0public/dev-status.json\0'),
+    ['public/new-status.json', 'public/dev-status.json'],
+  );
+  assert.deepEqual(parseGitPorcelainChangedPaths(''), []);
+  assert.throws(() => parseGitPorcelainChangedPaths(' M public/dev-status.json'), /NOT_TERMINATED/);
+  assert.throws(() => parseGitPorcelainChangedPaths('R  public/new-status.json\0'), /RENAME_SOURCE_MISSING/);
+  assert.throws(() => parseGitPorcelainChangedPaths('XX public/dev-status.json\0'), /RECORD_INVALID/);
+});
+
+test('real Git status preserves exact controller dev-status path on first modified line', () => {
+  const repoRoot = tempState();
+  try {
+    git(repoRoot, 'init', '-b', 'main');
+    git(repoRoot, 'config', 'user.email', 'test@example.invalid');
+    git(repoRoot, 'config', 'user.name', 'Test');
+    const devStatusPath = join(repoRoot, 'public', 'dev-status.json');
+    mkdirSync(dirname(devStatusPath), { recursive: true });
+    writeFileSync(devStatusPath, '{"status":"initial"}\n');
+    git(repoRoot, 'add', '.');
+    git(repoRoot, 'commit', '-m', 'initial state');
+    writeFileSync(devStatusPath, '{"status":"pending"}\n');
+    const raw = spawnSync('git', ['-C', repoRoot, 'status', '--porcelain=v1', '-z', '--untracked-files=all'], {
+      encoding: 'utf8', windowsHide: true,
+    });
+    assert.equal(raw.status, 0);
+    assert.equal(raw.stdout, ' M public/dev-status.json\0');
+    const controllerPaths = changedPaths(repoRoot);
+    assert.deepEqual(controllerPaths, ['public/dev-status.json']);
+    assert.ok(controllerPaths.every((path) => ['public/dev-status.json'].includes(path)));
+    assert.ok(!controllerPaths.includes('ublic/dev-status.json'));
+
+    writeFileSync(join(repoRoot, 'extra file ü.txt'), 'untracked\n');
+    assert.deepEqual(changedPaths(repoRoot).sort(), ['public/dev-status.json', 'extra file ü.txt'].sort());
+    git(repoRoot, 'add', '.');
+    git(repoRoot, 'commit', '-m', 'updated state');
+    git(repoRoot, 'mv', 'public/dev-status.json', 'public/status-moved.json');
+    const renamePaths = changedPaths(repoRoot);
+    assert.deepEqual(renamePaths.sort(), ['public/status-moved.json', 'public/dev-status.json'].sort());
+    assert.ok(renamePaths.some((path) => path !== 'public/dev-status.json'));
+  } finally {
+    rmSync(repoRoot, { recursive: true, force: true });
+  }
+});
 
 test('single instance lock permits only one executor', () => {
   const stateDir = tempState();
