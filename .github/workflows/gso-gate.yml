@@ -2,6 +2,12 @@ name: GSO Gate
 
 on:
   workflow_dispatch:
+    inputs:
+      update_visual_baseline:
+        description: Generate a candidate visual baseline artifact for review
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - main
@@ -10,6 +16,8 @@ on:
 jobs:
   gate:
     runs-on: self-hosted
+    env:
+      PUPPETEER_SKIP_DOWNLOAD: "true"
 
     steps:
       - name: Checkout
@@ -37,6 +45,18 @@ jobs:
       - name: Playwright smoke test
         run: npm run test:smoke
 
+      - name: Generate candidate BackstopJS visual baseline
+        if: >-
+          (github.event_name == 'workflow_dispatch' && inputs.update_visual_baseline) ||
+          hashFiles('backstop_data/bitmaps_reference/*.png') == ''
+        run: npm run test:visual:reference
+
+      - name: BackstopJS visual baseline gate
+        if: >-
+          hashFiles('backstop_data/bitmaps_reference/*.png') != '' &&
+          (github.event_name != 'workflow_dispatch' || !inputs.update_visual_baseline)
+        run: npm run test:visual
+
       - name: Upload Playwright evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -45,5 +65,18 @@ jobs:
           path: |
             playwright-report/
             test-results/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Upload visual regression evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backstop-visual-${{ github.run_id }}
+          path: |
+            backstop_data/bitmaps_reference/
+            backstop_data/bitmaps_test/
+            backstop_data/html_report/
+            backstop_data/ci_report/
           if-no-files-found: warn
           retention-days: 7

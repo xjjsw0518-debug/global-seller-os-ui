@@ -8,6 +8,8 @@
     "build": "vite build && node scripts/prepare-sites-build.mjs",
     "preview": "vite preview",
     "test:smoke": "playwright test",
+    "test:visual": "backstop test --config=backstop.config.cjs",
+    "test:visual:reference": "backstop reference --config=backstop.config.cjs",
     "test:sites": "node --test tests/sites-worker.test.mjs"
   },
   "dependencies": {
@@ -23,6 +25,7 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "devDependencies": {
-    "@playwright/test": "^1.64.0"
+    "@playwright/test": "^1.64.0",
+    "backstopjs": "^6.3.25"
   }
 }
